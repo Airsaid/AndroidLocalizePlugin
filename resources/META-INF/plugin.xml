@@ -33,8 +33,7 @@
         <action id="AndroidLocalizePlugin.ConvertAction" class="action.ConvertAction"
                 text="Convert to other languages"
                 description="Convert this strings.xml to other languages that can be used to localize your Android app.">
-            <!--<add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="EditSource"/>-->
-            <add-to-group group-id="RunMenu" anchor="first"/>
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="EditSource"/>
         </action>
     </actions>
 
