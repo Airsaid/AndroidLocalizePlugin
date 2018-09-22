@@ -1,14 +1,16 @@
 package translate.http;
 
-import translate.lang.LANG;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import translate.lang.LANG;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,13 +21,13 @@ import java.util.Map;
 public abstract class AbstractHttpAttribute {
     public String              url;
     public Map<String, String> formData;
-    public Map<LANG, String>   langMap;
+    public List<LANG>          langData;
     public CloseableHttpClient httpClient;
 
     public AbstractHttpAttribute(String url) {
         this.url = url;
         this.formData = new HashMap<>();
-        this.langMap = new HashMap<>();
+        this.langData = new ArrayList<>();
         this.httpClient = HttpClients.createDefault();
     }
 

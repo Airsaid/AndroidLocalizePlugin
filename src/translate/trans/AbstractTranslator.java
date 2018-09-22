@@ -3,9 +3,10 @@ package translate.trans;
 import translate.http.AbstractHttpAttribute;
 import translate.http.HttpParams;
 import translate.lang.LANG;
-import translate.trans.impl.*;
+import translate.trans.impl.GoogleTranslator;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * AbstractTranslator is an abstract base class for all translators
@@ -36,7 +37,6 @@ public abstract class AbstractTranslator extends AbstractHttpAttribute implement
         } catch (Exception e) {
             e.printStackTrace();
         }
-        close();
         return result;
     }
 
@@ -44,6 +44,15 @@ public abstract class AbstractTranslator extends AbstractHttpAttribute implement
      * Initialize the supported language mapping.
      */
     public abstract void setLangSupport();
+
+    /**
+     * Get the language currently supported for translation.
+     *
+     * @return support lang list.
+     */
+    public List<LANG> getSupportLang() {
+        return langData;
+    }
 
     @Override
     public void setFormData(LANG source, String text){}
@@ -62,4 +71,5 @@ public abstract class AbstractTranslator extends AbstractHttpAttribute implement
      * @throws IOException if the parsing fails.
      */
     public abstract String parses(String text) throws IOException;
+
 }

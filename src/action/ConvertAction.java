@@ -7,9 +7,9 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
-import data.SupportLanguage;
+import translate.lang.LANG;
 import logic.GetAndroidStringTask;
-import logic.TranslationTask;
+import logic.TranslateTask;
 import module.AndroidString;
 import org.jetbrains.annotations.NotNull;
 import ui.SelectLanguageDialog;
@@ -22,6 +22,7 @@ import java.util.List;
 public class ConvertAction extends AnAction implements SelectLanguageDialog.OnClickListener {
 
     private Project mProject;
+    private VirtualFile mSelectFile;
     private List<AndroidString> mAndroidStrings;
 
     @Override
@@ -58,8 +59,8 @@ public class ConvertAction extends AnAction implements SelectLanguageDialog.OnCl
     public void update(AnActionEvent e) {
         super.update(e);
         // The translation option is only show when strings.xml is selected.
-        VirtualFile file = e.getData(CommonDataKeys.VIRTUAL_FILE);
-        boolean isSelectStringsFile = isSelectStringsFile(file);
+        mSelectFile = e.getData(CommonDataKeys.VIRTUAL_FILE);
+        boolean isSelectStringsFile = isSelectStringsFile(mSelectFile);
         e.getPresentation().setEnabledAndVisible(isSelectStringsFile);
     }
 
@@ -99,9 +100,9 @@ public class ConvertAction extends AnAction implements SelectLanguageDialog.OnCl
     }
 
     @Override
-    public void onClickListener(List<SupportLanguage> selectLanguage) {
-        TranslationTask translationTask = new TranslationTask(
-                mProject, "Translating...", selectLanguage, mAndroidStrings);
+    public void onClickListener(List<LANG> selectLanguage) {
+        TranslateTask translationTask = new TranslateTask(
+                mProject, "Translating...", selectLanguage, mAndroidStrings, mSelectFile);
         translationTask.queue();
     }
 }

@@ -4,8 +4,9 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.ui.components.JBCheckBox;
-import data.SupportLanguage;
+import translate.lang.LANG;
 import org.jetbrains.annotations.Nullable;
+import translate.trans.impl.GoogleTranslator;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,10 +22,10 @@ import java.util.List;
 public class SelectLanguageDialog extends DialogWrapper {
 
     private OnClickListener mOnClickListener;
-    private List<SupportLanguage> mSelectLanguages = new ArrayList<>();
+    private List<LANG> mSelectLanguages = new ArrayList<>();
 
     public interface OnClickListener {
-        void onClickListener(List<SupportLanguage> selectLanguage);
+        void onClickListener(List<LANG> selectLanguage);
     }
 
     public SelectLanguageDialog(@Nullable Project project) {
@@ -68,9 +69,9 @@ public class SelectLanguageDialog extends DialogWrapper {
         });
         // add language
         mSelectLanguages.clear();
-        List<SupportLanguage> supportLanguages = SupportLanguage.getSupportLanguage();
+        List<LANG> supportLanguages = new GoogleTranslator().getSupportLang();
         container.setLayout(new GridLayout(supportLanguages.size() / 4, 4));
-        for (SupportLanguage language : supportLanguages) {
+        for (LANG language : supportLanguages) {
             JBCheckBox checkBoxLanguage = new JBCheckBox();
             checkBoxLanguage.setText(language.getEnglishName()
                     .concat("(").concat(language.getCode()).concat(")"));

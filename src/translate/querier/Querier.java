@@ -16,9 +16,12 @@ public final class Querier<T extends AbstractHttpAttribute> {
         collection = new ArrayList<T>();
     }
 
-    public List<String> execute() {
-        List<String> result = new ArrayList<String>();
+    public String executeSingle() {
+        return collection.get(0).run(from, to, text);
+    }
 
+    public List<String> execute() {
+        List<String> result = new ArrayList<>();
         for (T element : collection) {
             if (element.getClass().getName().contains("Translator")) {
                 result.add(element.run(from, to, text));

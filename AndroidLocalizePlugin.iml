@@ -7,7 +7,7 @@
     ﻿     <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
           <sourceFolder url="file://$MODULE_DIR$/resources" type="java-resource" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="IntelliJ IDEA Community Edition IC-181.5281.24" jdkType="IDEA JDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="org.apache.httpcomponents:httpclient:4.5.5" level="project" />
     <orderEntry type="library" name="com.fasterxml.jackson.core:jackson-databind:2.9.5" level="project" />
