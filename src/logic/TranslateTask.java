@@ -63,6 +63,7 @@ public class TranslateTask extends Task.Backgroundable {
         GoogleTranslator googleTranslator = new GoogleTranslator();
         querierTrans.attach(googleTranslator);
         for (LANG toLanguage : mLanguages) {
+            progressIndicator.setText("Translating in the " + toLanguage.getEnglishName() + " language...");
             List<AndroidString> writeAndroidString = new ArrayList<>();
             for (AndroidString androidString : mAndroidStrings) {
                 if (androidString.isTranslatable()) {
@@ -74,10 +75,10 @@ public class TranslateTask extends Task.Backgroundable {
             mWriteData.put(toLanguage.getCode(), writeAndroidString);
         }
         googleTranslator.close();
-        writeResultData();
+        writeResultData(progressIndicator);
     }
 
-    private void writeResultData() {
+    private void writeResultData(ProgressIndicator progressIndicator) {
         if (mWriteData == null) {
             translateFail(new IllegalArgumentException("No translate data."));
             return;
@@ -86,8 +87,8 @@ public class TranslateTask extends Task.Backgroundable {
         Set<String> keySet = mWriteData.keySet();
         for (String key : keySet) {
             File writeFile = getWriteFileForCode(key);
-            List<AndroidString> values = mWriteData.get(key);
-            write(writeFile, values);
+            progressIndicator.setText("Write to " + writeFile.getParentFile().getName() + " data...");
+            write(writeFile, mWriteData.get(key));
             refreshAndOpenFile(writeFile);
         }
     }
