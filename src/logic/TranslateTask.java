@@ -1,8 +1,11 @@
 package logic;
 
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import module.AndroidString;
 import org.jetbrains.annotations.Nls;
@@ -85,23 +88,7 @@ public class TranslateTask extends Task.Backgroundable {
             File writeFile = getWriteFileForCode(key);
             List<AndroidString> values = mWriteData.get(key);
             write(writeFile, values);
-        }
-    }
-
-    private void write(File file, List<AndroidString> androidStrings) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
-            bw.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-            bw.newLine();
-            bw.write("<resources>");
-            bw.newLine();
-            for (AndroidString androidString : androidStrings) {
-                bw.write("\t<string name=\"" + androidString.getName() + "\">" + androidString.getValue() + "</string>");
-                bw.newLine();
-            }
-            bw.write("</resources>");
-            bw.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
+            refreshAndOpenFile(writeFile);
         }
     }
 
@@ -120,6 +107,35 @@ public class TranslateTask extends Task.Backgroundable {
             }
         }
         return file;
+    }
+
+    private void write(File file, List<AndroidString> androidStrings) {
+        ApplicationManager.getApplication().invokeLater(() -> {
+            ApplicationManager.getApplication().runWriteAction(() -> {
+                try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
+                    bw.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+                    bw.newLine();
+                    bw.write("<resources>");
+                    bw.newLine();
+                    for (AndroidString androidString : androidStrings) {
+                        bw.write("\t<string name=\"" + androidString.getName() + "\">" + androidString.getValue() + "</string>");
+                        bw.newLine();
+                    }
+                    bw.write("</resources>");
+                    bw.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        });
+    }
+
+    private void refreshAndOpenFile(File file) {
+        VirtualFile virtualFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(file.getPath());
+        if (virtualFile != null) {
+            ApplicationManager.getApplication().invokeLater(() ->
+                    FileEditorManager.getInstance(myProject).openFile(virtualFile, true));
+        }
     }
 
     @Override
