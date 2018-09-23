@@ -7,11 +7,11 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
-import translate.lang.LANG;
-import task.GetAndroidStringTask;
-import task.TranslateTask;
 import module.AndroidString;
 import org.jetbrains.annotations.NotNull;
+import task.GetAndroidStringTask;
+import task.TranslateTask;
+import translate.lang.LANG;
 import ui.SelectLanguageDialog;
 
 import java.util.List;

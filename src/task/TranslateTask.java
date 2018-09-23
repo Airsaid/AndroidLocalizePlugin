@@ -53,6 +53,7 @@ public class TranslateTask extends Task.Backgroundable {
         Querier<AbstractTranslator> querierTrans = new Querier<>();
         GoogleTranslator googleTranslator = new GoogleTranslator();
         querierTrans.attach(googleTranslator);
+        mWriteData.clear();
         for (LANG toLanguage : mLanguages) {
             progressIndicator.setText("Translating in the " + toLanguage.getEnglishName() + " language...");
             List<AndroidString> writeAndroidString = new ArrayList<>();
@@ -86,7 +87,7 @@ public class TranslateTask extends Task.Backgroundable {
 
     private File getWriteFileForCode(String langCode) {
         String parentPath = mSelectFile.getParent().getParent().getPath();
-        File parentFile = new File(parentPath, "values-".concat(langCode));
+        File parentFile = new File(parentPath, getDirNameForCode(langCode));
         if (!parentFile.exists()) {
             parentFile.mkdirs();
         }
@@ -99,6 +100,24 @@ public class TranslateTask extends Task.Backgroundable {
             }
         }
         return file;
+    }
+
+    private String getDirNameForCode(String langCode) {
+        String suffix;
+        if (langCode.equals(LANG.ChineseSimplified.getCode())) {
+            suffix = "zh-rCN";
+        } else if (langCode.equals(LANG.ChineseTraditional.getCode())) {
+            suffix = "zh-rTW";
+        } else if (langCode.equals(LANG.Filipino.getCode())) {
+            suffix = "fil";
+        } else if (langCode.equals(LANG.Indonesian.getCode())) {
+            suffix = "in-rID";
+        } else if (langCode.equals(LANG.Javanese.getCode())) {
+            suffix = "jv";
+        } else {
+            suffix = langCode;
+        }
+        return "values-".concat(suffix);
     }
 
     private void write(File file, List<AndroidString> androidStrings) {
