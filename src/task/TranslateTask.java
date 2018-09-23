@@ -1,4 +1,4 @@
-package logic;
+package task;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -34,18 +34,9 @@ public class TranslateTask extends Task.Backgroundable {
     private OnTranslateListener mOnTranslateListener;
 
     public interface OnTranslateListener {
-
-        /**
-         * translate success/done.
-         */
         void onTranslateSuccess();
 
-        /**
-         * translate fail.
-         *
-         * @param e error.
-         */
-        void onTranslateFail(Throwable e);
+        void onTranslateError(Throwable e);
     }
 
     public TranslateTask(@Nullable Project project, @Nls @NotNull String title, List<LANG> languages,
@@ -80,7 +71,7 @@ public class TranslateTask extends Task.Backgroundable {
 
     private void writeResultData(ProgressIndicator progressIndicator) {
         if (mWriteData == null) {
-            translateFail(new IllegalArgumentException("No translate data."));
+            translateError(new IllegalArgumentException("No translate data."));
             return;
         }
 
@@ -148,7 +139,7 @@ public class TranslateTask extends Task.Backgroundable {
     @Override
     public void onThrowable(@NotNull Throwable error) {
         super.onThrowable(error);
-        translateFail(error);
+        translateError(error);
     }
 
     private void translateSuccess() {
@@ -157,9 +148,9 @@ public class TranslateTask extends Task.Backgroundable {
         }
     }
 
-    private void translateFail(Throwable error) {
+    private void translateError(Throwable error) {
         if (mOnTranslateListener != null) {
-            mOnTranslateListener.onTranslateFail(error);
+            mOnTranslateListener.onTranslateError(error);
         }
     }
 

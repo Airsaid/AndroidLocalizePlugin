@@ -8,8 +8,8 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import translate.lang.LANG;
-import logic.GetAndroidStringTask;
-import logic.TranslateTask;
+import task.GetAndroidStringTask;
+import task.TranslateTask;
 import module.AndroidString;
 import org.jetbrains.annotations.NotNull;
 import ui.SelectLanguageDialog;
@@ -102,7 +102,16 @@ public class ConvertAction extends AnAction implements SelectLanguageDialog.OnCl
     @Override
     public void onClickListener(List<LANG> selectLanguage) {
         TranslateTask translationTask = new TranslateTask(
-                mProject, "Translating...", selectLanguage, mAndroidStrings, mSelectFile);
+                mProject, "In translation...", selectLanguage, mAndroidStrings, mSelectFile);
+        translationTask.setOnTranslateListener(new TranslateTask.OnTranslateListener() {
+            @Override
+            public void onTranslateSuccess() {}
+
+            @Override
+            public void onTranslateError(Throwable e) {
+                Messages.showErrorDialog("Translate error: " + e, "Error");
+            }
+        });
         translationTask.queue();
     }
 }

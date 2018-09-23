@@ -1,4 +1,4 @@
-package logic;
+package task;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.progress.ProgressIndicator;

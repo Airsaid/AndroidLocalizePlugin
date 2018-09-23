@@ -36,8 +36,8 @@ public final class GoogleTranslator extends AbstractTranslator {
         langData.add(LANG.Belarusian);
         langData.add(LANG.Bulgarian);
         langData.add(LANG.Catalan);
-        langData.add(LANG.Chinese_Simplified);
-        langData.add(LANG.Chinese_Traditional);
+        langData.add(LANG.ChineseSimplified);
+        langData.add(LANG.ChineseTraditional);
         langData.add(LANG.Croatian);
         langData.add(LANG.Czech);
         langData.add(LANG.Danish);
@@ -53,7 +53,7 @@ public final class GoogleTranslator extends AbstractTranslator {
         langData.add(LANG.German);
         langData.add(LANG.Greek);
         langData.add(LANG.Gujarati);
-        langData.add(LANG.Haitian_Creole);
+        langData.add(LANG.HaitianCreole);
         langData.add(LANG.Hebrew);
         langData.add(LANG.Hindi);
         langData.add(LANG.Hungarian);
