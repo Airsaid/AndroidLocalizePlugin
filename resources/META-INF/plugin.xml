@@ -1,22 +1,19 @@
 <idea-plugin>
-    <id>com.your.company.unique.plugin.id</id>
-    <name>Plugin display name here</name>
+    <id>com.github.airsaid.androidlocalizeplugin</id>
+    <name>AndroidLocalizePlugin</name>
     <version>1.0</version>
-    <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+    <vendor email="airsaid1024@gmail.com" url="https://github.com/Airsaid/AndroidLocalizePlugin"/>
 
     <description><![CDATA[
-      Enter short description for your plugin here.<br>
-      <em>most HTML tags may be used</em>
+      Android localization plugin. Support multiple languages, No need to apply for key.
     ]]></description>
 
-    <change-notes><![CDATA[
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>
-    ]]>
+    <change-notes>
+        V1.0: Initial release of the plugin.
     </change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-    <idea-version since-build="173.0"/>
+    <idea-version since-build="145"/>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
@@ -32,6 +29,7 @@
         <!-- Add your actions here -->
         <action id="AndroidLocalizePlugin.ConvertAction" class="action.ConvertAction"
                 text="Convert to other languages"
+                icon="PluginIcons.CONVERT_ACTION_ICON"
                 description="Convert this strings.xml to other languages that can be used to localize your Android app.">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="EditSource"/>
         </action>
