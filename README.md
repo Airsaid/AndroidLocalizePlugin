@@ -5,6 +5,7 @@
 - Support 104 languages.
 - No need to apply for key.
 - One key generates all translation files.
+- Support for specifying that text is not translated.
 
 # Preview
 ![image](https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/preview/preview.gif)
