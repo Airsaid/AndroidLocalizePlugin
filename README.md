@@ -6,7 +6,7 @@
 - No need to apply for key.
 
 # Preview
-![image](https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/preview.gif)
+![image](https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/preview/preview.gif)
 
 # Install
 ## Local installation
