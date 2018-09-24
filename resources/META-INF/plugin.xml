@@ -2,15 +2,15 @@
     <id>com.github.airsaid.androidlocalizeplugin</id>
     <name>AndroidLocalizePlugin</name>
     <version>1.0</version>
-    <vendor email="airsaid1024@gmail.com" url="https://github.com/Airsaid/AndroidLocalizePlugin"/>
+    <vendor email="airsaid1024@gmail.com" url="https://github.com/Airsaid/AndroidLocalizePlugin">Airsaid</vendor>
 
     <description><![CDATA[
       Android localization plugin. Support multiple languages, No need to apply for key.
     ]]></description>
 
-    <change-notes>
-        V1.0: Initial release of the plugin.
-    </change-notes>
+    <change-notes><![CDATA[
+      V1.0: Initial release of the plugin.
+    ]]></change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
     <idea-version since-build="145"/>
