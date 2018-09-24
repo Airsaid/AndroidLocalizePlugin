@@ -1,5 +1,5 @@
 # AndroidLocalizePlugin
-:cn: Android/idea localization plugin. Support multiple languages, No need to apply for key.
+:cn: Android/idea localization plugin. support multiple languages, no need to apply for key.
 
 # Feature
 - Support 104 languages.
