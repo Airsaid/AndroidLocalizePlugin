@@ -6,10 +6,14 @@
 
     <description><![CDATA[
       Android localization plugin. Support multiple languages, No need to apply for key.
+      <li>1. Select the values/strings.xml.</li>
+      <li>2. Right-click and select Convert to other languages.</li>
+      <li>3. Select the language to be translated.</li>
+      <li>4. Click ok.</li>
     ]]></description>
 
     <change-notes><![CDATA[
-      V1.0: Initial release of the plugin.
+      <li>V1.0: Initial release of the plugin.</li>
     ]]></change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
@@ -17,9 +21,7 @@
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
-    <!-- uncomment to enable plugin in all products
     <depends>com.intellij.modules.lang</depends>
-    -->
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
