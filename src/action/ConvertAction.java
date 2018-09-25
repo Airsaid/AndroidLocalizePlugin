@@ -16,6 +16,7 @@
 
 package action;
 
+
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -37,8 +38,8 @@ import java.util.List;
  */
 public class ConvertAction extends AnAction implements SelectLanguageDialog.OnClickListener {
 
-    private Project mProject;
-    private VirtualFile mSelectFile;
+    private Project             mProject;
+    private VirtualFile         mSelectFile;
     private List<AndroidString> mAndroidStrings;
 
     @Override
@@ -93,7 +94,7 @@ public class ConvertAction extends AnAction implements SelectLanguageDialog.OnCl
         if (parent == null) return false;
 
         String parentName = parent.getName();
-        if (!"values".equals(parentName) && !"values-en".equals(parentName)) return false;
+        if (!"values".equals(parentName)) return false;
 
         return "strings.xml".equals(file.getName());
     }

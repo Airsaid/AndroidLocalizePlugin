@@ -4,6 +4,7 @@ package translate.lang;
  * @author airsaid
  */
 public enum LANG {
+    Auto("auto", "Auto", "Auto"),
     Albanian("sq", "Shqiptar", "Albanian"),
     Arabic("ar", "العربية", "Arabic"),
     Amharic("am", "አማርኛ", "Amharic"),

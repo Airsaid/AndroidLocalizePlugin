@@ -75,7 +75,7 @@ public class TranslateTask extends Task.Backgroundable {
             List<AndroidString> writeAndroidString = new ArrayList<>();
             for (AndroidString androidString : mAndroidStrings) {
                 if (androidString.isTranslatable()) {
-                    querierTrans.setParams(LANG.English, toLanguage, androidString.getValue());
+                    querierTrans.setParams(LANG.Auto, toLanguage, androidString.getValue());
                     String resultValue = querierTrans.executeSingle();
                     writeAndroidString.add(new AndroidString(androidString.getName(), resultValue, false));
                 }
