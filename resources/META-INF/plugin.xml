@@ -1,11 +1,11 @@
 <idea-plugin>
-    <id>com.github.airsaid.androidlocalizeplugin</id>
-    <name>AndroidLocalizePlugin</name>
+    <id>com.github.airsaid.androidlocalize</id>
+    <name>AndroidLocalize</name>
     <version>1.1</version>
     <vendor email="airsaid1024@gmail.com" url="https://github.com/Airsaid/AndroidLocalizePlugin">Airsaid</vendor>
 
     <description><![CDATA[
-      Android localization plugin. Support multiple languages, No need to apply for key.
+      Android localization plugin. Support multiple languages, No need to apply for key.<br>
       <li>1. Select the values/strings.xml.</li>
       <li>2. Right-click and select Convert to other languages.</li>
       <li>3. Select the language to be translated.</li>
