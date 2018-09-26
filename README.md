@@ -1,5 +1,5 @@
 # AndroidLocalizePlugin
-:earth_asia: Android/idea localization plugin. support multiple languages, no need to apply for key. ([中文说明](https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/README_CN.md))
+:earth_asia: Android/IDEA localization plugin. support multiple languages, no need to apply for key. ([中文说明](https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/README_CN.md))
 
 # Feature
 - Support 104 languages.
@@ -13,7 +13,7 @@
 # Install
 ## Local installation
 - Step 1: Download AndroidLocalizePlugin.zip file.
-- Step 2: Open AndroidStudio or idea.
+- Step 2: Open AndroidStudio or IDEA.
 - Step 3: Preferences -> Plugins -> Install plugin from disk...
 - Step 4: Select AndroidLocalizePlugin.zip and Restart ide.
 
