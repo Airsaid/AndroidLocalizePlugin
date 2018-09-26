@@ -11,11 +11,16 @@
 ![image](https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/preview/preview.gif)
 
 # Install
+## Online installation
+- Step 1: Open AndroidStudio or IDEA.
+- Step 2: Preferences -> Plugins -> Browse repositories...
+- Step 3: Search AndroidLocalize and install. Then restart IDE.
+
 ## Local installation
 - Step 1: Download AndroidLocalizePlugin.zip file.
 - Step 2: Open AndroidStudio or IDEA.
 - Step 3: Preferences -> Plugins -> Install plugin from disk...
-- Step 4: Select AndroidLocalizePlugin.zip and Restart ide.
+- Step 4: Select AndroidLocalizePlugin.zip and Restart IDE.
 
 # Usage
 - Step 1: Select the values/strings.xml.

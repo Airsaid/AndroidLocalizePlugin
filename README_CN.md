@@ -11,10 +11,15 @@
 ![image](https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/preview/preview.gif)
 
 # 安装
+## 在线安装
+- 第一步：打开 AndroidStudio 或 IDEA。
+- 第二步：打开 Preferences -> Plugins -> Browse repositories。
+- 第三步：搜索 AndroidLocalize 并安装，然后重新启动 IDE。
+
 ## 本地安装
 - 第一步：下载 AndroidLocalizePlugin.zip 文件。
 - 第二步：打开 AndroidStudio 或 IDEA。
-- 第三步：选择 Preferences -> Plugins -> Install plugin from disk...。
+- 第三步：打开 Preferences -> Plugins -> Install plugin from disk。
 - 第四步：选择 AndroidLocalizePlugin.zip 文件安装，并重新启动 IDE。
 
 # 使用
