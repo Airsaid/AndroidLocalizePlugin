@@ -1,36 +1,36 @@
 # AndroidLocalizePlugin
-:earth_asia: Android/idea localization plugin. support multiple languages, no need to apply for key.（[中文说明](https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/README_CN.md))）
+:earth_asia: Android/IDEA 本地化插件。 支持多种语言，无需申请 KEY。
 
-# Feature
-- Support 104 languages.
-- No need to apply for key.
-- One key generates all translation files.
-- Support for specifying that text is not translated.
+# 功能
+- 支持 104 种语言。
+- 无需申请 KEY。
+- 一键生成所有翻译文件。
+- 支持对指定的文本不参与翻译。
 
-# Preview
+# 预览
 ![image](https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/preview/preview.gif)
 
-# Install
-## Local installation
-- Step 1: Download AndroidLocalizePlugin.zip file.
-- Step 2: Open AndroidStudio or idea.
-- Step 3: Preferences -> Plugins -> Install plugin from disk...
-- Step 4: Select AndroidLocalizePlugin.zip and Restart ide.
+# 安装
+## 本地安装
+- 第一步：下载 AndroidLocalizePlugin.zip 文件。
+- 第二步：打开 AndroidStudio 或 IDEA。
+- 第三步：选择 Preferences -> Plugins -> Install plugin from disk...。
+- 第四步：选择 AndroidLocalizePlugin.zip 文件安装，并重新启动 IDE。
 
-# Usage
-- Step 1: Select the values/strings.xml.
-- Step 2: Right-click and select Convert to other languages.
-- Step 3: Select the language to be translated.
-- Step 4: Click ok.
+# 使用
+- 第一步：选择 values/strings.xml 文件。
+- 第二步：右键选择 Convert to other languages。
+- 第三步：勾选上需要翻译的语言。
+- 第四步：点击 OK。
 
-# Thanks
+# 感谢
 - MTrans：[https://github.com/hujingshuang/MTrans](https://github.com/hujingshuang/MTrans)
 
-# ContactMe
+# 联系我
 - Blog: [https://airsaid.com/](https://airsaid.com/)
 - Telegram: [https://t.me/airsaids/](https://t.me/airsaids/)
 
-# License
+# 许可证
 ```
 Copyright 2018 Airsaid. https://github.com/airsaid
 
