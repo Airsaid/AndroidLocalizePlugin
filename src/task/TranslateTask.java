@@ -32,10 +32,7 @@ import translate.querier.Querier;
 import translate.trans.AbstractTranslator;
 import translate.trans.impl.GoogleTranslator;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -139,7 +136,7 @@ public class TranslateTask extends Task.Backgroundable {
     private void write(File file, List<AndroidString> androidStrings) {
         ApplicationManager.getApplication().invokeLater(() -> {
             ApplicationManager.getApplication().runWriteAction(() -> {
-                try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
+                try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false), "UTF-8"))) {
                     bw.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
                     bw.newLine();
                     bw.write("<resources>");
