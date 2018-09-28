@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.github.airsaid.androidlocalize</id>
     <name>AndroidLocalize</name>
-    <version>1.1</version>
+    <version>1.2</version>
     <vendor email="airsaid1024@gmail.com" url="https://github.com/Airsaid/AndroidLocalizePlugin">Airsaid</vendor>
 
     <description><![CDATA[
@@ -15,6 +15,7 @@
     <change-notes><![CDATA[
       <li>V1.0: Initial release of the plugin.</li>
       <li>V1.1: Support for automatic detection of source file language.</li>
+      <li>V1.2: Fixed garbled bug.</li>
     ]]></change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
