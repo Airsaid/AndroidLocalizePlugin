@@ -33,6 +33,7 @@ import translate.trans.AbstractTranslator;
 import translate.trans.impl.GoogleTranslator;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -136,7 +137,7 @@ public class TranslateTask extends Task.Backgroundable {
     private void write(File file, List<AndroidString> androidStrings) {
         ApplicationManager.getApplication().invokeLater(() -> {
             ApplicationManager.getApplication().runWriteAction(() -> {
-                try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false), "UTF-8"))) {
+                try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false), StandardCharsets.UTF_8))) {
                     bw.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
                     bw.newLine();
                     bw.write("<resources>");
