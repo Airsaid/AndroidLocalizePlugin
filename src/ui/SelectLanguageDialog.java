@@ -20,14 +20,15 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.ui.components.JBCheckBox;
-import translate.lang.LANG;
 import org.jetbrains.annotations.Nullable;
+import translate.lang.LANG;
 import translate.trans.impl.GoogleTranslator;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -86,6 +87,8 @@ public class SelectLanguageDialog extends DialogWrapper {
         // add language
         mSelectLanguages.clear();
         List<LANG> supportLanguages = new GoogleTranslator().getSupportLang();
+        // sort by country code, easy to find
+        supportLanguages.sort(new CountryCodeComparator());
         container.setLayout(new GridLayout(supportLanguages.size() / 4, 4));
         for (LANG language : supportLanguages) {
             JBCheckBox checkBoxLanguage = new JBCheckBox();
@@ -115,6 +118,13 @@ public class SelectLanguageDialog extends DialogWrapper {
                 JBCheckBox checkBox = (JBCheckBox) component;
                 checkBox.setSelected(selectAll);
             }
+        }
+    }
+
+    class CountryCodeComparator implements Comparator<LANG> {
+        @Override
+        public int compare(LANG o1, LANG o2) {
+            return o1.getCode().compareTo(o2.getCode());
         }
     }
 }
