@@ -24,6 +24,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
+import logic.LanguageHelper;
 import module.AndroidString;
 import org.jetbrains.annotations.NotNull;
 import task.GetAndroidStringTask;
@@ -106,20 +107,21 @@ public class ConvertAction extends AnAction implements SelectLanguageDialog.OnCl
      * @return true: there is text that needs to be translated.
      */
     private boolean isTranslatable(@NotNull List<AndroidString> list) {
-        boolean isTranslate = false;
+        boolean isTranslatable = false;
         for (AndroidString androidString : list) {
             if (androidString.isTranslatable()) {
-                isTranslate = true;
+                isTranslatable = true;
                 break;
             }
         }
-        return isTranslate;
+        return isTranslatable;
     }
 
     @Override
-    public void onClickListener(List<LANG> selectLanguage) {
+    public void onClickListener(List<LANG> selectedLanguage) {
+        LanguageHelper.saveSelectedLanguage(mProject, selectedLanguage);
         TranslateTask translationTask = new TranslateTask(
-                mProject, "In translation...", selectLanguage, mAndroidStrings, mSelectFile);
+                mProject, "In translation...", selectedLanguage, mAndroidStrings, mSelectFile);
         translationTask.setOnTranslateListener(new TranslateTask.OnTranslateListener() {
             @Override
             public void onTranslateSuccess() {}
@@ -131,4 +133,5 @@ public class ConvertAction extends AnAction implements SelectLanguageDialog.OnCl
         });
         translationTask.queue();
     }
+
 }
