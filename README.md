@@ -1,10 +1,11 @@
 # AndroidLocalizePlugin
-:earth_asia: Android/IDEA localization plugin. support multiple languages, no need to apply for key. ([中文说明](https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/README_CN.md))
+:earth_asia: Android/IDEA localization plugin. support multiple languages, no need to apply for key. ([中文文档](https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/README_CN.md))
 
 # Feature
 - Support 104 languages.
 - No need to apply for key.
 - One key generates all translation files.
+- Support no translation of existing string.
 - Support for specifying that text is not translated.
 
 # Preview
