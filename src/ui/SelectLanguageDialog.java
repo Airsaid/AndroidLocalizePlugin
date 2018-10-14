@@ -86,6 +86,9 @@ public class SelectLanguageDialog extends DialogWrapper {
             PropertiesComponent.getInstance(mProject)
                     .setValue(Constants.KEY_IS_OVERWRITE_EXISTING_STRING, state == ItemEvent.SELECTED);
         });
+        boolean isOverwriteExistingString = PropertiesComponent.getInstance(mProject)
+                .getBoolean(Constants.KEY_IS_OVERWRITE_EXISTING_STRING);
+        overwriteExistingString.setSelected(isOverwriteExistingString);
         // add language
         mSelectLanguages.clear();
         List<LANG> supportLanguages = new GoogleTranslator().getSupportLang();
