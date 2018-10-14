@@ -16,6 +16,7 @@
 
 package task;
 
+import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -23,6 +24,10 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiManager;
+import constant.Constants;
+import logic.ParseStringXml;
 import module.AndroidString;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
@@ -64,24 +69,62 @@ public class TranslateTask extends Task.Backgroundable {
 
     @Override
     public void run(@NotNull ProgressIndicator progressIndicator) {
-        Querier<AbstractTranslator> querierTrans = new Querier<>();
+        boolean isOverwriteExistingString = PropertiesComponent.getInstance(myProject)
+                .getBoolean(Constants.KEY_IS_OVERWRITE_EXISTING_STRING);
+
+        Querier<AbstractTranslator> translator = new Querier<>();
         GoogleTranslator googleTranslator = new GoogleTranslator();
-        querierTrans.attach(googleTranslator);
+        translator.attach(googleTranslator);
         mWriteData.clear();
+
         for (LANG toLanguage : mLanguages) {
             progressIndicator.setText("Translating in the " + toLanguage.getEnglishName() + " language...");
-            List<AndroidString> writeAndroidString = new ArrayList<>();
-            for (AndroidString androidString : mAndroidStrings) {
-                if (androidString.isTranslatable()) {
-                    querierTrans.setParams(LANG.Auto, toLanguage, androidString.getValue());
-                    String resultValue = querierTrans.executeSingle();
-                    writeAndroidString.add(new AndroidString(androidString.getName(), resultValue, false));
-                }
+
+            if (isOverwriteExistingString) {
+                translate(translator, toLanguage, null);
+                continue;
             }
-            mWriteData.put(toLanguage.getCode(), writeAndroidString);
+
+            ApplicationManager.getApplication().runReadAction(() -> {
+                VirtualFile virtualFile = getVirtualFile(toLanguage);
+
+                if (virtualFile == null) {
+                    translate(translator, toLanguage, null);
+                    return;
+                }
+
+                PsiFile psiFile = PsiManager.getInstance(myProject).findFile(virtualFile);
+                if (psiFile == null) {
+                    translate(translator, toLanguage, null);
+                    return;
+                }
+
+                List<AndroidString> androidStrings = ParseStringXml.parse(progressIndicator, psiFile);
+                translate(translator, toLanguage, androidStrings);
+            });
         }
         googleTranslator.close();
         writeResultData(progressIndicator);
+    }
+
+    private void translate(Querier<AbstractTranslator> translator, LANG toLanguage, @Nullable List<AndroidString> list) {
+        List<AndroidString> writeAndroidString = new ArrayList<>();
+        for (AndroidString androidString : mAndroidStrings) {
+            if (!androidString.isTranslatable()) {
+                continue;
+            }
+
+            if (list != null && list.contains(androidString)) {
+                writeAndroidString.add(new AndroidString(
+                        androidString.getName(), list.get(list.indexOf(androidString)).getValue(), false));
+                continue;
+            }
+
+            translator.setParams(LANG.Auto, toLanguage, androidString.getValue());
+            String resultValue = translator.executeSingle();
+            writeAndroidString.add(new AndroidString(androidString.getName(), resultValue, false));
+        }
+        mWriteData.put(toLanguage.getCode(), writeAndroidString);
     }
 
     private void writeResultData(ProgressIndicator progressIndicator) {
@@ -99,21 +142,39 @@ public class TranslateTask extends Task.Backgroundable {
         }
     }
 
-    private File getWriteFileForCode(String langCode) {
+    private VirtualFile getVirtualFile(LANG lang) {
+        File file = getStringFile(lang.getCode());
+        return LocalFileSystem.getInstance().findFileByIoFile(file);
+    }
+
+    private File getStringFile(String langCode) {
+        return getStringFile(langCode, false);
+    }
+
+    private File getStringFile(String langCode, boolean mkdirs) {
         String parentPath = mSelectFile.getParent().getParent().getPath();
-        File parentFile = new File(parentPath, getDirNameForCode(langCode));
-        if (!parentFile.exists()) {
-            parentFile.mkdirs();
-        }
-        File file = new File(parentFile, "strings.xml");
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
+        File stringFile;
+        if (mkdirs) {
+            File parentFile = new File(parentPath, getDirNameForCode(langCode));
+            if (!parentFile.exists()) {
+                parentFile.mkdirs();
             }
+            stringFile = new File(parentFile, "strings.xml");
+            if (!stringFile.exists()) {
+                try {
+                    stringFile.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            stringFile = new File(parentPath.concat(File.separator).concat(getDirNameForCode(langCode)), "strings.xml");
         }
-        return file;
+        return stringFile;
+    }
+
+    private File getWriteFileForCode(String langCode) {
+        return getStringFile(langCode, true);
     }
 
     private String getDirNameForCode(String langCode) {
@@ -135,28 +196,26 @@ public class TranslateTask extends Task.Backgroundable {
     }
 
     private void write(File file, List<AndroidString> androidStrings) {
-        ApplicationManager.getApplication().invokeLater(() -> {
-            ApplicationManager.getApplication().runWriteAction(() -> {
-                try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false), StandardCharsets.UTF_8))) {
-                    bw.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+        ApplicationManager.getApplication().invokeLater(() -> ApplicationManager.getApplication().runWriteAction(() -> {
+            try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false), StandardCharsets.UTF_8))) {
+                bw.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+                bw.newLine();
+                bw.write("<resources>");
+                bw.newLine();
+                for (AndroidString androidString : androidStrings) {
+                    bw.write("\t<string name=\"" + androidString.getName() + "\">" + androidString.getValue() + "</string>");
                     bw.newLine();
-                    bw.write("<resources>");
-                    bw.newLine();
-                    for (AndroidString androidString : androidStrings) {
-                        bw.write("\t<string name=\"" + androidString.getName() + "\">" + androidString.getValue() + "</string>");
-                        bw.newLine();
-                    }
-                    bw.write("</resources>");
-                    bw.flush();
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
-            });
-        });
+                bw.write("</resources>");
+                bw.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }));
     }
 
     private void refreshAndOpenFile(File file) {
-        VirtualFile virtualFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(file.getPath());
+        VirtualFile virtualFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(file);
         if (virtualFile != null) {
             ApplicationManager.getApplication().invokeLater(() ->
                     FileEditorManager.getInstance(myProject).openFile(virtualFile, true));

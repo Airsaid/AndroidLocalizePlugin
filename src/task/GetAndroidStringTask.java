@@ -21,15 +21,13 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.xml.XmlDocument;
 import com.intellij.psi.xml.XmlFile;
-import com.intellij.psi.xml.XmlTag;
+import logic.ParseStringXml;
 import module.AndroidString;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,8 +36,8 @@ import java.util.List;
 public class GetAndroidStringTask extends Task.Backgroundable {
 
     private PsiFile mFile;
+    private List<AndroidString> mAndroidStrings;
     private OnGetAndroidStringListener mListener;
-    private List<AndroidString> mAndroidStrings = new ArrayList<>();
 
     public interface OnGetAndroidStringListener {
         void onGetSuccess(@NotNull List<AndroidString> list);
@@ -60,23 +58,7 @@ public class GetAndroidStringTask extends Task.Backgroundable {
         }
 
         ApplicationManager.getApplication().runReadAction(() -> {
-            mAndroidStrings.clear();
-            XmlFile file = (XmlFile) mFile;
-            XmlDocument document = file.getDocument();
-            if (document != null) {
-                XmlTag rootTag = document.getRootTag();
-                if (rootTag != null) {
-                    XmlTag[] stringTags = rootTag.findSubTags("string");
-                    for (XmlTag stringTag : stringTags) {
-                        String name = stringTag.getAttributeValue("name");
-                        String value = stringTag.getValue().getText();
-                        String translatableStr = stringTag.getAttributeValue("translatable");
-                        Boolean translatable = Boolean.valueOf(translatableStr == null ? "true" : translatableStr);
-                        mAndroidStrings.add(new AndroidString(name, value, translatable));
-                        progressIndicator.setText("Loading " + name + " text from strings.xml...");
-                    }
-                }
-            }
+            mAndroidStrings = ParseStringXml.parse(progressIndicator, mFile);
         });
     }
 

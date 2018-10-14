@@ -56,6 +56,18 @@ public class AndroidString {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof AndroidString)) {
+            return false;
+        }
+        AndroidString androidString = (AndroidString) obj;
+        return name.equals(androidString.name);
+    }
+
+    @Override
     public String toString() {
         return "AndroidString{" +
                 "name='" + name + '\'' +

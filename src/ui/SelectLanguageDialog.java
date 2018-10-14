@@ -16,10 +16,12 @@
 
 package ui;
 
+import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.ui.components.JBCheckBox;
+import constant.Constants;
 import logic.LanguageHelper;
 import org.jetbrains.annotations.Nullable;
 import translate.lang.LANG;
@@ -76,16 +78,13 @@ public class SelectLanguageDialog extends DialogWrapper {
     private JComponent doCreateCenterPanel() {
         final JPanel panel = new JPanel(new BorderLayout(16, 6));
         final Container container = new Container();
-        // add select all
-        final JBCheckBox selectAll = new JBCheckBox("Select All");
-        panel.add(selectAll, BorderLayout.NORTH);
-        selectAll.addItemListener(e -> {
+        // add overwrite existing string
+        final JBCheckBox overwriteExistingString = new JBCheckBox("Overwrite Existing String");
+        panel.add(overwriteExistingString, BorderLayout.NORTH);
+        overwriteExistingString.addItemListener(e -> {
             int state = e.getStateChange();
-            if (state == ItemEvent.SELECTED) {
-                selectAll(container, true);
-            } else {
-                selectAll(container, false);
-            }
+            PropertiesComponent.getInstance(mProject)
+                    .setValue(Constants.KEY_IS_OVERWRITE_EXISTING_STRING, state == ItemEvent.SELECTED);
         });
         // add language
         mSelectLanguages.clear();
@@ -118,15 +117,6 @@ public class SelectLanguageDialog extends DialogWrapper {
 
     public void setOnClickListener(OnClickListener listener) {
         mOnClickListener = listener;
-    }
-
-    private void selectAll(Container container, boolean selectAll) {
-        for (Component component : container.getComponents()) {
-            if (component instanceof JBCheckBox) {
-                JBCheckBox checkBox = (JBCheckBox) component;
-                checkBox.setSelected(selectAll);
-            }
-        }
     }
 
     class CountryCodeComparator implements Comparator<LANG> {
