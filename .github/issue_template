@@ -1,6 +1,13 @@
+Please ensure you have given all the following requested information in your report.
 
-IDE Info:
 
-Plugin Version:
+#### Please select the affected platforms
+- [ ] Android Studio
+- [ ] IntelliJ IDEA
 
-Issue Description:
+#### Version of Plugin and IDE
+- Plugin Version:
+- IDE Version:
+
+#### Issue details
+_Please provide the details of your issue_
