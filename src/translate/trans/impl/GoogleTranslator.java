@@ -2,9 +2,9 @@ package translate.trans.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.util.EntityUtils;
 import translate.lang.LANG;
@@ -166,7 +166,13 @@ public final class GoogleTranslator extends AbstractTranslator {
             String value = formData.get(key);
             uri.addParameter(key, value);
         }
-        HttpUriRequest request = new HttpGet(uri.toString());
+        HttpGet request = new HttpGet(uri.toString());
+        RequestConfig config = RequestConfig.copy(RequestConfig.DEFAULT)
+                    .setSocketTimeout(5000)
+                    .setConnectTimeout(5000)
+                    .setConnectionRequestTimeout(5000)
+                    .build();
+        request.setConfig(config);
         CloseableHttpResponse response = httpClient.execute(request);
         HttpEntity entity = response.getEntity();
 
