@@ -16,18 +16,21 @@
 
 package module;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author airsaid
  */
-public class AndroidString {
+public class AndroidString implements Cloneable {
 
-    private String name;
-    private String value;
-    private boolean translatable;
+    private String        name;
+    private List<Content> contents;
+    private boolean       translatable;
 
-    public AndroidString(String name, String value, boolean translatable) {
+    public AndroidString(String name, List<Content> contents, boolean translatable) {
         this.name = name;
-        this.value = value;
+        this.contents = contents;
         this.translatable = translatable;
     }
 
@@ -39,12 +42,12 @@ public class AndroidString {
         this.name = name;
     }
 
-    public String getValue() {
-        return value;
+    public List<Content> getContents() {
+        return contents;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setContents(List<Content> contents) {
+        this.contents = contents;
     }
 
     public boolean isTranslatable() {
@@ -68,10 +71,27 @@ public class AndroidString {
     }
 
     @Override
+    public AndroidString clone() {
+        try {
+            AndroidString clone = (AndroidString) super.clone();
+            List<Content> contents = clone.getContents();
+            List<Content> cloneContents = new ArrayList<>(contents.size());
+            for (Content content : clone.getContents()) {
+                cloneContents.add(content.clone());
+            }
+            clone.setContents(cloneContents);
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
     public String toString() {
         return "AndroidString{" +
                 "name='" + name + '\'' +
-                ", value='" + value + '\'' +
+                ", contents=" + contents +
                 ", translatable=" + translatable +
                 '}';
     }

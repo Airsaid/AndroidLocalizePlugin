@@ -18,10 +18,9 @@ package logic;
 
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.xml.XmlDocument;
-import com.intellij.psi.xml.XmlFile;
-import com.intellij.psi.xml.XmlTag;
+import com.intellij.psi.xml.*;
 import module.AndroidString;
+import module.Content;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -62,10 +61,28 @@ public class ParseStringXml {
                 XmlTag[] stringTags = rootTag.findSubTags("string");
                 for (XmlTag stringTag : stringTags) {
                     String name = stringTag.getAttributeValue("name");
-                    String value = stringTag.getValue().getText();
                     String translatableStr = stringTag.getAttributeValue("translatable");
                     boolean translatable = Boolean.valueOf(translatableStr == null ? "true" : translatableStr);
-                    androidStrings.add(new AndroidString(name, value, translatable));
+
+                    List<Content> contents = new ArrayList<>();
+                    XmlTagChild[] tags = stringTag.getValue().getChildren();
+                    for (XmlTagChild child : tags) {
+                        if (child instanceof XmlText) {
+                            XmlText xmlText = (XmlText) child;
+                            contents.add(new Content(xmlText.getValue()));
+                        } else if (child instanceof XmlTag) {
+                            XmlTag xmlTag = (XmlTag) child;
+                            if (!xmlTag.getName().equals("xliff:g")) continue;
+
+                            String text = xmlTag.getValue().getText();
+                            String id = xmlTag.getAttributeValue("id");
+                            String example = xmlTag.getAttributeValue("example");
+                            contents.add(new Content(text, id, example, true));
+                        }
+                    }
+
+                    androidStrings.add(new AndroidString(name, contents, translatable));
+
                     if (progressIndicator != null) {
                         progressIndicator.setText("Loading " + name + " text from strings.xml...");
                     }

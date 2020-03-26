@@ -29,6 +29,7 @@ import com.intellij.psi.PsiManager;
 import constant.Constants;
 import logic.ParseStringXml;
 import module.AndroidString;
+import module.Content;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -46,11 +47,11 @@ import java.util.*;
  */
 public class TranslateTask extends Task.Backgroundable {
 
-    private List<LANG> mLanguages;
-    private List<AndroidString> mAndroidStrings;
-    private VirtualFile mSelectFile;
+    private List<LANG>                       mLanguages;
+    private List<AndroidString>              mAndroidStrings;
+    private VirtualFile                      mSelectFile;
     private Map<String, List<AndroidString>> mWriteData;
-    private OnTranslateListener mOnTranslateListener;
+    private OnTranslateListener              mOnTranslateListener;
 
     public interface OnTranslateListener {
         void onTranslateSuccess();
@@ -114,15 +115,23 @@ public class TranslateTask extends Task.Backgroundable {
                 continue;
             }
 
+            // If the string to be translated already exists, use it directly
             if (list != null && list.contains(androidString)) {
-                writeAndroidString.add(new AndroidString(
-                        androidString.getName(), list.get(list.indexOf(androidString)).getValue(), false));
+                writeAndroidString.add(list.get(list.indexOf(androidString)));
                 continue;
             }
 
-            translator.setParams(LANG.Auto, toLanguage, androidString.getValue());
-            String resultValue = translator.executeSingle();
-            writeAndroidString.add(new AndroidString(androidString.getName(), resultValue, false));
+            AndroidString clone = androidString.clone();
+            List<Content> contexts = clone.getContents();
+            for (Content content : contexts) {
+                if (content.isIgnore()) continue; // Ignore text with xliff:g tags set
+
+                translator.setParams(LANG.Auto, toLanguage, content.getText());
+                String result = translator.executeSingle();
+                content.setText(result);
+            }
+
+            writeAndroidString.add(clone);
         }
         mWriteData.put(toLanguage.getCode(), writeAndroidString);
     }
@@ -203,7 +212,11 @@ public class TranslateTask extends Task.Backgroundable {
                 bw.write("<resources>");
                 bw.newLine();
                 for (AndroidString androidString : androidStrings) {
-                    bw.write("\t<string name=\"" + androidString.getName() + "\">" + androidString.getValue() + "</string>");
+                    bw.write("\t<string name=\"" + androidString.getName() + "\">");
+                    for (Content content : androidString.getContents()) {
+                        bw.write(content.getText());
+                    }
+                    bw.write("</string>");
                     bw.newLine();
                 }
                 bw.write("</resources>");

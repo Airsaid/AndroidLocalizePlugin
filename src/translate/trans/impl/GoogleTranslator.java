@@ -21,7 +21,7 @@ public final class GoogleTranslator extends AbstractTranslator {
 
     private static final String url = "https://translate.google.cn/translate_a/single";
 
-    public GoogleTranslator(){
+    public GoogleTranslator() {
         super(url);
     }
 
@@ -139,22 +139,9 @@ public final class GoogleTranslator extends AbstractTranslator {
         formData.put("sl", from.getCode());
         formData.put("tl", to.getCode());
         formData.put("hl", "zh-CN");
-        formData.put("dt", "at");
-        formData.put("dt", "bd");
-        formData.put("dt", "ex");
-        formData.put("dt", "ld");
-        formData.put("dt", "md");
-        formData.put("dt", "qca");
-        formData.put("dt", "rw");
-        formData.put("dt", "rm");
-        formData.put("dt", "ss");
         formData.put("dt", "t");
         formData.put("ie", "UTF-8");
         formData.put("oe", "UTF-8");
-        formData.put("source", "btn");
-        formData.put("ssel", "0");
-        formData.put("tsel", "0");
-        formData.put("kc", "0");
         formData.put("tk", token(text));
         formData.put("q", text);
     }
@@ -168,16 +155,15 @@ public final class GoogleTranslator extends AbstractTranslator {
         }
         HttpGet request = new HttpGet(uri.toString());
         RequestConfig config = RequestConfig.copy(RequestConfig.DEFAULT)
-                    .setSocketTimeout(5000)
-                    .setConnectTimeout(5000)
-                    .setConnectionRequestTimeout(5000)
-                    .build();
+                .setSocketTimeout(5000)
+                .setConnectTimeout(5000)
+                .setConnectionRequestTimeout(5000)
+                .build();
         request.setConfig(config);
         CloseableHttpResponse response = httpClient.execute(request);
         HttpEntity entity = response.getEntity();
 
-        String result = EntityUtils.toString(entity, "utf-8");
-
+        String result = EntityUtils.toString(entity, "UTF-8");
         EntityUtils.consume(entity);
         response.getEntity().getContent().close();
         response.close();
@@ -198,7 +184,7 @@ public final class GoogleTranslator extends AbstractTranslator {
             engine.eval(new InputStreamReader(inputStream));
 
             if (engine instanceof Invocable) {
-                Invocable invoke = (Invocable)engine;
+                Invocable invoke = (Invocable) engine;
                 tk = String.valueOf(invoke.invokeFunction("token", text));
             }
         } catch (Exception e) {
