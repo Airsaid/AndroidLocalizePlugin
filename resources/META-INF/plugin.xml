@@ -28,6 +28,8 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
+        <applicationConfigurable groupId="tools" id="Android.localize"
+                                 instance="config.AndroidLocalizeConfigurable"/>
     </extensions>
 
     <actions>

@@ -1,7 +1,9 @@
 package translate.trans.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import config.PluginConfig;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -154,11 +156,18 @@ public final class GoogleTranslator extends AbstractTranslator {
             uri.addParameter(key, value);
         }
         HttpGet request = new HttpGet(uri.toString());
-        RequestConfig config = RequestConfig.copy(RequestConfig.DEFAULT)
+
+        RequestConfig.Builder builder = RequestConfig.copy(RequestConfig.DEFAULT)
                 .setSocketTimeout(5000)
                 .setConnectTimeout(5000)
-                .setConnectionRequestTimeout(5000)
-                .build();
+                .setConnectionRequestTimeout(5000);
+
+        if (PluginConfig.isEnableProxy()) {
+            HttpHost proxy = new HttpHost(PluginConfig.getHostName(), PluginConfig.getPortNumber());
+            builder.setProxy(proxy);
+        }
+
+        RequestConfig config = builder.build();
         request.setConfig(config);
         CloseableHttpResponse response = httpClient.execute(request);
         HttpEntity entity = response.getEntity();

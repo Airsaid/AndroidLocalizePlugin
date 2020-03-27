@@ -60,6 +60,10 @@ public class ParseStringXml {
             if (rootTag != null) {
                 XmlTag[] stringTags = rootTag.findSubTags("string");
                 for (XmlTag stringTag : stringTags) {
+                    if (progressIndicator != null && progressIndicator.isCanceled()) {
+                        break;
+                    }
+
                     String name = stringTag.getAttributeValue("name");
                     String translatableStr = stringTag.getAttributeValue("translatable");
                     boolean translatable = Boolean.valueOf(translatableStr == null ? "true" : translatableStr);

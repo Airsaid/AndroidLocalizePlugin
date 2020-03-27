@@ -72,17 +72,18 @@ public class TranslateTask extends Task.Backgroundable {
     public void run(@NotNull ProgressIndicator progressIndicator) {
         boolean isOverwriteExistingString = PropertiesComponent.getInstance(myProject)
                 .getBoolean(Constants.KEY_IS_OVERWRITE_EXISTING_STRING);
-
         Querier<AbstractTranslator> translator = new Querier<>();
         GoogleTranslator googleTranslator = new GoogleTranslator();
         translator.attach(googleTranslator);
         mWriteData.clear();
 
         for (LANG toLanguage : mLanguages) {
+            if (progressIndicator.isCanceled()) break;
+
             progressIndicator.setText("Translating in the " + toLanguage.getEnglishName() + " language...");
 
             if (isOverwriteExistingString) {
-                translate(translator, toLanguage, null);
+                translate(progressIndicator, translator, toLanguage, null);
                 continue;
             }
 
@@ -90,27 +91,29 @@ public class TranslateTask extends Task.Backgroundable {
                 VirtualFile virtualFile = getVirtualFile(toLanguage);
 
                 if (virtualFile == null) {
-                    translate(translator, toLanguage, null);
+                    translate(progressIndicator, translator, toLanguage, null);
                     return;
                 }
 
                 PsiFile psiFile = PsiManager.getInstance(myProject).findFile(virtualFile);
                 if (psiFile == null) {
-                    translate(translator, toLanguage, null);
+                    translate(progressIndicator, translator, toLanguage, null);
                     return;
                 }
 
                 List<AndroidString> androidStrings = ParseStringXml.parse(progressIndicator, psiFile);
-                translate(translator, toLanguage, androidStrings);
+                translate(progressIndicator, translator, toLanguage, androidStrings);
             });
         }
         googleTranslator.close();
         writeResultData(progressIndicator);
     }
 
-    private void translate(Querier<AbstractTranslator> translator, LANG toLanguage, @Nullable List<AndroidString> list) {
+    private void translate(@NotNull ProgressIndicator progressIndicator, Querier<AbstractTranslator> translator, LANG toLanguage, @Nullable List<AndroidString> list) {
         List<AndroidString> writeAndroidString = new ArrayList<>();
         for (AndroidString androidString : mAndroidStrings) {
+            if (progressIndicator.isCanceled()) break;
+
             if (!androidString.isTranslatable()) {
                 continue;
             }
@@ -137,6 +140,8 @@ public class TranslateTask extends Task.Backgroundable {
     }
 
     private void writeResultData(ProgressIndicator progressIndicator) {
+        if (progressIndicator.isCanceled()) return;
+
         if (mWriteData == null) {
             translateError(new IllegalArgumentException("No translate data."));
             return;
@@ -144,6 +149,8 @@ public class TranslateTask extends Task.Backgroundable {
 
         Set<String> keySet = mWriteData.keySet();
         for (String key : keySet) {
+            if (progressIndicator.isCanceled()) break;
+
             File writeFile = getWriteFileForCode(key);
             progressIndicator.setText("Write to " + writeFile.getParentFile().getName() + " data...");
             write(writeFile, mWriteData.get(key));
