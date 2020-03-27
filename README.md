@@ -32,7 +32,7 @@
 # FAQ
 - Q1, Empty characters after translation?
     A: You need to set an proxy or replace an proxy address or wait a while before trying. set proxy:
-    ![image](https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/preview/setproxy.gif)
+    ![image](https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/preview/setproxy.png)
 
 - Q2, How to ignore translation?
     A: Use the translatable or xliff:g tags. for example:
@@ -46,6 +46,10 @@
 
 # ContactMe
 - Telegram: [https://t.me/airsaids/](https://t.me/airsaids/)
+
+# Invite me for coffee
+If this project has helped you, you can [invite me for coffee](https://25e37ece.wiz03.com/wapp/pages/view/share/s/0BUTXe15Q4mk28KWtW0l7BLh1Y6ijp02l4Ct2gxqhW0OmYvl).
+
 
 # License
 ```
