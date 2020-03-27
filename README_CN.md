@@ -31,10 +31,12 @@
 
 # 常见问题
 - 问题一：翻译后得到的是空的文本？
+
     回答：你需要设置代理或替换代理地址，或者等待一段时间后再次尝试。代理设置：
     ![image](https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/preview/setproxy.png)
 
 - 问题二：如何忽略不让其翻译？
+
     回答: 可以使用 translatable 或者 xliff:g 标签。示例：
     ```
     <string name="name" translatable="false">AndroidLocalizePlugin</string>
