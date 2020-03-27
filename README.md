@@ -29,11 +29,22 @@
 - Step 3: Select the language to be translated.
 - Step 4: Click ok.
 
+# FAQ
+- Q1, Empty characters after translation?
+    A: You need to set an proxy or replace an proxy address or wait a while before trying. set proxy:
+    ![image](https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/preview/setproxy.gif)
+
+- Q2, How to ignore translation?
+    A: Use the translatable or xliff:g tags. for example:
+    ```
+    <string name="name" translatable="false">AndroidLocalizePlugin</string>
+    <string name="detail">detail<xliff:g>: %1$s</xliff:g></string>
+    ```
+
 # Thanks
 - MTrans：[https://github.com/hujingshuang/MTrans](https://github.com/hujingshuang/MTrans)
 
 # ContactMe
-- Blog: [https://airsaid.com/](https://airsaid.com/)
 - Telegram: [https://t.me/airsaids/](https://t.me/airsaids/)
 
 # License

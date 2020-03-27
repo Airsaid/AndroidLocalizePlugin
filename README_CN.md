@@ -29,11 +29,22 @@
 - 第三步：勾选上需要翻译的语言。
 - 第四步：点击 OK。
 
+# 常见问题
+- 问题一：翻译后得到的是空的文本？
+    回答：你需要设置代理或替换代理地址，或者等待一段时间后再次尝试。代理设置：
+    ![image](https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/preview/setproxy.gif)
+
+- 问题二：如何忽略不让其翻译？
+    回答: 可以使用 translatable 或者 xliff:g 标签。示例：
+    ```
+    <string name="name" translatable="false">AndroidLocalizePlugin</string>
+    <string name="detail">detail<xliff:g>: %1$s</xliff:g></string>
+    ```
+
 # 感谢
 - MTrans：[https://github.com/hujingshuang/MTrans](https://github.com/hujingshuang/MTrans)
 
 # 联系我
-- Blog: [https://airsaid.com/](https://airsaid.com/)
 - Telegram: [https://t.me/airsaids/](https://t.me/airsaids/)
 
 # 许可证
