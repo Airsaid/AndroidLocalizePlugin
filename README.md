@@ -30,11 +30,11 @@
 - Step 4: Click ok.
 
 # FAQ
-- Q1, Empty characters after translation?
+- Q1: Empty characters after translation?
     A: You need to set an proxy or replace an proxy address or wait a while before trying. set proxy:
     ![image](https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/preview/setproxy.png)
 
-- Q2, How to ignore translation?
+- Q2: How to ignore translation?
     A: Use the translatable or xliff:g tags. for example:
     ```
     <string name="name" translatable="false">AndroidLocalizePlugin</string>
