@@ -24,7 +24,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
-import logic.LanguageHelper;
 import module.AndroidString;
 import org.jetbrains.annotations.NotNull;
 import task.GetAndroidStringTask;
@@ -119,7 +118,6 @@ public class ConvertAction extends AnAction implements SelectLanguageDialog.OnCl
 
     @Override
     public void onClickListener(List<LANG> selectedLanguage) {
-        LanguageHelper.saveSelectedLanguage(mProject, selectedLanguage);
         TranslateTask translationTask = new TranslateTask(
                 mProject, "In translation...", selectedLanguage, mAndroidStrings, mSelectFile);
         translationTask.setOnTranslateListener(new TranslateTask.OnTranslateListener() {

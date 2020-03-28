@@ -29,4 +29,6 @@ public interface Constants {
 
     String KEY_IS_OVERWRITE_EXISTING_STRING = PLUGIN_ID.concat(".is_overwrite_existing_string");
 
+    String KEY_IS_SELECT_ALL = PLUGIN_ID.concat(".is_select_all");
+
 }

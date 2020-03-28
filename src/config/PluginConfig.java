@@ -18,12 +18,12 @@ package config;
 
 import com.intellij.ide.util.PropertiesComponent;
 
+import static constant.Constants.PLUGIN_ID;
+
 /**
  * @author airsaid
  */
 public final class PluginConfig {
-
-    private static final String PLUGIN_ID = "com.airsaid.androidLocalize";
 
     private static final String KEY_ENABLE_PROXY = PLUGIN_ID.concat(".enableProxy");
 

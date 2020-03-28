@@ -40,10 +40,14 @@ import java.util.List;
  * @author airsaid
  */
 public class SelectLanguageDialog extends DialogWrapper {
+    private JPanel    myPanel;
+    private JCheckBox overwriteExistingStringCheckBox;
+    private JCheckBox selectAllCheckBox;
+    private JPanel    languagesPanel;
 
-    private Project mProject;
+    private Project         mProject;
     private OnClickListener mOnClickListener;
-    private List<LANG> mSelectLanguages = new ArrayList<>();
+    private List<LANG>      mSelectLanguages = new ArrayList<>();
 
     public interface OnClickListener {
         void onClickListener(List<LANG> selectedLanguage);
@@ -52,56 +56,36 @@ public class SelectLanguageDialog extends DialogWrapper {
     public SelectLanguageDialog(@Nullable Project project) {
         super(project, false);
         this.mProject = project;
+        doCreateCenterPanel();
         setTitle("Select Convert Languages");
         setResizable(true);
         init();
     }
 
-    @Override
-    protected void doOKAction() {
-        if (mSelectLanguages.size() <= 0) {
-            Messages.showErrorDialog("Please select the language you need to translate!", "Error");
-            return;
-        }
-        if (mOnClickListener != null) {
-            mOnClickListener.onClickListener(mSelectLanguages);
-        }
-        super.doOKAction();
+    public void setOnClickListener(OnClickListener listener) {
+        mOnClickListener = listener;
     }
 
     @Nullable
     @Override
     protected JComponent createCenterPanel() {
-        return doCreateCenterPanel();
+        return myPanel;
     }
 
-    private JComponent doCreateCenterPanel() {
-        final JPanel panel = new JPanel(new BorderLayout(16, 6));
-        final Container container = new Container();
-        // add overwrite existing string
-        final JBCheckBox overwriteExistingString = new JBCheckBox("Overwrite Existing String");
-        panel.add(overwriteExistingString, BorderLayout.NORTH);
-        overwriteExistingString.addItemListener(e -> {
-            int state = e.getStateChange();
-            PropertiesComponent.getInstance(mProject)
-                    .setValue(Constants.KEY_IS_OVERWRITE_EXISTING_STRING, state == ItemEvent.SELECTED);
-        });
-        boolean isOverwriteExistingString = PropertiesComponent.getInstance(mProject)
-                .getBoolean(Constants.KEY_IS_OVERWRITE_EXISTING_STRING);
-        overwriteExistingString.setSelected(isOverwriteExistingString);
+    private void doCreateCenterPanel() {
         // add language
         mSelectLanguages.clear();
         List<LANG> supportLanguages = new GoogleTranslator().getSupportLang();
         List<String> selectedLanguageCodes = LanguageHelper.getSelectedLanguageCodes(mProject);
         // sort by country code, easy to find
         supportLanguages.sort(new CountryCodeComparator());
-        container.setLayout(new GridLayout(supportLanguages.size() / 4, 4));
+        languagesPanel.setLayout(new GridLayout(supportLanguages.size() / 4, 4));
         for (LANG language : supportLanguages) {
             String code = language.getCode();
             JBCheckBox checkBoxLanguage = new JBCheckBox();
             checkBoxLanguage.setText(language.getEnglishName()
                     .concat("(").concat(code).concat(")"));
-            container.add(checkBoxLanguage);
+            languagesPanel.add(checkBoxLanguage);
             checkBoxLanguage.addItemListener(e -> {
                 int state = e.getStateChange();
                 if (state == ItemEvent.SELECTED) {
@@ -114,12 +98,47 @@ public class SelectLanguageDialog extends DialogWrapper {
                 checkBoxLanguage.setSelected(true);
             }
         }
-        panel.add(container, BorderLayout.CENTER);
-        return panel;
+
+        boolean isOverwriteExistingString = PropertiesComponent.getInstance(mProject)
+                .getBoolean(Constants.KEY_IS_OVERWRITE_EXISTING_STRING);
+        overwriteExistingStringCheckBox.setSelected(isOverwriteExistingString);
+        overwriteExistingStringCheckBox.addItemListener(e -> {
+            int state = e.getStateChange();
+            PropertiesComponent.getInstance(mProject)
+                    .setValue(Constants.KEY_IS_OVERWRITE_EXISTING_STRING, state == ItemEvent.SELECTED);
+        });
+
+        boolean isSelectAll = PropertiesComponent.getInstance(mProject)
+                .getBoolean(Constants.KEY_IS_SELECT_ALL);
+        selectAllCheckBox.setSelected(isSelectAll);
+        selectAllCheckBox.addItemListener(e -> {
+            int state = e.getStateChange();
+            selectAll(state == ItemEvent.SELECTED);
+            PropertiesComponent.getInstance(mProject)
+                    .setValue(Constants.KEY_IS_SELECT_ALL, state == ItemEvent.SELECTED);
+        });
     }
 
-    public void setOnClickListener(OnClickListener listener) {
-        mOnClickListener = listener;
+    private void selectAll(boolean selectAll) {
+        for (Component component : languagesPanel.getComponents()) {
+            if (component instanceof JBCheckBox) {
+                JBCheckBox checkBox = (JBCheckBox) component;
+                checkBox.setSelected(selectAll);
+            }
+        }
+    }
+
+    @Override
+    protected void doOKAction() {
+        LanguageHelper.saveSelectedLanguage(mProject, mSelectLanguages);
+        if (mSelectLanguages.size() <= 0) {
+            Messages.showErrorDialog("Please select the language you need to translate!", "Error");
+            return;
+        }
+        if (mOnClickListener != null) {
+            mOnClickListener.onClickListener(mSelectLanguages);
+        }
+        super.doOKAction();
     }
 
     class CountryCodeComparator implements Comparator<LANG> {
