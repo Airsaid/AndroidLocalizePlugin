@@ -38,7 +38,7 @@
 
 - 问题二：如何忽略不让其翻译？
 
-    回答: 可以使用 translatable 或者 xliff:g 标签。示例：
+    回答：可以使用 translatable 或者 xliff:g 标签。示例：
     ```
     <string name="name" translatable="false">AndroidLocalizePlugin</string>
     <string name="detail">detail<xliff:g>: %1$s</xliff:g></string>
@@ -50,7 +50,7 @@
 # 联系我
 - Telegram: [https://t.me/airsaids/](https://t.me/airsaids/)
 
-# 请我喝咖啡
+# 请我喝咖啡 :coffee:
 如果这个项目给你带来了帮助，你可以[请我喝咖啡](https://25e37ece.wiz03.com/wapp/pages/view/share/s/0BUTXe15Q4mk28KWtW0l7BLh1Y6ijp02l4Ct2gxqhW0OmYvl)。
 
 

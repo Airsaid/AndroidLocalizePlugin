@@ -50,7 +50,7 @@
 # ContactMe
 - Telegram: [https://t.me/airsaids/](https://t.me/airsaids/)
 
-# Invite me for coffee
+# Invite me for coffee :coffee:
 If this project has helped you, you can [invite me for coffee](https://25e37ece.wiz03.com/wapp/pages/view/share/s/0BUTXe15Q4mk28KWtW0l7BLh1Y6ijp02l4Ct2gxqhW0OmYvl).
 
 
