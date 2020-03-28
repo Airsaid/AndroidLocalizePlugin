@@ -33,6 +33,7 @@
 - Q1: Empty characters after translation?
 
     A: You need to set an proxy or replace an proxy address or wait a while before trying. set proxy:
+
     ![image](https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/preview/setproxy.png)
 
 - Q2: How to ignore translation?

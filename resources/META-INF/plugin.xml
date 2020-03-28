@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.github.airsaid.androidlocalize</id>
     <name>AndroidLocalize</name>
-    <version>1.4</version>
+    <version>1.5</version>
     <vendor email="airsaid1024@gmail.com" url="https://github.com/Airsaid/AndroidLocalizePlugin">Airsaid</vendor>
 
     <description><![CDATA[
@@ -18,6 +18,7 @@
       <li>V1.2: Fixed garbled bug.</li>
       <li>V1.3: Added Overwrite Existing String function. and optimize the experience of choice.</li>
       <li>V1.4: Added proxy support and fixed bugs.</li>
+      <li>V1.5: Added select all options.</li>
     ]]></change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
