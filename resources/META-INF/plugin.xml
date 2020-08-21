@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.github.airsaid.androidlocalize</id>
     <name>AndroidLocalize</name>
-    <version>1.5</version>
+    <version>1.6</version>
     <vendor email="airsaid1024@gmail.com" url="https://github.com/Airsaid/AndroidLocalizePlugin">Airsaid</vendor>
 
     <description><![CDATA[

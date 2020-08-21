@@ -9,10 +9,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="httpclient-4.5.5" level="project" />
-    <orderEntry type="library" name="httpcore-4.4.9" level="project" />
-    <orderEntry type="library" name="jackson-annotations-2.9.5" level="project" />
-    <orderEntry type="library" name="jackson-core-2.9.5" level="project" />
-    <orderEntry type="library" name="jackson-databind-2.9.5" level="project" />
+    <orderEntry type="library" name="libs" level="project" />
   </component>
 </module>

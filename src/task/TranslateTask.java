@@ -68,6 +68,9 @@ public class TranslateTask extends Task.Backgroundable {
         this.mWriteData = new HashMap<>();
     }
 
+    boolean readCompleted = false;
+    List<AndroidString> skipOrSelectList;
+
     @Override
     public void run(@NotNull ProgressIndicator progressIndicator) {
         boolean isOverwriteExistingString = PropertiesComponent.getInstance(myProject)
@@ -86,29 +89,41 @@ public class TranslateTask extends Task.Backgroundable {
                 translate(progressIndicator, translator, toLanguage, null);
                 continue;
             }
-
+            readCompleted = false;
             ApplicationManager.getApplication().runReadAction(() -> {
                 VirtualFile virtualFile = getVirtualFile(toLanguage);
 
                 if (virtualFile == null) {
-                    translate(progressIndicator, translator, toLanguage, null);
+                    readCompleted = true;
                     return;
                 }
 
                 PsiFile psiFile = PsiManager.getInstance(myProject).findFile(virtualFile);
                 if (psiFile == null) {
-                    translate(progressIndicator, translator, toLanguage, null);
+                    readCompleted = true;
                     return;
                 }
 
-                List<AndroidString> androidStrings = ParseStringXml.parse(progressIndicator, psiFile);
-                translate(progressIndicator, translator, toLanguage, androidStrings);
+                skipOrSelectList = ParseStringXml.parse(progressIndicator, psiFile);
+                readCompleted = true;
             });
+            while (!readCompleted){
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    //ignore
+                }
+            }
+            progressIndicator.setText("Translating in the " + toLanguage.getEnglishName() + " language...");
+            translate(progressIndicator, translator, toLanguage, skipOrSelectList);
+            skipOrSelectList = null;
+
         }
         googleTranslator.close();
         writeResultData(progressIndicator);
     }
 
+    private int realTranslateCount = 0;
     private void translate(@NotNull ProgressIndicator progressIndicator, Querier<AbstractTranslator> translator, LANG toLanguage, @Nullable List<AndroidString> list) {
         List<AndroidString> writeAndroidString = new ArrayList<>();
         for (AndroidString androidString : mAndroidStrings) {
@@ -132,11 +147,21 @@ public class TranslateTask extends Task.Backgroundable {
                 translator.setParams(LANG.Auto, toLanguage, content.getText());
                 String result = translator.executeSingle();
                 content.setText(result);
+                realTranslateCount++;
             }
 
             writeAndroidString.add(clone);
         }
         mWriteData.put(toLanguage.getCode(), writeAndroidString);
+        if(realTranslateCount>300||(realTranslateCount+mAndroidStrings.size())>300){
+            realTranslateCount = 0;
+            progressIndicator.setText("Translating too many times sleep 10s ");
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void writeResultData(ProgressIndicator progressIndicator) {
