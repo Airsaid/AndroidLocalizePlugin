@@ -146,6 +146,10 @@ public class TranslateTask extends Task.Backgroundable {
 
                 translator.setParams(LANG.Auto, toLanguage, content.getText());
                 String result = translator.executeSingle();
+                if(result ==null||result.trim().isEmpty()|| result.equals(content.getText())){
+                    result = translator.executeSingle();
+                    realTranslateCount++;
+                }
                 content.setText(result);
                 realTranslateCount++;
             }
