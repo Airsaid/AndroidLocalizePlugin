@@ -35,10 +35,12 @@ public class AndroidLocalizeConfigurable implements Configurable {
     private JLabel       portNumberLabel;
     private JTextField   hostNameField;
     private JSpinner     portNumberSpinner;
+    private JCheckBox translateTogether;
 
     private boolean isEnableProxy = PluginConfig.isEnableProxy();
     private String  hostName      = PluginConfig.getHostName();
     private int     portNumber    = PluginConfig.getPortNumber();
+    private boolean isTranslateTogether = PluginConfig.isTranslateTogether();
 
     @Nls(capitalization = Nls.Capitalization.Title)
     @Override
@@ -57,6 +59,7 @@ public class AndroidLocalizeConfigurable implements Configurable {
         enableProxy(isEnableProxy);
         hostNameField.setText(hostName);
         portNumberSpinner.setValue(portNumber);
+        translateTogether.setSelected(isTranslateTogether);
 
         noProxy.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {
@@ -85,7 +88,8 @@ public class AndroidLocalizeConfigurable implements Configurable {
         boolean modifyEnable = isEnableProxy != enableProxy.isSelected();
         boolean modifyHostName = !hostName.equals(hostNameField.getText());
         boolean modifyPortNumber = portNumber != Integer.parseInt(portNumberSpinner.getValue().toString());
-        return modifyEnable || modifyHostName || modifyPortNumber;
+        boolean modifyTogether = isTranslateTogether != translateTogether.isSelected();
+        return modifyEnable || modifyHostName || modifyPortNumber || modifyTogether;
     }
 
     @Override
@@ -93,6 +97,23 @@ public class AndroidLocalizeConfigurable implements Configurable {
         PluginConfig.setEnableProxy(enableProxy.isSelected());
         PluginConfig.setHostName(hostNameField.getText());
         PluginConfig.setPortNumber(Integer.parseInt(portNumberSpinner.getValue().toString()));
+        PluginConfig.setTranslateTogether(translateTogether.isSelected());
+
+        isEnableProxy = enableProxy.isSelected();
+        hostName      = hostNameField.getText();
+        portNumber    = Integer.parseInt(portNumberSpinner.getValue().toString());
+        isTranslateTogether = translateTogether.isSelected();
     }
 
+    @Override
+    public void reset() {
+        PluginConfig.setEnableProxy(isEnableProxy);
+        PluginConfig.setHostName(hostName);
+        PluginConfig.setPortNumber(portNumber);
+        PluginConfig.setTranslateTogether(isTranslateTogether);
+        enableProxy(isEnableProxy);
+        hostNameField.setText(hostName);
+        portNumberSpinner.setValue(portNumber);
+        translateTogether.setSelected(isTranslateTogether);
+    }
 }

@@ -31,6 +31,8 @@ public final class PluginConfig {
 
     private static final String KEY_PORT_NUMBER = PLUGIN_ID.concat(".portNumber");
 
+    private static final String KEY_TRANSLATE_TOGETHER = PLUGIN_ID.concat(".translateTogether");
+
     public static boolean isEnableProxy() {
         return PropertiesComponent.getInstance().getBoolean(KEY_ENABLE_PROXY, false);
     }
@@ -53,6 +55,14 @@ public final class PluginConfig {
 
     public static void setPortNumber(int port) {
         PropertiesComponent.getInstance().setValue(KEY_PORT_NUMBER, port, 0);
+    }
+
+    public static boolean isTranslateTogether() {
+        return !PropertiesComponent.getInstance().getBoolean(KEY_TRANSLATE_TOGETHER, false);
+    }
+
+    public static void setTranslateTogether(boolean together) {
+        PropertiesComponent.getInstance().setValue(KEY_TRANSLATE_TOGETHER, !together);
     }
 
 }

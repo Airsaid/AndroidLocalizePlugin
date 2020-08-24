@@ -16,6 +16,9 @@
 
 package task;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -26,6 +29,7 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
+import config.PluginConfig;
 import constant.Constants;
 import logic.ParseStringXml;
 import module.AndroidString;
@@ -47,11 +51,11 @@ import java.util.*;
  */
 public class TranslateTask extends Task.Backgroundable {
 
-    private List<LANG>                       mLanguages;
-    private List<AndroidString>              mAndroidStrings;
-    private VirtualFile                      mSelectFile;
+    private List<LANG> mLanguages;
+    private List<AndroidString> mAndroidStrings;
+    private VirtualFile mSelectFile;
     private Map<String, List<AndroidString>> mWriteData;
-    private OnTranslateListener              mOnTranslateListener;
+    private OnTranslateListener mOnTranslateListener;
 
     public interface OnTranslateListener {
         void onTranslateSuccess();
@@ -104,10 +108,10 @@ public class TranslateTask extends Task.Backgroundable {
                     return;
                 }
 
-                skipOrSelectList = ParseStringXml.parse(progressIndicator, psiFile);
+                skipOrSelectList = ParseStringXml.parse(progressIndicator, psiFile,false);
                 readCompleted = true;
             });
-            while (!readCompleted){
+            while (!readCompleted) {
                 try {
                     Thread.sleep(50);
                 } catch (InterruptedException e) {
@@ -124,8 +128,11 @@ public class TranslateTask extends Task.Backgroundable {
     }
 
     private int realTranslateCount = 0;
+
     private void translate(@NotNull ProgressIndicator progressIndicator, Querier<AbstractTranslator> translator, LANG toLanguage, @Nullable List<AndroidString> list) {
         List<AndroidString> writeAndroidString = new ArrayList<>();
+        List<AndroidString> queryAndroidString = new ArrayList<>();
+        StringBuilder queryTextBuilder = new StringBuilder();
         for (AndroidString androidString : mAndroidStrings) {
             if (progressIndicator.isCanceled()) break;
 
@@ -144,20 +151,65 @@ public class TranslateTask extends Task.Backgroundable {
             for (Content content : contexts) {
                 if (content.isIgnore()) continue; // Ignore text with xliff:g tags set
 
-                translator.setParams(LANG.Auto, toLanguage, content.getText());
-                String result = translator.executeSingle();
-                if(result ==null||result.trim().isEmpty()|| result.equals(content.getText())){
-                    result = translator.executeSingle();
+                if (PluginConfig.isTranslateTogether()) {
+                    queryTextBuilder.append(content.getText());
+                    queryTextBuilder.append("\n");
+                } else {
+                    translator.setParams(LANG.Auto, toLanguage, content.getText());
+                    String result = translator.executeSingle();
+                    if (result == null || result.trim().isEmpty() || result.equals(content.getText())) {
+                        result = translator.executeSingle();
+                        realTranslateCount++;
+                    }
+                    content.setText(result);
                     realTranslateCount++;
                 }
-                content.setText(result);
-                realTranslateCount++;
             }
-
+            queryAndroidString.add(clone);
             writeAndroidString.add(clone);
         }
+
+        if (PluginConfig.isTranslateTogether()) {
+            translator.setParams(LANG.Auto, toLanguage, queryTextBuilder.toString());
+            String result = translator.executeSingle();
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                JsonNode jsonNode = mapper.readTree(result).get(5);
+                if(jsonNode.size()>0){
+                    int i = 0;
+                    for(AndroidString query:queryAndroidString){
+                        List<Content> contexts = query.getContents();
+                        for (Content content : contexts) {
+                            if (content.isIgnore()) continue; // Ignore text with xliff:g tags set
+                            if(i<jsonNode.size()){
+                                StringBuilder contentResult = new StringBuilder();
+                                for(;i<jsonNode.size();i++){
+                                    if("\n".equals(jsonNode.get(i).get(0).textValue())){
+                                        i++;
+                                       break;
+                                    }
+                                    if(jsonNode.get(i).get(0).textValue()!=null&&jsonNode.get(i).get(0).textValue().contains("\n")&&jsonNode.get(i).get(0).textValue().trim().isEmpty()){
+                                        contentResult.append(jsonNode.get(i).get(0).textValue().replace("\n",""));
+                                        i++;
+                                        break;
+                                    }
+                                    contentResult.append(jsonNode.get(i).get(2).get(0).get(0).textValue());
+                                }
+                                content.setText(contentResult.toString());
+                            }else {
+                                break;
+                            }
+                        }
+                    }
+                }
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+            realTranslateCount++;
+        }
+
         mWriteData.put(toLanguage.getCode(), writeAndroidString);
-        if(realTranslateCount>300||(realTranslateCount+mAndroidStrings.size())>300){
+        if (realTranslateCount > 300 || (realTranslateCount + mAndroidStrings.size()) > 300) {
             realTranslateCount = 0;
             progressIndicator.setText("Translating too many times sleep 10s ");
             try {
@@ -245,12 +297,60 @@ public class TranslateTask extends Task.Backgroundable {
             try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false), StandardCharsets.UTF_8))) {
                 bw.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
                 bw.newLine();
-                bw.write("<resources>");
+                bw.write("<resources");
+                Map<String,String> attrs = AndroidString.getOriginalAttrs();
+                if(attrs!=null&&attrs.size()>0){
+                    bw.write(" ");
+                    int i = 1;
+                    for(String key:attrs.keySet()){
+                        if(i == attrs.size()){
+                            bw.write(key+"=\""+attrs.get(key)+"\"");
+                        }else {
+                            bw.write(key+"=\""+attrs.get(key)+"\" ");
+                        }
+                        i++;
+                    }
+                }
+                bw.write(">");
                 bw.newLine();
                 for (AndroidString androidString : androidStrings) {
-                    bw.write("\t<string name=\"" + androidString.getName() + "\">");
+                    bw.write("\t<string");
+                    attrs = androidString.getAttrs();
+                    if(attrs!=null&&attrs.size()>0){
+                        bw.write(" ");
+                        int i = 1;
+                        for(String key:attrs.keySet()){
+                            if(i == attrs.size()){
+                                bw.write(key+"=\""+attrs.get(key)+"\"");
+                            }else {
+                                bw.write(key+"=\""+attrs.get(key)+"\" ");
+                            }
+                            i++;
+                        }
+                    }
+                    bw.write(">");
                     for (Content content : androidString.getContents()) {
-                        bw.write(content.getText());
+                        if(content.getTagName()!=null&&!content.getTagName().trim().isEmpty()){
+                            bw.write("<"+content.getTagName());
+                            attrs = content.getAttrs();
+                            if(attrs!=null&&attrs.size()>0){
+                                bw.write(" ");
+                                int i = 1;
+                                for(String key:attrs.keySet()){
+                                    if(i == attrs.size()){
+                                        bw.write(key+"=\""+attrs.get(key)+"\"");
+                                    }else {
+                                        bw.write(key+"=\""+attrs.get(key)+"\" ");
+                                    }
+                                    i++;
+                                }
+                            }
+                            bw.write(">");
+                            bw.write(content.getText());
+                            bw.write("</"+content.getTagName()+">");
+                        }else {
+                            bw.write(content.getText());
+                        }
                     }
                     bw.write("</string>");
                     bw.newLine();

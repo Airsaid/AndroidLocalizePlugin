@@ -16,6 +16,8 @@
 
 package module;
 
+import java.util.Map;
+
 /**
  * @author airsaid
  */
@@ -24,6 +26,8 @@ public class Content implements Cloneable {
     private String  id;
     private String  example;
     private boolean isIgnore;
+    private String tagName;
+    private Map<String,String> attrs;
 
     public Content(String text) {
         this.text = text;
@@ -33,6 +37,17 @@ public class Content implements Cloneable {
         this.text = text;
         this.id = id;
         this.example = example;
+        this.isIgnore = isIgnore;
+    }
+
+    public Content(String text, String tagName, Map<String,String> attrs, boolean isIgnore) {
+        this.text = text;
+        this.tagName = tagName;
+        if(attrs!=null&&attrs.size()>0){
+            this.attrs = attrs;
+        }else {
+            this.attrs = null;
+        }
         this.isIgnore = isIgnore;
     }
 
@@ -68,6 +83,22 @@ public class Content implements Cloneable {
         isIgnore = ignore;
     }
 
+    public String getTagName() {
+        return tagName;
+    }
+
+    public void setTagName(String tagName) {
+        this.tagName = tagName;
+    }
+
+    public Map<String, String> getAttrs() {
+        return attrs;
+    }
+
+    public void setAttrs(Map<String, String> attrs) {
+        this.attrs = attrs;
+    }
+
     @Override
     public Content clone() {
         try {
@@ -84,7 +115,8 @@ public class Content implements Cloneable {
                 "text='" + text + '\'' +
                 ", id='" + id + '\'' +
                 ", example='" + example + '\'' +
-                ", isIgnore=" + isIgnore +
+                ", isIgnore=" + isIgnore + '\'' +
+                ", tagName=" + tagName +
                 '}';
     }
 }

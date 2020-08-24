@@ -18,6 +18,7 @@ package module;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author airsaid
@@ -27,9 +28,22 @@ public class AndroidString implements Cloneable {
     private String        name;
     private List<Content> contents;
     private boolean       translatable;
+    private Map<String,String> attrs;
+    private static Map<String,String> originalAttrs;
 
     public AndroidString(String name, List<Content> contents, boolean translatable) {
         this.name = name;
+        this.contents = contents;
+        this.translatable = translatable;
+    }
+
+    public AndroidString(String name,Map<String,String> attrs, List<Content> contents, boolean translatable) {
+        this.name = name;
+        if(attrs!=null&&attrs.size()>0){
+            this.attrs = attrs;
+        }else {
+            this.attrs = null;
+        }
         this.contents = contents;
         this.translatable = translatable;
     }
@@ -56,6 +70,22 @@ public class AndroidString implements Cloneable {
 
     public void setTranslatable(boolean translatable) {
         this.translatable = translatable;
+    }
+
+    public Map<String, String> getAttrs() {
+        return attrs;
+    }
+
+    public void setAttrs(Map<String, String> attrs) {
+        this.attrs = attrs;
+    }
+
+    public static Map<String, String> getOriginalAttrs() {
+        return originalAttrs;
+    }
+
+    public static void setOriginalAttrs(Map<String, String> originalAttrs) {
+        AndroidString.originalAttrs = originalAttrs;
     }
 
     @Override

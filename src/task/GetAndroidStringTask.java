@@ -58,7 +58,7 @@ public class GetAndroidStringTask extends Task.Backgroundable {
         }
 
         ApplicationManager.getApplication().runReadAction(() -> {
-            mAndroidStrings = ParseStringXml.parse(progressIndicator, mFile);
+            mAndroidStrings = ParseStringXml.parse(progressIndicator, mFile,true);
         });
     }
 

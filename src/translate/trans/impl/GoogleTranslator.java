@@ -1,5 +1,6 @@
 package translate.trans.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import config.PluginConfig;
 import org.apache.http.HttpEntity;
@@ -137,11 +138,11 @@ public final class GoogleTranslator extends AbstractTranslator {
 
     @Override
     public void setFormData(LANG from, LANG to, String text) {
-        formData.put("client", "t");
+        formData.put("client", "webapp");
         formData.put("sl", from.getCode());
         formData.put("tl", to.getCode());
         formData.put("hl", "zh-CN");
-        formData.put("dt", "t");
+        formData.put("dt", "at");
         formData.put("ie", "UTF-8");
         formData.put("oe", "UTF-8");
         formData.put("tk", token(text));
@@ -156,7 +157,6 @@ public final class GoogleTranslator extends AbstractTranslator {
             uri.addParameter(key, value);
         }
         HttpGet request = new HttpGet(uri.toString());
-
         RequestConfig.Builder builder = RequestConfig.copy(RequestConfig.DEFAULT)
                 .setSocketTimeout(5000)
                 .setConnectTimeout(5000)
@@ -182,8 +182,19 @@ public final class GoogleTranslator extends AbstractTranslator {
 
     @Override
     public String parses(String text) throws IOException {
+        if(PluginConfig.isTranslateTogether()){
+            return text;
+        }
         ObjectMapper mapper = new ObjectMapper();
-        return mapper.readTree(text).get(0).get(0).get(0).textValue();
+        StringBuilder contentResult = new StringBuilder();
+        JsonNode jsonNode = mapper.readTree(text).get(5);
+        for(int i=0;i<jsonNode.size();i++){
+            if("\n".equals(jsonNode.get(i).get(0).textValue())){
+                break;
+            }
+            contentResult.append(jsonNode.get(i).get(2).get(0).get(0).textValue());
+        }
+        return contentResult.toString();
     }
 
     private String token(String text) {
