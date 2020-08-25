@@ -2,6 +2,7 @@ package translate.trans.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.intellij.openapi.diagnostic.Logger;
 import config.PluginConfig;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -152,16 +153,18 @@ public final class GoogleTranslator extends AbstractTranslator {
     @Override
     public String query() throws Exception {
         URIBuilder uri = new URIBuilder(url);
+        Logger logger = Logger.getInstance(GoogleTranslator.class);
+        logger.info("runQuery"+uri.toString());
         for (String key : formData.keySet()) {
             String value = formData.get(key);
             uri.addParameter(key, value);
         }
         HttpGet request = new HttpGet(uri.toString());
+        logger.info("request"+uri.toString());
         RequestConfig.Builder builder = RequestConfig.copy(RequestConfig.DEFAULT)
                 .setSocketTimeout(5000)
                 .setConnectTimeout(5000)
                 .setConnectionRequestTimeout(5000);
-
         if (PluginConfig.isEnableProxy()) {
             HttpHost proxy = new HttpHost(PluginConfig.getHostName(), PluginConfig.getPortNumber());
             builder.setProxy(proxy);
@@ -173,6 +176,7 @@ public final class GoogleTranslator extends AbstractTranslator {
         HttpEntity entity = response.getEntity();
 
         String result = EntityUtils.toString(entity, "UTF-8");
+        logger.info("response"+result);
         EntityUtils.consume(entity);
         response.getEntity().getContent().close();
         response.close();

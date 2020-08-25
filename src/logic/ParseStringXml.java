@@ -86,17 +86,19 @@ public class ParseStringXml {
                             contents.add(new Content(xmlText.getValue()));
                         } else if (child instanceof XmlTag) {
                             XmlTag xmlTag = (XmlTag) child;
-//                            if (!xmlTag.getName().equals("xliff:g")) {
-                                Map<String,String> attrs = new LinkedHashMap<>();
-                                XmlAttribute[] xmlAttrs = xmlTag.getAttributes();
-                                if(xmlAttrs.length>0){
-                                    for (XmlAttribute xmlAttr : xmlAttrs) {
-                                        attrs.put(xmlAttr.getName(), xmlAttr.getValue());
-                                    }
+                            Map<String,String> attrs = new LinkedHashMap<>();
+                            XmlAttribute[] xmlAttrs = xmlTag.getAttributes();
+                            if(xmlAttrs.length>0){
+                                for (XmlAttribute xmlAttr : xmlAttrs) {
+                                    attrs.put(xmlAttr.getName(), xmlAttr.getValue());
                                 }
-                                contents.add(new Content(xmlTag.getValue().getText(),xmlTag.getName(),attrs,true));
+                            }
+                            if (!xmlTag.getName().equals("xliff:g")) {
+                                contents.add(new Content(xmlTag.getValue().getText(),xmlTag.getName(),attrs,false));
 //                                continue;
-//                            }
+                            }else {
+                                contents.add(new Content(xmlTag.getValue().getText(),xmlTag.getName(),attrs,true));
+                            }
 
 //                            String text = xmlTag.getValue().getText();
 //                            String id = xmlTag.getAttributeValue("id");
