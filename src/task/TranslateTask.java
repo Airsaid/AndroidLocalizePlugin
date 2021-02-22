@@ -129,9 +129,9 @@ public class TranslateTask extends Task.Backgroundable {
             for (Content content : contexts) {
                 if (content.isIgnore()) continue; // Ignore text with xliff:g tags set
 
-                translator.setParams(LANG.Auto, toLanguage, content.getText());
+                translator.setParams(LANG.Auto, toLanguage, EscapeUtil.removeEscapeSequences(content.getText()));
                 String result = translator.executeSingle();
-                content.setText(result);
+                content.setText(EscapeUtil.addEscapeSequences(result));
             }
 
             writeAndroidString.add(clone);
@@ -274,5 +274,6 @@ public class TranslateTask extends Task.Backgroundable {
     public void setOnTranslateListener(OnTranslateListener listener) {
         this.mOnTranslateListener = listener;
     }
+
 
 }
