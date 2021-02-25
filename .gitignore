@@ -1,3 +1,4 @@
 .idea/
 out/
 .DS_Store
+/test/res/
