@@ -1,5 +1,8 @@
-.idea/
-out/
-.DS_Store
-/test/res/
-*.iml
+# IDEA
+.idea
+
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
