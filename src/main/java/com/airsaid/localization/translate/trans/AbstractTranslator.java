@@ -2,7 +2,7 @@ package com.airsaid.localization.translate.trans;
 
 import com.airsaid.localization.translate.http.AbstractHttpAttribute;
 import com.airsaid.localization.translate.http.HttpParams;
-import com.airsaid.localization.translate.lang.LANG;
+import com.airsaid.localization.translate.lang.Lang;
 import com.airsaid.localization.translate.trans.impl.GoogleTranslator;
 
 import java.io.IOException;
@@ -24,12 +24,12 @@ public abstract class AbstractTranslator extends AbstractHttpAttribute implement
     }
 
     @Override
-    public String run(LANG source, String text) {
+    public String run(Lang source, String text) {
         return null;
     }
 
     @Override
-    public String run(LANG from, LANG to, String text) {
+    public String run(Lang from, Lang to, String text) {
         String result = "";
         setFormData(from, to, text);
         try {
@@ -50,15 +50,15 @@ public abstract class AbstractTranslator extends AbstractHttpAttribute implement
      *
      * @return support lang list.
      */
-    public List<LANG> getSupportLang() {
+    public List<Lang> getSupportLang() {
         return langData;
     }
 
     @Override
-    public void setFormData(LANG source, String text){}
+    public void setFormData(Lang source, String text){}
 
     @Override
-    public abstract void setFormData(LANG from, LANG to, String text);
+    public abstract void setFormData(Lang from, Lang to, String text);
 
     @Override
     public abstract String query() throws Exception;

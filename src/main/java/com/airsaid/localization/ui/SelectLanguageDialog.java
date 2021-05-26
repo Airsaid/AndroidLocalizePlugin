@@ -18,7 +18,7 @@ package com.airsaid.localization.ui;
 
 import com.airsaid.localization.constant.Constants;
 import com.airsaid.localization.logic.LanguageHelper;
-import com.airsaid.localization.translate.lang.LANG;
+import com.airsaid.localization.translate.lang.Lang;
 import com.airsaid.localization.translate.trans.impl.GoogleTranslator;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.project.Project;
@@ -47,10 +47,10 @@ public class SelectLanguageDialog extends DialogWrapper {
 
     private Project         mProject;
     private OnClickListener mOnClickListener;
-    private List<LANG>      mSelectLanguages = new ArrayList<>();
+    private List<Lang>      mSelectLanguages = new ArrayList<>();
 
     public interface OnClickListener {
-        void onClickListener(List<LANG> selectedLanguage);
+        void onClickListener(List<Lang> selectedLanguage);
     }
 
     public SelectLanguageDialog(@Nullable Project project) {
@@ -75,12 +75,12 @@ public class SelectLanguageDialog extends DialogWrapper {
     private void doCreateCenterPanel() {
         // add language
         mSelectLanguages.clear();
-        List<LANG> supportLanguages = new GoogleTranslator().getSupportLang();
+        List<Lang> supportLanguages = new GoogleTranslator().getSupportLang();
         List<String> selectedLanguageCodes = LanguageHelper.getSelectedLanguageCodes(mProject);
         // sort by country code, easy to find
         supportLanguages.sort(new CountryCodeComparator());
         languagesPanel.setLayout(new GridLayout(supportLanguages.size() / 4, 4));
-        for (LANG language : supportLanguages) {
+        for (Lang language : supportLanguages) {
             String code = language.getCode();
             JBCheckBox checkBoxLanguage = new JBCheckBox();
             checkBoxLanguage.setText(language.getEnglishName()
@@ -141,9 +141,9 @@ public class SelectLanguageDialog extends DialogWrapper {
         super.doOKAction();
     }
 
-    class CountryCodeComparator implements Comparator<LANG> {
+    class CountryCodeComparator implements Comparator<Lang> {
         @Override
-        public int compare(LANG o1, LANG o2) {
+        public int compare(Lang o1, Lang o2) {
             return o1.getCode().compareTo(o2.getCode());
         }
     }

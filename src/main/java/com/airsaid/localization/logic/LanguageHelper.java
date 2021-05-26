@@ -17,7 +17,7 @@
 package com.airsaid.localization.logic;
 
 import com.airsaid.localization.constant.Constants;
-import com.airsaid.localization.translate.lang.LANG;
+import com.airsaid.localization.translate.lang.Lang;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.project.Project;
 import org.apache.http.util.TextUtils;
@@ -45,7 +45,7 @@ public class LanguageHelper {
      * @param project   current project.
      * @param languages selected language.
      */
-    public static void saveSelectedLanguage(@NotNull Project project, @NotNull List<LANG> languages) {
+    public static void saveSelectedLanguage(@NotNull Project project, @NotNull List<Lang> languages) {
         Objects.requireNonNull(project);
         Objects.requireNonNull(languages);
 
@@ -74,10 +74,10 @@ public class LanguageHelper {
     }
 
     @NotNull
-    private static String getLanguageCodeString(@NotNull List<LANG> language) {
+    private static String getLanguageCodeString(@NotNull List<Lang> language) {
         StringBuilder codes = new StringBuilder(language.size());
         for (int i = 0, len = language.size(); i < len; i++) {
-            LANG lang = language.get(i);
+            Lang lang = language.get(i);
             String code = lang.getCode();
             codes.append(code);
             if (i < len - 1) {

@@ -20,7 +20,7 @@ package com.airsaid.localization.action;
 import com.airsaid.localization.module.AndroidString;
 import com.airsaid.localization.task.GetAndroidStringTask;
 import com.airsaid.localization.task.TranslateTask;
-import com.airsaid.localization.translate.lang.LANG;
+import com.airsaid.localization.translate.lang.Lang;
 import com.airsaid.localization.ui.SelectLanguageDialog;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -117,7 +117,7 @@ public class ConvertAction extends AnAction implements SelectLanguageDialog.OnCl
     }
 
     @Override
-    public void onClickListener(List<LANG> selectedLanguage) {
+    public void onClickListener(List<Lang> selectedLanguage) {
         TranslateTask translationTask = new TranslateTask(
                 mProject, "In translation...", selectedLanguage, mAndroidStrings, mSelectFile);
         translationTask.setOnTranslateListener(new TranslateTask.OnTranslateListener() {

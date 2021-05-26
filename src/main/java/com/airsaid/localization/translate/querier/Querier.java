@@ -1,14 +1,14 @@
 package com.airsaid.localization.translate.querier;
 
 import com.airsaid.localization.translate.http.AbstractHttpAttribute;
-import com.airsaid.localization.translate.lang.LANG;
+import com.airsaid.localization.translate.lang.Lang;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public final class Querier<T extends AbstractHttpAttribute> {
-    private LANG from;
-    private LANG to;
+    private Lang from;
+    private Lang to;
     private String text;
     private List<T> collection;
 
@@ -32,13 +32,13 @@ public final class Querier<T extends AbstractHttpAttribute> {
         return result;
     }
 
-    public void setParams(LANG from, LANG to, String text) {
+    public void setParams(Lang from, Lang to, String text) {
         this.from = from;
         this.to = to;
         this.text = text;
     }
 
-    public void setParams(LANG source, String text) {
+    public void setParams(Lang source, String text) {
         this.from = source;
         this.text = text;
     }

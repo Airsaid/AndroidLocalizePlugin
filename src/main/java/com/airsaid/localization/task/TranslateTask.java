@@ -20,7 +20,7 @@ import com.airsaid.localization.constant.Constants;
 import com.airsaid.localization.logic.ParseStringXml;
 import com.airsaid.localization.module.AndroidString;
 import com.airsaid.localization.module.Content;
-import com.airsaid.localization.translate.lang.LANG;
+import com.airsaid.localization.translate.lang.Lang;
 import com.airsaid.localization.translate.querier.Querier;
 import com.airsaid.localization.translate.trans.AbstractTranslator;
 import com.airsaid.localization.translate.trans.impl.GoogleTranslator;
@@ -46,7 +46,7 @@ import java.util.*;
  */
 public class TranslateTask extends Task.Backgroundable {
 
-    private List<LANG>                       mLanguages;
+    private List<Lang>                       mLanguages;
     private List<AndroidString>              mAndroidStrings;
     private VirtualFile                      mSelectFile;
     private Map<String, List<AndroidString>> mWriteData;
@@ -58,7 +58,7 @@ public class TranslateTask extends Task.Backgroundable {
         void onTranslateError(Throwable e);
     }
 
-    public TranslateTask(@Nullable Project project, @Nls @NotNull String title, List<LANG> languages,
+    public TranslateTask(@Nullable Project project, @Nls @NotNull String title, List<Lang> languages,
                          List<AndroidString> androidStrings, VirtualFile selectFile) {
         super(project, title);
         this.mLanguages = languages;
@@ -76,7 +76,7 @@ public class TranslateTask extends Task.Backgroundable {
         translator.attach(googleTranslator);
         mWriteData.clear();
 
-        for (LANG toLanguage : mLanguages) {
+        for (Lang toLanguage : mLanguages) {
             if (progressIndicator.isCanceled()) break;
 
             progressIndicator.setText("Translating in the " + toLanguage.getEnglishName() + " language...");
@@ -108,7 +108,7 @@ public class TranslateTask extends Task.Backgroundable {
         writeResultData(progressIndicator);
     }
 
-    private void translate(@NotNull ProgressIndicator progressIndicator, Querier<AbstractTranslator> translator, LANG toLanguage, @Nullable List<AndroidString> list) {
+    private void translate(@NotNull ProgressIndicator progressIndicator, Querier<AbstractTranslator> translator, Lang toLanguage, @Nullable List<AndroidString> list) {
         List<AndroidString> writeAndroidString = new ArrayList<>();
         for (AndroidString androidString : mAndroidStrings) {
             if (progressIndicator.isCanceled()) break;
@@ -128,7 +128,7 @@ public class TranslateTask extends Task.Backgroundable {
             for (Content content : contexts) {
                 if (content.isIgnore()) continue; // Ignore text with xliff:g tags set
 
-                translator.setParams(LANG.Auto, toLanguage, EscapeUtil.removeEscapeSequences(content.getText()));
+                translator.setParams(Lang.AUTO, toLanguage, EscapeUtil.removeEscapeSequences(content.getText()));
                 String result = translator.executeSingle();
                 content.setText(EscapeUtil.addEscapeSequences(result));
             }
@@ -157,7 +157,7 @@ public class TranslateTask extends Task.Backgroundable {
         }
     }
 
-    private VirtualFile getVirtualFile(LANG lang) {
+    private VirtualFile getVirtualFile(Lang lang) {
         File file = getStringFile(lang.getCode());
         return LocalFileSystem.getInstance().findFileByIoFile(file);
     }
@@ -194,15 +194,15 @@ public class TranslateTask extends Task.Backgroundable {
 
     private String getDirNameForCode(String langCode) {
         String suffix;
-        if (langCode.equals(LANG.ChineseSimplified.getCode())) {
+        if (langCode.equals(Lang.CHINESE_SIMPLIFIED.getCode())) {
             suffix = "zh-rCN";
-        } else if (langCode.equals(LANG.ChineseTraditional.getCode())) {
+        } else if (langCode.equals(Lang.CHINESE_TRADITIONAL.getCode())) {
             suffix = "zh-rTW";
-        } else if (langCode.equals(LANG.Filipino.getCode())) {
+        } else if (langCode.equals(Lang.FILIPINO.getCode())) {
             suffix = "fil";
-        } else if (langCode.equals(LANG.Indonesian.getCode())) {
+        } else if (langCode.equals(Lang.INDONESIAN.getCode())) {
             suffix = "in-rID";
-        } else if (langCode.equals(LANG.Javanese.getCode())) {
+        } else if (langCode.equals(Lang.JAVANESE.getCode())) {
             suffix = "jv";
         } else {
             suffix = langCode;

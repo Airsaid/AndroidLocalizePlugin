@@ -1,12 +1,12 @@
 package com.airsaid.localization.translate.http;
 
+import com.airsaid.localization.translate.lang.Lang;
 import com.airsaid.localization.translate.trans.AbstractTranslator;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import com.airsaid.localization.translate.lang.LANG;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ import java.util.Map;
 public abstract class AbstractHttpAttribute {
     public String              url;
     public Map<String, String> formData;
-    public List<LANG>          langData;
+    public List<Lang>          langData;
     public CloseableHttpClient httpClient;
 
     public AbstractHttpAttribute(String url) {
@@ -51,7 +51,7 @@ public abstract class AbstractHttpAttribute {
      * @param text the content to be converted into speech
      * @return the string form of the translated result.
      */
-    public abstract String run(LANG source, String text);
+    public abstract String run(Lang source, String text);
 
     /**
      * The control center includes parameter setting, sending HTTP request, receiving
@@ -62,7 +62,7 @@ public abstract class AbstractHttpAttribute {
      * @param text the content to be translated
      * @return the string form of the translated result.
      */
-    public abstract String run(LANG from, LANG to, String text);
+    public abstract String run(Lang from, Lang to, String text);
 
     /**
      * Release and close the resources of HTTP
