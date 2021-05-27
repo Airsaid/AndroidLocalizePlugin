@@ -40,7 +40,6 @@ public class AndroidLocalizeConfigurable implements Configurable {
     private String  hostName      = PluginConfig.getHostName();
     private int     portNumber    = PluginConfig.getPortNumber();
 
-    @Nls(capitalization = Nls.Capitalization.Title)
     @Override
     public String getDisplayName() {
         return "Android Localize";
