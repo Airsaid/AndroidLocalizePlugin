@@ -13,6 +13,8 @@ repositories {
 }
 
 dependencies {
+    implementation 'com.google.code.gson:gson:2.8.7'
+
     implementation 'org.apache.httpcomponents:httpclient:4.5.5'
     implementation 'org.apache.httpcomponents:httpcore:4.4.9'
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.9.5'
