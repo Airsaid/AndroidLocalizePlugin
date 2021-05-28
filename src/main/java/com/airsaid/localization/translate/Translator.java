@@ -10,6 +10,6 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface Translator {
 
-  String doTranslate(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text);
+  String doTranslate(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) throws TranslationException;
 
 }

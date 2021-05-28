@@ -3,13 +3,13 @@ package com.airsaid.localization.translate.impl.google;
 import com.airsaid.localization.translate.AbstractTranslator;
 import com.airsaid.localization.translate.lang.Lang;
 import com.airsaid.localization.translate.util.AgentUtil;
+import com.airsaid.localization.translate.util.GsonUtil;
 import com.airsaid.localization.translate.util.UrlBuilder;
-import com.intellij.util.io.HttpRequests;
+import com.intellij.openapi.util.Pair;
 import com.intellij.util.io.RequestBuilder;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,7 +23,14 @@ public class GoogleTranslator extends AbstractTranslator {
   @Override
   @NotNull
   public List<Lang> getSupportedLanguages() {
-    return Collections.emptyList();
+    Lang[] values = Lang.values();
+    List<Lang> result = new ArrayList<>(values.length - 1);
+    for (Lang lang : values) {
+      if (lang != Lang.AUTO) {
+        result.add(lang);
+      }
+    }
+    return result;
   }
 
   @Override
@@ -32,7 +39,7 @@ public class GoogleTranslator extends AbstractTranslator {
         .addQueryParameter("sl", fromLang.getCode()) // source language code (auto for auto detection)
         .addQueryParameter("tl", toLang.getCode()) // translation language
         .addQueryParameter("client", "gtx") // client of request (guess)
-        .addQueryParameters("dt", "t", "bd", "rm", "qca") // specify what to return
+        .addQueryParameters("dt", "t") // specify what to return
         .addQueryParameter("dj", "1") // json response with names
         .addQueryParameter("ie", "UTF-8") // input encoding
         .addQueryParameter("oe", "UTF-8") // output encoding
@@ -41,17 +48,21 @@ public class GoogleTranslator extends AbstractTranslator {
   }
 
   @Override
-  public void configureRequestBuilder(@NotNull RequestBuilder requestBuilder) {
-    requestBuilder.userAgent(AgentUtil.getUserAgent());
+  public @NotNull List<Pair<String, String>> getRequestParams(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
+    List<Pair<String, String>> params = new ArrayList<>();
+    params.add(Pair.create("q", text));
+    return params;
   }
 
   @Override
-  public @NotNull String parsingRequest(HttpRequests.Request request) {
-    try {
-      return request.readString();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    return "";
+  public void configureRequestBuilder(@NotNull RequestBuilder requestBuilder) {
+    requestBuilder.userAgent(AgentUtil.getUserAgent())
+        .tuner(connection -> connection.setRequestProperty("Referer", GoogleTranslator.HOST_URL));
+  }
+
+  @Override
+  public @NotNull String parsingResult(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text, @NotNull String resultText) {
+    GoogleTranslationResult googleTranslationResult = GsonUtil.getInstance().getGson().fromJson(resultText, GoogleTranslationResult.class);
+    return googleTranslationResult.getTranslationResult();
   }
 }
