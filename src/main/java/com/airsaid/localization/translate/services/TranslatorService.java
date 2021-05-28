@@ -7,6 +7,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
+import org.apache.log4j.Level;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
@@ -20,9 +21,15 @@ public final class TranslatorService {
   private static final Logger LOG = Logger.getInstance(TranslatorService.class);
 
   private Translator translator;
+  private final TranslationCacheService cacheService;
+
+  static {
+    LOG.setLevel(Level.DEBUG);
+  }
 
   public TranslatorService() {
     translator = new GoogleTranslator();
+    cacheService = TranslationCacheService.getInstance();
   }
 
   @NotNull
@@ -37,11 +44,24 @@ public final class TranslatorService {
 
   public void doTranslate(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text, @NotNull Consumer<String> consumer) {
     LOG.info(String.format("doTranslate fromLang: %s, toLang: %s, text: %s", fromLang, toLang, text));
+
+    String cacheResult = cacheService.get(getKey(fromLang, toLang, text));
+    if (!cacheResult.isEmpty()) {
+      LOG.info(String.format("doTranslate cache result: %s", cacheResult));
+      consumer.accept(cacheResult);
+      return;
+    }
+
     ApplicationManager.getApplication().executeOnPooledThread(() -> {
       String result = translator.doTranslate(fromLang, toLang, text);
       LOG.info(String.format("doTranslate result: %s", result));
+      cacheService.put(getKey(fromLang, toLang, text), result);
       consumer.accept(result);
     });
+  }
+
+  private String getKey(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
+    return fromLang.getCode() + "_" + toLang.getCode() + "_" + text;
   }
 
 }
