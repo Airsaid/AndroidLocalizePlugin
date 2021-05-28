@@ -7,6 +7,7 @@ import com.airsaid.localization.translate.util.GsonUtil;
 import com.airsaid.localization.translate.util.UrlBuilder;
 import com.intellij.openapi.util.Pair;
 import com.intellij.util.io.RequestBuilder;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -50,7 +51,7 @@ public class GoogleTranslator extends AbstractTranslator {
   @Override
   public @NotNull List<Pair<String, String>> getRequestParams(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
     List<Pair<String, String>> params = new ArrayList<>();
-    params.add(Pair.create("q", text));
+    params.add(Pair.create("q", StringEscapeUtils.escapeJava(text)));
     return params;
   }
 
