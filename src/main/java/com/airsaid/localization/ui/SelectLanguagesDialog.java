@@ -39,7 +39,7 @@ import java.util.List;
  *
  * @author airsaid
  */
-public class SelectLanguageDialog extends DialogWrapper {
+public class SelectLanguagesDialog extends DialogWrapper {
     private JPanel    myPanel;
     private JCheckBox overwriteExistingStringCheckBox;
     private JCheckBox selectAllCheckBox;
@@ -53,7 +53,7 @@ public class SelectLanguageDialog extends DialogWrapper {
         void onClickListener(List<Lang> selectedLanguage);
     }
 
-    public SelectLanguageDialog(@Nullable Project project) {
+    public SelectLanguagesDialog(@Nullable Project project) {
         super(project, false);
         this.mProject = project;
         doCreateCenterPanel();

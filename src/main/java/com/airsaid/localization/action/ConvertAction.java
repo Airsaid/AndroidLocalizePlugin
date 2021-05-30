@@ -21,7 +21,7 @@ import com.airsaid.localization.module.AndroidString;
 import com.airsaid.localization.task.GetAndroidStringTask;
 import com.airsaid.localization.task.TranslateTask;
 import com.airsaid.localization.translate.lang.Lang;
-import com.airsaid.localization.ui.SelectLanguageDialog;
+import com.airsaid.localization.ui.SelectLanguagesDialog;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -36,7 +36,7 @@ import java.util.List;
 /**
  * @author airsaid
  */
-public class ConvertAction extends AnAction implements SelectLanguageDialog.OnClickListener {
+public class ConvertAction extends AnAction implements SelectLanguagesDialog.OnClickListener {
 
     private Project             mProject;
     private VirtualFile         mSelectFile;
@@ -67,7 +67,7 @@ public class ConvertAction extends AnAction implements SelectLanguageDialog.OnCl
     }
 
     private void showSelectLanguageDialog() {
-        SelectLanguageDialog dialog = new SelectLanguageDialog(mProject);
+        SelectLanguagesDialog dialog = new SelectLanguagesDialog(mProject);
         dialog.setOnClickListener(this);
         dialog.show();
     }
