@@ -35,56 +35,56 @@ import java.util.Objects;
  */
 public class LanguageHelper {
 
-    private LanguageHelper() {
-        throw new AssertionError("No LanguageHelper instances for you!");
+  private LanguageHelper() {
+    throw new AssertionError("No LanguageHelper instances for you!");
+  }
+
+  /**
+   * Save the language data selected in the current project.
+   *
+   * @param project   current project.
+   * @param languages selected language.
+   */
+  public static void saveSelectedLanguage(@NotNull Project project, @NotNull List<Lang> languages) {
+    Objects.requireNonNull(project);
+    Objects.requireNonNull(languages);
+
+    PropertiesComponent.getInstance(project)
+        .setValue(Constants.KEY_SELECTED_LANGUAGES, getLanguageCodeString(languages));
+  }
+
+  /**
+   * Get saved language code data.
+   *
+   * @param project current project.
+   * @return null if not saved.
+   */
+  @Nullable
+  public static List<String> getSelectedLanguageCodes(@NotNull Project project) {
+    Objects.requireNonNull(project);
+
+    String codeString = PropertiesComponent.getInstance(project)
+        .getValue(Constants.KEY_SELECTED_LANGUAGES);
+
+    if (TextUtils.isEmpty(codeString)) {
+      return null;
     }
 
-    /**
-     * Save the language data selected in the current project.
-     *
-     * @param project   current project.
-     * @param languages selected language.
-     */
-    public static void saveSelectedLanguage(@NotNull Project project, @NotNull List<Lang> languages) {
-        Objects.requireNonNull(project);
-        Objects.requireNonNull(languages);
+    return Arrays.asList(codeString.split(","));
+  }
 
-        PropertiesComponent.getInstance(project)
-                .setValue(Constants.KEY_SELECTED_LANGUAGES, getLanguageCodeString(languages));
+  @NotNull
+  private static String getLanguageCodeString(@NotNull List<Lang> language) {
+    StringBuilder codes = new StringBuilder(language.size());
+    for (int i = 0, len = language.size(); i < len; i++) {
+      Lang lang = language.get(i);
+      String code = lang.getCode();
+      codes.append(code);
+      if (i < len - 1) {
+        codes.append(",");
+      }
     }
-
-    /**
-     * Get saved language code data.
-     *
-     * @param project current project.
-     * @return null if not saved.
-     */
-    @Nullable
-    public static List<String> getSelectedLanguageCodes(@NotNull Project project) {
-        Objects.requireNonNull(project);
-
-        String codeString = PropertiesComponent.getInstance(project)
-                .getValue(Constants.KEY_SELECTED_LANGUAGES);
-
-        if (TextUtils.isEmpty(codeString)) {
-            return null;
-        }
-
-        return Arrays.asList(codeString.split(","));
-    }
-
-    @NotNull
-    private static String getLanguageCodeString(@NotNull List<Lang> language) {
-        StringBuilder codes = new StringBuilder(language.size());
-        for (int i = 0, len = language.size(); i < len; i++) {
-            Lang lang = language.get(i);
-            String code = lang.getCode();
-            codes.append(code);
-            if (i < len - 1) {
-                codes.append(",");
-            }
-        }
-        return codes.toString();
-    }
+    return codes.toString();
+  }
 
 }

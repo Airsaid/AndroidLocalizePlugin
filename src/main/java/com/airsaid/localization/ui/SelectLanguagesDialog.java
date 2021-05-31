@@ -19,7 +19,7 @@ package com.airsaid.localization.ui;
 import com.airsaid.localization.constant.Constants;
 import com.airsaid.localization.logic.LanguageHelper;
 import com.airsaid.localization.translate.lang.Lang;
-import com.airsaid.localization.translate.trans.impl.GoogleTranslator;
+import com.airsaid.localization.translate.services.TranslatorService;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -47,7 +47,7 @@ public class SelectLanguagesDialog extends DialogWrapper {
 
   private final Project project;
   private OnClickListener onClickListener;
-  private final List<Lang> selectLanguages = new ArrayList<>();
+  private final List<Lang> selectedLanguages = new ArrayList<>();
 
   public interface OnClickListener {
     void onClickListener(List<Lang> selectedLanguage);
@@ -73,13 +73,13 @@ public class SelectLanguagesDialog extends DialogWrapper {
 
   private void doCreateCenterPanel() {
     // add language
-    selectLanguages.clear();
-    List<Lang> supportLanguages = new GoogleTranslator().getSupportLang();
+    selectedLanguages.clear();
+    List<Lang> supportedLanguages = TranslatorService.getInstance().getTranslator().getSupportedLanguages();
     List<String> selectedLanguageCodes = LanguageHelper.getSelectedLanguageCodes(project);
-    // sort by country code, easy to find
-    supportLanguages.sort(new CountryCodeComparator());
-    languagesPanel.setLayout(new GridLayout(supportLanguages.size() / 4, 4));
-    for (Lang language : supportLanguages) {
+    // sort by english name, easy to find
+    supportedLanguages.sort(new EnglishNameComparator());
+    languagesPanel.setLayout(new GridLayout(supportedLanguages.size() / 4, 4));
+    for (Lang language : supportedLanguages) {
       String code = language.getCode();
       JBCheckBox checkBoxLanguage = new JBCheckBox();
       checkBoxLanguage.setText(language.getEnglishName()
@@ -88,9 +88,9 @@ public class SelectLanguagesDialog extends DialogWrapper {
       checkBoxLanguage.addItemListener(e -> {
         int state = e.getStateChange();
         if (state == ItemEvent.SELECTED) {
-          selectLanguages.add(language);
+          selectedLanguages.add(language);
         } else {
-          selectLanguages.remove(language);
+          selectedLanguages.remove(language);
         }
       });
       if (selectedLanguageCodes != null && selectedLanguageCodes.contains(code)) {
@@ -134,21 +134,21 @@ public class SelectLanguagesDialog extends DialogWrapper {
 
   @Override
   protected void doOKAction() {
-    LanguageHelper.saveSelectedLanguage(project, selectLanguages);
-    if (selectLanguages.size() <= 0) {
+    LanguageHelper.saveSelectedLanguage(project, selectedLanguages);
+    if (selectedLanguages.size() <= 0) {
       Messages.showErrorDialog("Please select the language you need to translate!", "Error");
       return;
     }
     if (onClickListener != null) {
-      onClickListener.onClickListener(selectLanguages);
+      onClickListener.onClickListener(selectedLanguages);
     }
     super.doOKAction();
   }
 
-  static class CountryCodeComparator implements Comparator<Lang> {
+  static class EnglishNameComparator implements Comparator<Lang> {
     @Override
     public int compare(Lang o1, Lang o2) {
-      return o1.getCode().compareTo(o2.getCode());
+      return o1.getEnglishName().compareTo(o2.getEnglishName());
     }
   }
 }

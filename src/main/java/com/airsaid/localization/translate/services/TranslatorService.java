@@ -1,6 +1,6 @@
 package com.airsaid.localization.translate.services;
 
-import com.airsaid.localization.translate.Translator;
+import com.airsaid.localization.translate.AbstractTranslator;
 import com.airsaid.localization.translate.impl.google.GoogleTranslator;
 import com.airsaid.localization.translate.lang.Lang;
 import com.intellij.openapi.application.ApplicationManager;
@@ -20,7 +20,7 @@ public final class TranslatorService {
 
   private static final Logger LOG = Logger.getInstance(TranslatorService.class);
 
-  private Translator translator;
+  private AbstractTranslator translator;
   private final TranslationCacheService cacheService;
 
   static {
@@ -37,9 +37,14 @@ public final class TranslatorService {
     return ServiceManager.getService(TranslatorService.class);
   }
 
-  public void setTranslator(@NotNull Translator translator) {
+  public void setTranslator(@NotNull AbstractTranslator translator) {
     LOG.info(String.format("setTranslator: %s", translator));
     this.translator = translator;
+  }
+
+  @NotNull
+  public AbstractTranslator getTranslator() {
+    return translator;
   }
 
   public void doTranslate(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text, @NotNull Consumer<String> consumer) {
