@@ -24,75 +24,156 @@ import java.util.List;
  */
 public class AndroidString implements Cloneable {
 
-    private String        name;
-    private List<Content> contents;
-    private boolean       translatable;
+  private String name;
+  private String value;
+  private List<Content> contents;
+  private boolean translatable;
 
-    public AndroidString(String name, List<Content> contents, boolean translatable) {
-        this.name = name;
-        this.contents = contents;
-        this.translatable = translatable;
+  public AndroidString(String name, String value, List<Content> contents, boolean translatable) {
+    this.name = name;
+    this.value = value;
+    this.contents = contents;
+    this.translatable = translatable;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getValue() {
+    return value;
+  }
+
+  public void setValue(String value) {
+    this.value = value;
+  }
+
+  public List<Content> getContents() {
+    return contents;
+  }
+
+  public void setContents(List<Content> contents) {
+    this.contents = contents;
+  }
+
+  public boolean isTranslatable() {
+    return translatable;
+  }
+
+  public void setTranslatable(boolean translatable) {
+    this.translatable = translatable;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == this) {
+      return true;
+    }
+    if (!(obj instanceof AndroidString)) {
+      return false;
+    }
+    AndroidString androidString = (AndroidString) obj;
+    return name.equals(androidString.name);
+  }
+
+  @Override
+  public AndroidString clone() {
+    try {
+      AndroidString clone = (AndroidString) super.clone();
+      List<Content> contents = clone.getContents();
+      List<Content> cloneContents = new ArrayList<>(contents.size());
+      for (Content content : clone.getContents()) {
+        cloneContents.add(content.clone());
+      }
+      clone.setContents(cloneContents);
+      return clone;
+    } catch (CloneNotSupportedException e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  @Override
+  public String toString() {
+    return "AndroidString{" +
+        "name='" + name + '\'' +
+        ", value='" + value + '\'' +
+        ", contents=" + contents +
+        ", translatable=" + translatable +
+        '}';
+  }
+
+  public static class Content implements Cloneable {
+    private String text;
+    private String id;
+    private String example;
+    private boolean isIgnore;
+
+    public Content(String text) {
+      this.text = text;
     }
 
-    public String getName() {
-        return name;
+    public Content(String text, String id, String example, boolean isIgnore) {
+      this.text = text;
+      this.id = id;
+      this.example = example;
+      this.isIgnore = isIgnore;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getText() {
+      return text;
     }
 
-    public List<Content> getContents() {
-        return contents;
+    public void setText(String text) {
+      this.text = text;
     }
 
-    public void setContents(List<Content> contents) {
-        this.contents = contents;
+    public String getId() {
+      return id;
     }
 
-    public boolean isTranslatable() {
-        return translatable;
+    public void setId(String id) {
+      this.id = id;
     }
 
-    public void setTranslatable(boolean translatable) {
-        this.translatable = translatable;
+    public String getExample() {
+      return example;
+    }
+
+    public void setExample(String example) {
+      this.example = example;
+    }
+
+    public boolean isIgnore() {
+      return isIgnore;
+    }
+
+    public void setIgnore(boolean ignore) {
+      isIgnore = ignore;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        }
-        if (!(obj instanceof AndroidString)) {
-            return false;
-        }
-        AndroidString androidString = (AndroidString) obj;
-        return name.equals(androidString.name);
-    }
-
-    @Override
-    public AndroidString clone() {
-        try {
-            AndroidString clone = (AndroidString) super.clone();
-            List<Content> contents = clone.getContents();
-            List<Content> cloneContents = new ArrayList<>(contents.size());
-            for (Content content : clone.getContents()) {
-                cloneContents.add(content.clone());
-            }
-            clone.setContents(cloneContents);
-            return clone;
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-            return null;
-        }
+    public Content clone() {
+      try {
+        return (Content) super.clone();
+      } catch (CloneNotSupportedException e) {
+        e.printStackTrace();
+        return null;
+      }
     }
 
     @Override
     public String toString() {
-        return "AndroidString{" +
-                "name='" + name + '\'' +
-                ", contents=" + contents +
-                ", translatable=" + translatable +
-                '}';
+      return "Content{" +
+          "text='" + text + '\'' +
+          ", id='" + id + '\'' +
+          ", example='" + example + '\'' +
+          ", isIgnore=" + isIgnore +
+          '}';
     }
+  }
 }
