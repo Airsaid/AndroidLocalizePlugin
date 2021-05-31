@@ -48,21 +48,24 @@ public final class TranslatorService {
   }
 
   public void doTranslate(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text, @NotNull Consumer<String> consumer) {
+    ApplicationManager.getApplication().executeOnPooledThread(() ->
+        ApplicationManager.getApplication().invokeLater(() -> consumer.accept(doTranslate(fromLang, toLang, text)))
+    );
+  }
+
+  public String doTranslate(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
     LOG.info(String.format("doTranslate fromLang: %s, toLang: %s, text: %s", fromLang, toLang, text));
 
     String cacheResult = cacheService.get(getKey(fromLang, toLang, text));
     if (!cacheResult.isEmpty()) {
       LOG.info(String.format("doTranslate cache result: %s", cacheResult));
-      consumer.accept(cacheResult);
-      return;
+      return cacheResult;
     }
 
-    ApplicationManager.getApplication().executeOnPooledThread(() -> {
-      String result = translator.doTranslate(fromLang, toLang, text);
-      LOG.info(String.format("doTranslate result: %s", result));
-      cacheService.put(getKey(fromLang, toLang, text), result);
-      consumer.accept(result);
-    });
+    String result = translator.doTranslate(fromLang, toLang, text);
+    LOG.info(String.format("doTranslate result: %s", result));
+    cacheService.put(getKey(fromLang, toLang, text), result);
+    return result;
   }
 
   private String getKey(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
