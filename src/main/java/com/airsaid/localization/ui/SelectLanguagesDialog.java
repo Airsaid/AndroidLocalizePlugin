@@ -72,12 +72,19 @@ public class SelectLanguagesDialog extends DialogWrapper {
   }
 
   private void doCreateCenterPanel() {
-    // add language
+    // add languages
     selectedLanguages.clear();
     List<Lang> supportedLanguages = TranslatorService.getInstance().getTranslator().getSupportedLanguages();
+    supportedLanguages.sort(new EnglishNameComparator()); // sort by english name, easy to find
+    addLanguageList(supportedLanguages);
+
+    // add options
+    addOverwriteExistingStringOption();
+    addSelectAllOption();
+  }
+
+  private void addLanguageList(List<Lang> supportedLanguages) {
     List<String> selectedLanguageCodes = LanguageHelper.getSelectedLanguageCodes(project);
-    // sort by english name, easy to find
-    supportedLanguages.sort(new EnglishNameComparator());
     languagesPanel.setLayout(new GridLayout(supportedLanguages.size() / 4, 4));
     for (Lang language : supportedLanguages) {
       String code = language.getCode();
@@ -97,7 +104,9 @@ public class SelectLanguagesDialog extends DialogWrapper {
         checkBoxLanguage.setSelected(true);
       }
     }
+  }
 
+  private void addOverwriteExistingStringOption() {
     boolean isOverwriteExistingString = PropertiesComponent.getInstance(project)
         .getBoolean(Constants.KEY_IS_OVERWRITE_EXISTING_STRING);
     overwriteExistingStringCheckBox.setSelected(isOverwriteExistingString);
@@ -106,7 +115,9 @@ public class SelectLanguagesDialog extends DialogWrapper {
       PropertiesComponent.getInstance(project)
           .setValue(Constants.KEY_IS_OVERWRITE_EXISTING_STRING, state == ItemEvent.SELECTED);
     });
+  }
 
+  private void addSelectAllOption() {
     boolean isSelectAll = PropertiesComponent.getInstance(project)
         .getBoolean(Constants.KEY_IS_SELECT_ALL);
     selectAllCheckBox.setSelected(isSelectAll);
