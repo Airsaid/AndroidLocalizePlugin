@@ -23,7 +23,6 @@ import com.airsaid.localization.translate.services.TranslatorService;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.ui.components.JBCheckBox;
 import org.jetbrains.annotations.Nullable;
 
@@ -99,6 +98,8 @@ public class SelectLanguagesDialog extends DialogWrapper {
         } else {
           selectedLanguages.remove(language);
         }
+        // Update the OK button UI
+        getOKAction().setEnabled(selectedLanguages.size() > 0);
       });
       if (selectedLanguageCodes != null && selectedLanguageCodes.contains(code)) {
         checkBoxLanguage.setSelected(true);
@@ -146,10 +147,6 @@ public class SelectLanguagesDialog extends DialogWrapper {
   @Override
   protected void doOKAction() {
     LanguageHelper.saveSelectedLanguage(project, selectedLanguages);
-    if (selectedLanguages.size() <= 0) {
-      Messages.showErrorDialog("Please select the language you need to translate!", "Error");
-      return;
-    }
     if (onClickListener != null) {
       onClickListener.onClickListener(selectedLanguages);
     }
