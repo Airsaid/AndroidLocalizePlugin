@@ -40,111 +40,115 @@ import java.util.List;
  * @author airsaid
  */
 public class SelectLanguagesDialog extends DialogWrapper {
-    private JPanel    myPanel;
-    private JCheckBox overwriteExistingStringCheckBox;
-    private JCheckBox selectAllCheckBox;
-    private JPanel    languagesPanel;
+  private JPanel contentPanel;
+  private JCheckBox overwriteExistingStringCheckBox;
+  private JCheckBox selectAllCheckBox;
+  private JPanel languagesPanel;
 
-    private Project         mProject;
-    private OnClickListener mOnClickListener;
-    private List<Lang>      mSelectLanguages = new ArrayList<>();
+  private final Project project;
+  private OnClickListener onClickListener;
+  private final List<Lang> selectLanguages = new ArrayList<>();
 
-    public interface OnClickListener {
-        void onClickListener(List<Lang> selectedLanguage);
+  public interface OnClickListener {
+    void onClickListener(List<Lang> selectedLanguage);
+  }
+
+  public SelectLanguagesDialog(@Nullable Project project) {
+    super(project, false);
+    this.project = project;
+    doCreateCenterPanel();
+    setTitle("Select Converted Languages");
+    init();
+  }
+
+  public void setOnClickListener(OnClickListener listener) {
+    onClickListener = listener;
+  }
+
+  @Nullable
+  @Override
+  protected JComponent createCenterPanel() {
+    return contentPanel;
+  }
+
+  private void doCreateCenterPanel() {
+    // add language
+    selectLanguages.clear();
+    List<Lang> supportLanguages = new GoogleTranslator().getSupportLang();
+    List<String> selectedLanguageCodes = LanguageHelper.getSelectedLanguageCodes(project);
+    // sort by country code, easy to find
+    supportLanguages.sort(new CountryCodeComparator());
+    languagesPanel.setLayout(new GridLayout(supportLanguages.size() / 4, 4));
+    for (Lang language : supportLanguages) {
+      String code = language.getCode();
+      JBCheckBox checkBoxLanguage = new JBCheckBox();
+      checkBoxLanguage.setText(language.getEnglishName()
+          .concat("(").concat(code).concat(")"));
+      languagesPanel.add(checkBoxLanguage);
+      checkBoxLanguage.addItemListener(e -> {
+        int state = e.getStateChange();
+        if (state == ItemEvent.SELECTED) {
+          selectLanguages.add(language);
+        } else {
+          selectLanguages.remove(language);
+        }
+      });
+      if (selectedLanguageCodes != null && selectedLanguageCodes.contains(code)) {
+        checkBoxLanguage.setSelected(true);
+      }
     }
 
-    public SelectLanguagesDialog(@Nullable Project project) {
-        super(project, false);
-        this.mProject = project;
-        doCreateCenterPanel();
-        setTitle("Select Convert Languages");
-        setResizable(true);
-        init();
-    }
+    boolean isOverwriteExistingString = PropertiesComponent.getInstance(project)
+        .getBoolean(Constants.KEY_IS_OVERWRITE_EXISTING_STRING);
+    overwriteExistingStringCheckBox.setSelected(isOverwriteExistingString);
+    overwriteExistingStringCheckBox.addItemListener(e -> {
+      int state = e.getStateChange();
+      PropertiesComponent.getInstance(project)
+          .setValue(Constants.KEY_IS_OVERWRITE_EXISTING_STRING, state == ItemEvent.SELECTED);
+    });
 
-    public void setOnClickListener(OnClickListener listener) {
-        mOnClickListener = listener;
-    }
+    boolean isSelectAll = PropertiesComponent.getInstance(project)
+        .getBoolean(Constants.KEY_IS_SELECT_ALL);
+    selectAllCheckBox.setSelected(isSelectAll);
+    selectAllCheckBox.addItemListener(e -> {
+      int state = e.getStateChange();
+      selectAll(state == ItemEvent.SELECTED);
+      PropertiesComponent.getInstance(project)
+          .setValue(Constants.KEY_IS_SELECT_ALL, state == ItemEvent.SELECTED);
+    });
+  }
 
-    @Nullable
+  private void selectAll(boolean selectAll) {
+    for (Component component : languagesPanel.getComponents()) {
+      if (component instanceof JBCheckBox) {
+        JBCheckBox checkBox = (JBCheckBox) component;
+        checkBox.setSelected(selectAll);
+      }
+    }
+  }
+
+  @Override
+  protected @Nullable String getDimensionServiceKey() {
+    return "#com.airsaid.localization.ui.SelectLanguagesDialog";
+  }
+
+  @Override
+  protected void doOKAction() {
+    LanguageHelper.saveSelectedLanguage(project, selectLanguages);
+    if (selectLanguages.size() <= 0) {
+      Messages.showErrorDialog("Please select the language you need to translate!", "Error");
+      return;
+    }
+    if (onClickListener != null) {
+      onClickListener.onClickListener(selectLanguages);
+    }
+    super.doOKAction();
+  }
+
+  static class CountryCodeComparator implements Comparator<Lang> {
     @Override
-    protected JComponent createCenterPanel() {
-        return myPanel;
+    public int compare(Lang o1, Lang o2) {
+      return o1.getCode().compareTo(o2.getCode());
     }
-
-    private void doCreateCenterPanel() {
-        // add language
-        mSelectLanguages.clear();
-        List<Lang> supportLanguages = new GoogleTranslator().getSupportLang();
-        List<String> selectedLanguageCodes = LanguageHelper.getSelectedLanguageCodes(mProject);
-        // sort by country code, easy to find
-        supportLanguages.sort(new CountryCodeComparator());
-        languagesPanel.setLayout(new GridLayout(supportLanguages.size() / 4, 4));
-        for (Lang language : supportLanguages) {
-            String code = language.getCode();
-            JBCheckBox checkBoxLanguage = new JBCheckBox();
-            checkBoxLanguage.setText(language.getEnglishName()
-                    .concat("(").concat(code).concat(")"));
-            languagesPanel.add(checkBoxLanguage);
-            checkBoxLanguage.addItemListener(e -> {
-                int state = e.getStateChange();
-                if (state == ItemEvent.SELECTED) {
-                    mSelectLanguages.add(language);
-                } else {
-                    mSelectLanguages.remove(language);
-                }
-            });
-            if (selectedLanguageCodes != null && selectedLanguageCodes.contains(code)) {
-                checkBoxLanguage.setSelected(true);
-            }
-        }
-
-        boolean isOverwriteExistingString = PropertiesComponent.getInstance(mProject)
-                .getBoolean(Constants.KEY_IS_OVERWRITE_EXISTING_STRING);
-        overwriteExistingStringCheckBox.setSelected(isOverwriteExistingString);
-        overwriteExistingStringCheckBox.addItemListener(e -> {
-            int state = e.getStateChange();
-            PropertiesComponent.getInstance(mProject)
-                    .setValue(Constants.KEY_IS_OVERWRITE_EXISTING_STRING, state == ItemEvent.SELECTED);
-        });
-
-        boolean isSelectAll = PropertiesComponent.getInstance(mProject)
-                .getBoolean(Constants.KEY_IS_SELECT_ALL);
-        selectAllCheckBox.setSelected(isSelectAll);
-        selectAllCheckBox.addItemListener(e -> {
-            int state = e.getStateChange();
-            selectAll(state == ItemEvent.SELECTED);
-            PropertiesComponent.getInstance(mProject)
-                    .setValue(Constants.KEY_IS_SELECT_ALL, state == ItemEvent.SELECTED);
-        });
-    }
-
-    private void selectAll(boolean selectAll) {
-        for (Component component : languagesPanel.getComponents()) {
-            if (component instanceof JBCheckBox) {
-                JBCheckBox checkBox = (JBCheckBox) component;
-                checkBox.setSelected(selectAll);
-            }
-        }
-    }
-
-    @Override
-    protected void doOKAction() {
-        LanguageHelper.saveSelectedLanguage(mProject, mSelectLanguages);
-        if (mSelectLanguages.size() <= 0) {
-            Messages.showErrorDialog("Please select the language you need to translate!", "Error");
-            return;
-        }
-        if (mOnClickListener != null) {
-            mOnClickListener.onClickListener(mSelectLanguages);
-        }
-        super.doOKAction();
-    }
-
-    class CountryCodeComparator implements Comparator<Lang> {
-        @Override
-        public int compare(Lang o1, Lang o2) {
-            return o1.getCode().compareTo(o2.getCode());
-        }
-    }
+  }
 }
