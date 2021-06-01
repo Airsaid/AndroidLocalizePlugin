@@ -20,18 +20,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * strings.xml file model structure in Android.
+ *
  * @author airsaid
  */
+@SuppressWarnings("unused")
 public class AndroidString implements Cloneable {
 
   private String name;
-  private String value;
   private List<Content> contents;
   private boolean translatable;
 
-  public AndroidString(String name, String value, List<Content> contents, boolean translatable) {
+  public AndroidString(String name, List<Content> contents, boolean translatable) {
     this.name = name;
-    this.value = value;
     this.contents = contents;
     this.translatable = translatable;
   }
@@ -42,14 +43,6 @@ public class AndroidString implements Cloneable {
 
   public void setName(String name) {
     this.name = name;
-  }
-
-  public String getValue() {
-    return value;
-  }
-
-  public void setValue(String value) {
-    this.value = value;
   }
 
   public List<Content> getContents() {
@@ -77,7 +70,7 @@ public class AndroidString implements Cloneable {
       return false;
     }
     AndroidString androidString = (AndroidString) obj;
-    return name.equals(androidString.name);
+    return name.equals(androidString.name); // name is unique in the strings.xml
   }
 
   @Override
@@ -86,7 +79,7 @@ public class AndroidString implements Cloneable {
       AndroidString clone = (AndroidString) super.clone();
       List<Content> contents = clone.getContents();
       List<Content> cloneContents = new ArrayList<>(contents.size());
-      for (Content content : clone.getContents()) {
+      for (Content content : clone.getContents()) { // deep clone
         cloneContents.add(content.clone());
       }
       clone.setContents(cloneContents);
@@ -101,7 +94,6 @@ public class AndroidString implements Cloneable {
   public String toString() {
     return "AndroidString{" +
         "name='" + name + '\'' +
-        ", value='" + value + '\'' +
         ", contents=" + contents +
         ", translatable=" + translatable +
         '}';

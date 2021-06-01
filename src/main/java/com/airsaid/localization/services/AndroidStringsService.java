@@ -102,9 +102,7 @@ public final class AndroidStringsService {
       final boolean translatable = Boolean.parseBoolean(translatableStr == null ? "true" : translatableStr);
 
       final List<AndroidString.Content> contents = new ArrayList<>();
-      final XmlTagValue value = stringTag.getValue();
-      final String valueText = value.getText();
-      final XmlTagChild[] contentTags = value.getChildren();
+      final XmlTagChild[] contentTags = stringTag.getValue().getChildren();
       for (XmlTagChild content : contentTags) {
         if (content instanceof XmlText) {
           final XmlText xmlText = (XmlText) content;
@@ -120,7 +118,7 @@ public final class AndroidStringsService {
           contents.add(new AndroidString.Content(text, id, example, true));
         }
       }
-      androidStrings.add(new AndroidString(name, valueText, contents, translatable));
+      androidStrings.add(new AndroidString(name, contents, translatable));
     }
     return androidStrings;
   }
