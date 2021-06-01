@@ -41,7 +41,7 @@ public abstract class AbstractTranslator implements Translator {
       });
     } catch (IOException e) {
       e.printStackTrace();
-      throw new TranslationException(fromLang, toLang, text, e.getMessage());
+      throw new TranslationException(fromLang, toLang, text, e);
     }
   }
 
