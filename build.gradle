@@ -15,12 +15,6 @@ repositories {
 dependencies {
     implementation 'com.google.code.gson:gson:2.8.7'
 
-    implementation 'org.apache.httpcomponents:httpclient:4.5.5'
-    implementation 'org.apache.httpcomponents:httpcore:4.4.9'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.9.5'
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.9.5'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.5'
-
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
 }

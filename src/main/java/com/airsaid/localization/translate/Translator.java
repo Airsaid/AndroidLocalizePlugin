@@ -1,7 +1,7 @@
 package com.airsaid.localization.translate;
 
+import com.airsaid.localization.translate.impl.google.GoogleTranslator;
 import com.airsaid.localization.translate.lang.Lang;
-import com.airsaid.localization.translate.trans.impl.GoogleTranslator;
 import org.jetbrains.annotations.NotNull;
 
 /**
