@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.airsaid.localization.module;
+package com.airsaid.localization.model;
 
 import java.util.ArrayList;
 import java.util.List;
