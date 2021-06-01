@@ -33,18 +33,12 @@
     </extensions>
 
     <actions>
-        <action id="com.airsaid.localization.action.TranslateAction" class="com.airsaid.localization.action.TranslateAction"
+        <action id="com.airsaid.localization.action.TranslateAction"
+                class="com.airsaid.localization.action.TranslateAction"
                 text="Translate to Other Languages"
                 icon="PluginIcons.TRANSLATE_ACTION_ICON"
                 description="Translate this strings.xml to other languages that can be used to localize your Android APP.">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="EditSource"/>
         </action>
-
-        <action id="com.airsaid.localization.action.TestAction"
-                class="com.airsaid.localization.action.TestAction" text="Test Action"
-                description="Test action">
-            <add-to-group group-id="HelpMenu" anchor="first"/>
-        </action>
     </actions>
-
 </idea-plugin>
