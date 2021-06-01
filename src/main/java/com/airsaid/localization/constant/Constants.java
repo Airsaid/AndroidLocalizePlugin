@@ -31,4 +31,6 @@ public interface Constants {
 
   String KEY_IS_SELECT_ALL = PLUGIN_ID.concat(".is_select_all");
 
+  String KEY_IS_OPEN_TRANSLATED_FILE = PLUGIN_ID.concat(".is_open_translated_file");
+
 }

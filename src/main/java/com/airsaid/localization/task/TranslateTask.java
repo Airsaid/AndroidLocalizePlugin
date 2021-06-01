@@ -153,7 +153,9 @@ public class TranslateTask extends Task.Backgroundable {
 
   private void refreshAndOpenFile(File file) {
     VirtualFile virtualFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(file);
-    if (virtualFile != null) {
+    boolean isOpenTranslatedFile = PropertiesComponent.getInstance(myProject)
+        .getBoolean(Constants.KEY_IS_OPEN_TRANSLATED_FILE);
+    if (virtualFile != null && isOpenTranslatedFile) {
       ApplicationManager.getApplication().invokeLater(() ->
           FileEditorManager.getInstance(myProject).openFile(virtualFile, true));
     }

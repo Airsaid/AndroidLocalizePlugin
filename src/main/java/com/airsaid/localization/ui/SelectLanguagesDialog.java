@@ -43,6 +43,7 @@ public class SelectLanguagesDialog extends DialogWrapper {
   private JCheckBox overwriteExistingStringCheckBox;
   private JCheckBox selectAllCheckBox;
   private JPanel languagesPanel;
+  private JCheckBox openTranslatedFileCheckBox;
 
   private final Project project;
   private OnClickListener onClickListener;
@@ -78,8 +79,9 @@ public class SelectLanguagesDialog extends DialogWrapper {
     addLanguageList(supportedLanguages);
 
     // add options
-    addOverwriteExistingStringOption();
-    addSelectAllOption();
+    initOverwriteExistingStringOption();
+    initOpenTranslatedFileCheckBox();
+    initSelectAllOption();
   }
 
   private void addLanguageList(List<Lang> supportedLanguages) {
@@ -107,7 +109,7 @@ public class SelectLanguagesDialog extends DialogWrapper {
     }
   }
 
-  private void addOverwriteExistingStringOption() {
+  private void initOverwriteExistingStringOption() {
     boolean isOverwriteExistingString = PropertiesComponent.getInstance(project)
         .getBoolean(Constants.KEY_IS_OVERWRITE_EXISTING_STRING);
     overwriteExistingStringCheckBox.setSelected(isOverwriteExistingString);
@@ -118,7 +120,18 @@ public class SelectLanguagesDialog extends DialogWrapper {
     });
   }
 
-  private void addSelectAllOption() {
+  private void initOpenTranslatedFileCheckBox() {
+    boolean isOpenTranslatedFile = PropertiesComponent.getInstance(project)
+        .getBoolean(Constants.KEY_IS_OPEN_TRANSLATED_FILE);
+    openTranslatedFileCheckBox.setSelected(isOpenTranslatedFile);
+    openTranslatedFileCheckBox.addItemListener(e -> {
+      int state = e.getStateChange();
+      PropertiesComponent.getInstance(project)
+          .setValue(Constants.KEY_IS_OPEN_TRANSLATED_FILE, state == ItemEvent.SELECTED);
+    });
+  }
+
+  private void initSelectAllOption() {
     boolean isSelectAll = PropertiesComponent.getInstance(project)
         .getBoolean(Constants.KEY_IS_SELECT_ALL);
     selectAllCheckBox.setSelected(isSelectAll);
