@@ -47,10 +47,12 @@ public final class TranslatorService {
     return translator;
   }
 
-  public void doTranslate(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text, @NotNull Consumer<String> consumer) {
-    ApplicationManager.getApplication().executeOnPooledThread(() ->
-        ApplicationManager.getApplication().invokeLater(() -> consumer.accept(doTranslate(fromLang, toLang, text)))
-    );
+  public void doTranslateByAsync(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text, @NotNull Consumer<String> consumer) {
+    ApplicationManager.getApplication().executeOnPooledThread(() -> {
+      final String translatedText = doTranslate(fromLang, toLang, text);
+      ApplicationManager.getApplication().invokeLater(() ->
+          consumer.accept(translatedText));
+    });
   }
 
   public String doTranslate(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {

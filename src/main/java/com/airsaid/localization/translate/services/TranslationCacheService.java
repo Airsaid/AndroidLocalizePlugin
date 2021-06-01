@@ -17,6 +17,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
+ * Cache the translated text to local disk.
+ * <p>
+ * Cache up to {@link #CACHE_ITEM_SIZE} data, after which the old text is removed according to the LRU algorithm..
+ *
  * @author airsaid
  */
 @State(
