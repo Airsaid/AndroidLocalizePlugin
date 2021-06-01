@@ -24,5 +24,5 @@ import javax.swing.*;
  * @author airsaid
  */
 public interface PluginIcons {
-  Icon TRANSLATE_ACTION_ICON = IconLoader.getIcon("/icons/icon.png");
+  Icon TRANSLATE_ACTION_ICON = IconLoader.getIcon("/icons/icon_translate.svg");
 }
