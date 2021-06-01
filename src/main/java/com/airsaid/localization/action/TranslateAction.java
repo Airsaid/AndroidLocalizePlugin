@@ -26,18 +26,17 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 /**
- * Convert strings.xml to other languages that can be used to localize your Android app.
+ * Translate strings.xml to other languages that can be used to localize your Android APP.
  *
  * @author airsaid
  */
-public class ConvertAction extends AnAction implements SelectLanguagesDialog.OnClickListener {
+public class TranslateAction extends AnAction implements SelectLanguagesDialog.OnClickListener {
 
   private Project mProject;
   private PsiFile mStringsFile;
@@ -49,9 +48,9 @@ public class ConvertAction extends AnAction implements SelectLanguagesDialog.OnC
     mProject = e.getRequiredData(CommonDataKeys.PROJECT);
     mStringsFile = e.getRequiredData(CommonDataKeys.PSI_FILE);
 
-    mStringsService.loadStrings(mStringsFile, androidStrings -> {
+    mStringsService.loadStringsByAsync(mStringsFile, androidStrings -> {
       if (!isTranslatable(androidStrings)) {
-        Messages.showInfoMessage("The strings.xml has no text to translate!", "Prompt");
+        NotificationUtil.notifyInfo(mProject, "The strings.xml has no text to translate.");
         return;
       }
       mAndroidStrings = androidStrings;

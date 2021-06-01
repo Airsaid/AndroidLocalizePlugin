@@ -34,7 +34,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Select the language dialog you want to convert.
+ * Select the language dialog you want to Translate.
  *
  * @author airsaid
  */
@@ -56,7 +56,7 @@ public class SelectLanguagesDialog extends DialogWrapper {
     super(project, false);
     this.project = project;
     doCreateCenterPanel();
-    setTitle("Select Converted Languages");
+    setTitle("Select Translate Languages");
     init();
   }
 

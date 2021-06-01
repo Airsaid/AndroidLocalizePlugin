@@ -34,10 +34,10 @@
     </extensions>
 
     <actions>
-        <action id="AndroidLocalizePlugin.ConvertAction" class="com.airsaid.localization.action.ConvertAction"
-                text="Convert to other languages"
-                icon="PluginIcons.CONVERT_ACTION_ICON"
-                description="Convert this strings.xml to other languages that can be used to localize your Android app.">
+        <action id="com.airsaid.localization.action.TranslateAction" class="com.airsaid.localization.action.TranslateAction"
+                text="Translate to Other Languages"
+                icon="PluginIcons.TRANSLATE_ACTION_ICON"
+                description="Translate this strings.xml to other languages that can be used to localize your Android APP.">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="EditSource"/>
         </action>
 

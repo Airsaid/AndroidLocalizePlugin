@@ -29,9 +29,13 @@ public final class AndroidStringsService {
     return ServiceManager.getService(AndroidStringsService.class);
   }
 
-  public void loadStrings(@NotNull PsiFile stringsFile, @NotNull Consumer<List<AndroidString>> consumer) {
-    ApplicationManager.getApplication().executeOnPooledThread(() -> ApplicationManager.getApplication().runReadAction(() ->
-        ApplicationManager.getApplication().invokeLater(() -> consumer.consume(loadStrings(stringsFile)))));
+  public void loadStringsByAsync(@NotNull PsiFile stringsFile, @NotNull Consumer<List<AndroidString>> consumer) {
+    ApplicationManager.getApplication().executeOnPooledThread(() ->
+        ApplicationManager.getApplication().runReadAction(() -> {
+          List<AndroidString> androidStrings = loadStrings(stringsFile);
+          ApplicationManager.getApplication().invokeLater(() ->
+              consumer.consume(androidStrings));
+    }));
   }
 
   public List<AndroidString> loadStrings(@NotNull PsiFile stringsFile) {
