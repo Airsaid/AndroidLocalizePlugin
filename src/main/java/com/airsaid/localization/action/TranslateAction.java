@@ -16,7 +16,7 @@
 
 package com.airsaid.localization.action;
 
-import com.airsaid.localization.module.AndroidString;
+import com.airsaid.localization.model.AndroidString;
 import com.airsaid.localization.services.AndroidStringsService;
 import com.airsaid.localization.task.TranslateTask;
 import com.airsaid.localization.translate.lang.Lang;

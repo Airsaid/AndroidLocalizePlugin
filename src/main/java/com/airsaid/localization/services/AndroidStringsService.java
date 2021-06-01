@@ -1,12 +1,18 @@
 package com.airsaid.localization.services;
 
-import com.airsaid.localization.module.AndroidString;
+import com.airsaid.localization.model.AndroidString;
+import com.airsaid.localization.translate.lang.Lang;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Computable;
+import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiManager;
 import com.intellij.psi.xml.*;
 import com.intellij.util.Consumer;
 import org.jetbrains.annotations.NotNull;
@@ -16,8 +22,11 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
+ * Operation service for the {@link #NAME_STRINGS_FILE} file.
+ *
  * @author airsaid
  */
 @Service
@@ -25,29 +34,51 @@ public final class AndroidStringsService {
 
   private static final Logger LOG = Logger.getInstance(AndroidStringsService.class);
 
+  private static final String NAME_STRINGS_FILE = "strings.xml";
+
   public static AndroidStringsService getInstance() {
     return ServiceManager.getService(AndroidStringsService.class);
   }
 
+  /**
+   * Asynchronous loading the {@link #NAME_STRINGS_FILE} file as the {@link AndroidString} collection.
+   *
+   * @param stringsFile {@link #NAME_STRINGS_FILE} file.
+   * @param consumer    load result. called in the event dispatch thread.
+   */
   public void loadStringsByAsync(@NotNull PsiFile stringsFile, @NotNull Consumer<List<AndroidString>> consumer) {
-    ApplicationManager.getApplication().executeOnPooledThread(() ->
-        ApplicationManager.getApplication().runReadAction(() -> {
+    ApplicationManager.getApplication().executeOnPooledThread(() -> {
           List<AndroidString> androidStrings = loadStrings(stringsFile);
           ApplicationManager.getApplication().invokeLater(() ->
               consumer.consume(androidStrings));
-    }));
+        }
+    );
   }
 
+  /**
+   * Loading the {@link #NAME_STRINGS_FILE} file as the {@link AndroidString} collection.
+   *
+   * @param stringsFile {@link #NAME_STRINGS_FILE} file.
+   * @return {@link AndroidString} collection.
+   */
   public List<AndroidString> loadStrings(@NotNull PsiFile stringsFile) {
-    LOG.info("LoadStrings stringsFile: " + stringsFile);
-    List<AndroidString> androidStrings = parseStringsXml(stringsFile);
-    LOG.info("Parsed strings.xml result: " + androidStrings);
-    return androidStrings;
+    return ApplicationManager.getApplication().runReadAction((Computable<List<AndroidString>>) () -> {
+      LOG.info("LoadStrings stringsFile: " + stringsFile);
+      List<AndroidString> androidStrings = parseStringsXml(stringsFile);
+      LOG.info("Parsed " + stringsFile.getName() + " result: " + androidStrings);
+      return androidStrings;
+    });
   }
 
-  public void writeStringsFile(File file, List<AndroidString> strings) {
+  /**
+   * Write {@link AndroidString} collection data to the specified file.
+   *
+   * @param strings     specified {@link AndroidString} collection data.
+   * @param stringsFile specified file.
+   */
+  public void writeStringsFile(List<AndroidString> strings, @NotNull File stringsFile) {
     ApplicationManager.getApplication().invokeLater(() -> ApplicationManager.getApplication().runWriteAction(() -> {
-      try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false), StandardCharsets.UTF_8))) {
+      try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(stringsFile, false), StandardCharsets.UTF_8))) {
         bw.write("<resources>");
         bw.newLine();
         for (AndroidString androidString : strings) {
@@ -62,15 +93,16 @@ public final class AndroidStringsService {
         bw.flush();
       } catch (IOException e) {
         e.printStackTrace();
+        LOG.error("Failed to write to " + stringsFile.getPath() + " file.", e);
       }
     }));
   }
 
   /**
-   * Verify that the file is a strings.xml file.
+   * Verify that the file is a values/{@link #NAME_STRINGS_FILE} file.
    *
    * @param file verify file.
-   * @return true: the file is strings.xml file.
+   * @return true: the file is values/{@link #NAME_STRINGS_FILE} file.
    */
   public boolean isStringsFile(@Nullable PsiFile file) {
     if (file == null) return false;
@@ -81,13 +113,13 @@ public final class AndroidStringsService {
     String parentName = parent.getName();
     if (!"values".equals(parentName)) return false;
 
-    return "strings.xml".equals(file.getName());
+    return NAME_STRINGS_FILE.equals(file.getName());
   }
 
   /**
-   * Parse the strings.xml corresponding to {@link PsiFile}.
+   * Parse the {@link #NAME_STRINGS_FILE} corresponding to {@link PsiFile}.
    *
-   * @param stringsFile strings.xml psi file.
+   * @param stringsFile {@link #NAME_STRINGS_FILE} psi file.
    * @return parsed android string list.
    */
   private List<AndroidString> parseStringsXml(@NotNull PsiFile stringsFile) {
@@ -125,6 +157,83 @@ public final class AndroidStringsService {
       androidStrings.add(new AndroidString(name, contents, translatable));
     }
     return androidStrings;
+  }
+
+  /**
+   * Get the {@link #NAME_STRINGS_FILE} file of the specified language in the specified project resource directory.
+   *
+   * @param project     current project.
+   * @param resourceDir specified resource directory.
+   * @param lang        specified language.
+   * @return null if not exist, otherwise return the {@link #NAME_STRINGS_FILE} file.
+   */
+  @Nullable
+  public PsiFile getStringsPsiFile(@NotNull Project project, @NotNull VirtualFile resourceDir, @NotNull Lang lang) {
+    Objects.requireNonNull(project);
+    Objects.requireNonNull(resourceDir);
+    Objects.requireNonNull(lang);
+
+    return ApplicationManager.getApplication().runReadAction((Computable<PsiFile>) () -> {
+      VirtualFile virtualFile = LocalFileSystem.getInstance().findFileByIoFile(getStringsFile(resourceDir, lang, false));
+      if (virtualFile == null) {
+        return null;
+      }
+      return PsiManager.getInstance(project).findFile(virtualFile);
+    });
+  }
+
+  /**
+   * Get the {@link #NAME_STRINGS_FILE} file in the values directory of the specified language in the resource directory.
+   *
+   * @param resourceDir specified resource directory.
+   * @param lang        specified language.
+   * @param isMkdirs    true: create if it does not exist. false: direct return, may not exist.
+   * @return {@link #NAME_STRINGS_FILE} file.
+   */
+  @NotNull
+  public File getStringsFile(@NotNull VirtualFile resourceDir, @NotNull Lang lang, boolean isMkdirs) {
+    String resourceDirPath = resourceDir.getPath();
+    File stringFile;
+    if (isMkdirs) {
+      File valuesDir = new File(resourceDirPath, getValuesDirectoryName(lang));
+      if (!valuesDir.exists()) {
+        if (!valuesDir.mkdirs()) {
+          LOG.warn("Create " + valuesDir.getPath() + " failed.");
+        }
+      }
+      stringFile = new File(valuesDir, NAME_STRINGS_FILE);
+      if (!stringFile.exists()) {
+        try {
+          if (!stringFile.createNewFile()) {
+            LOG.warn("Create " + stringFile.getPath() + " failed.");
+          }
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+    } else {
+      stringFile = new File(resourceDirPath.concat(File.separator).concat(getValuesDirectoryName(lang)), NAME_STRINGS_FILE);
+    }
+    return stringFile;
+  }
+
+  private String getValuesDirectoryName(@NotNull Lang lang) {
+    String suffix;
+    String langCode = lang.getCode();
+    if (langCode.equals(Lang.CHINESE_SIMPLIFIED.getCode())) {
+      suffix = "zh-rCN";
+    } else if (langCode.equals(Lang.CHINESE_TRADITIONAL.getCode())) {
+      suffix = "zh-rTW";
+    } else if (langCode.equals(Lang.FILIPINO.getCode())) {
+      suffix = "fil";
+    } else if (langCode.equals(Lang.INDONESIAN.getCode())) {
+      suffix = "in-rID";
+    } else if (langCode.equals(Lang.JAVANESE.getCode())) {
+      suffix = "jv";
+    } else {
+      suffix = langCode;
+    }
+    return "values-".concat(suffix);
   }
 
 }

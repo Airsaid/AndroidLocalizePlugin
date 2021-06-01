@@ -23,12 +23,12 @@ package com.airsaid.localization.constant;
  */
 public interface Constants {
 
-    String PLUGIN_ID = "com.github.airsaid.androidlocalize";
+  String PLUGIN_ID = "com.github.airsaid.androidlocalize";
 
-    String KEY_SELECTED_LANGUAGES = PLUGIN_ID.concat(".selected_languages");
+  String KEY_SELECTED_LANGUAGES = PLUGIN_ID.concat(".selected_languages");
 
-    String KEY_IS_OVERWRITE_EXISTING_STRING = PLUGIN_ID.concat(".is_overwrite_existing_string");
+  String KEY_IS_OVERWRITE_EXISTING_STRING = PLUGIN_ID.concat(".is_overwrite_existing_string");
 
-    String KEY_IS_SELECT_ALL = PLUGIN_ID.concat(".is_select_all");
+  String KEY_IS_SELECT_ALL = PLUGIN_ID.concat(".is_select_all");
 
 }

@@ -20,16 +20,10 @@ import com.airsaid.localization.constant.Constants;
 import com.airsaid.localization.translate.lang.Lang;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiManager;
 import org.apache.http.util.TextUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -40,6 +34,8 @@ import java.util.Objects;
  * @author airsaid
  */
 public class LanguageHelper {
+
+  private static final String SEPARATOR_SELECTED_LANGUAGES_CODE = ",";
 
   private LanguageHelper() {
     throw new AssertionError("No LanguageHelper instances for you!");
@@ -60,10 +56,10 @@ public class LanguageHelper {
   }
 
   /**
-   * Get saved language code data.
+   * Get saved language code data in the current project.
    *
    * @param project current project.
-   * @return null if not saved.
+   * @return null if not saved, otherwise return the saved language code data.
    */
   @Nullable
   public static List<String> getSelectedLanguageCodes(@NotNull Project project) {
@@ -76,57 +72,7 @@ public class LanguageHelper {
       return null;
     }
 
-    return Arrays.asList(codeString.split(","));
-  }
-
-  @Nullable
-  public static PsiFile getStringsPsiFile(@NotNull Project project, @NotNull VirtualFile stringsFile, @NotNull Lang lang) {
-    VirtualFile virtualFile = LocalFileSystem.getInstance().findFileByIoFile(getStringsFile(stringsFile, lang, false));
-    if (virtualFile == null) return null;
-
-    return PsiManager.getInstance(project).findFile(virtualFile);
-  }
-
-  @NotNull
-  public static File getStringsFile(@NotNull VirtualFile stringsFile, @NotNull Lang lang, boolean isMkdirs) {
-    String parentPath = stringsFile.getParent().getParent().getPath();
-    File stringFile;
-    if (isMkdirs) {
-      File parentFile = new File(parentPath, getStringsDirName(lang));
-      if (!parentFile.exists()) {
-        parentFile.mkdirs();
-      }
-      stringFile = new File(parentFile, "strings.xml");
-      if (!stringFile.exists()) {
-        try {
-          stringFile.createNewFile();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
-    } else {
-      stringFile = new File(parentPath.concat(File.separator).concat(getStringsDirName(lang)), "strings.xml");
-    }
-    return stringFile;
-  }
-
-  public static String getStringsDirName(@NotNull Lang lang) {
-    String suffix;
-    String langCode = lang.getCode();
-    if (langCode.equals(Lang.CHINESE_SIMPLIFIED.getCode())) {
-      suffix = "zh-rCN";
-    } else if (langCode.equals(Lang.CHINESE_TRADITIONAL.getCode())) {
-      suffix = "zh-rTW";
-    } else if (langCode.equals(Lang.FILIPINO.getCode())) {
-      suffix = "fil";
-    } else if (langCode.equals(Lang.INDONESIAN.getCode())) {
-      suffix = "in-rID";
-    } else if (langCode.equals(Lang.JAVANESE.getCode())) {
-      suffix = "jv";
-    } else {
-      suffix = langCode;
-    }
-    return "values-".concat(suffix);
+    return Arrays.asList(codeString.split(SEPARATOR_SELECTED_LANGUAGES_CODE));
   }
 
   @NotNull
@@ -137,7 +83,7 @@ public class LanguageHelper {
       String code = lang.getCode();
       codes.append(code);
       if (i < len - 1) {
-        codes.append(",");
+        codes.append(SEPARATOR_SELECTED_LANGUAGES_CODE);
       }
     }
     return codes.toString();

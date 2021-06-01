@@ -17,8 +17,7 @@
 package com.airsaid.localization.task;
 
 import com.airsaid.localization.constant.Constants;
-import com.airsaid.localization.logic.LanguageHelper;
-import com.airsaid.localization.module.AndroidString;
+import com.airsaid.localization.model.AndroidString;
 import com.airsaid.localization.services.AndroidStringsService;
 import com.airsaid.localization.translate.lang.Lang;
 import com.airsaid.localization.translate.services.TranslatorService;
@@ -94,7 +93,8 @@ public class TranslateTask extends Task.Backgroundable {
 
       progressIndicator.setText("Translating in the " + toLanguage.getEnglishName() + " language...");
 
-      final PsiFile toStringsPsiFile = LanguageHelper.getStringsPsiFile(myProject, mStringsFile, toLanguage);
+      final VirtualFile resourceDir = mStringsFile.getParent().getParent();
+      final PsiFile toStringsPsiFile = mStringsService.getStringsPsiFile(myProject, resourceDir, toLanguage);
       LOG.info("Translating language: " + toLanguage.getEnglishName() + ", toStringsPsiFile: " + toStringsPsiFile);
       if (toStringsPsiFile != null) {
         List<AndroidString> toAndroidStrings = mStringsService.loadStrings(toStringsPsiFile);
@@ -102,7 +102,7 @@ public class TranslateTask extends Task.Backgroundable {
         List<AndroidString> translatedStrings = doTranslate(progressIndicator, toLanguage, toStringsMap, isOverwriteExistingString);
         writeTranslatedStrings(progressIndicator, new File(toStringsPsiFile.getVirtualFile().getPath()), translatedStrings);
       } else {
-        File stringsFile = LanguageHelper.getStringsFile(mStringsFile, toLanguage, true);
+        File stringsFile = mStringsService.getStringsFile(resourceDir, toLanguage, true);
         List<AndroidString> translatedStrings = doTranslate(progressIndicator, toLanguage, null, isOverwriteExistingString);
         writeTranslatedStrings(progressIndicator, stringsFile, translatedStrings);
       }
@@ -146,7 +146,7 @@ public class TranslateTask extends Task.Backgroundable {
     if (progressIndicator.isCanceled()) return;
 
     progressIndicator.setText("Writing to " + stringsFile.getParentFile().getName() + " data...");
-    mStringsService.writeStringsFile(stringsFile, translatedStrings);
+    mStringsService.writeStringsFile(translatedStrings, stringsFile);
 
     refreshAndOpenFile(stringsFile);
   }
