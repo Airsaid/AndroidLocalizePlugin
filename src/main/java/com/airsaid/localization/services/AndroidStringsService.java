@@ -8,6 +8,7 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Computable;
+import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
@@ -77,6 +78,11 @@ public final class AndroidStringsService {
    * @param stringsFile specified file.
    */
   public void writeStringsFile(List<AndroidString> strings, @NotNull File stringsFile) {
+    boolean isCreateSuccess = FileUtil.createIfDoesntExist(stringsFile);
+    if (!isCreateSuccess) {
+      LOG.error("Failed to write to " + stringsFile.getPath() + " file: create failed!");
+      return;
+    }
     ApplicationManager.getApplication().invokeLater(() -> ApplicationManager.getApplication().runWriteAction(() -> {
       try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(stringsFile, false), StandardCharsets.UTF_8))) {
         bw.write("<resources>");
@@ -174,7 +180,7 @@ public final class AndroidStringsService {
     Objects.requireNonNull(lang);
 
     return ApplicationManager.getApplication().runReadAction((Computable<PsiFile>) () -> {
-      VirtualFile virtualFile = LocalFileSystem.getInstance().findFileByIoFile(getStringsFile(resourceDir, lang, false));
+      VirtualFile virtualFile = LocalFileSystem.getInstance().findFileByIoFile(getStringsFile(resourceDir, lang));
       if (virtualFile == null) {
         return null;
       }
@@ -187,34 +193,11 @@ public final class AndroidStringsService {
    *
    * @param resourceDir specified resource directory.
    * @param lang        specified language.
-   * @param isMkdirs    true: create if it does not exist. false: direct return, may not exist.
    * @return {@link #NAME_STRINGS_FILE} file.
    */
   @NotNull
-  public File getStringsFile(@NotNull VirtualFile resourceDir, @NotNull Lang lang, boolean isMkdirs) {
-    String resourceDirPath = resourceDir.getPath();
-    File stringFile;
-    if (isMkdirs) {
-      File valuesDir = new File(resourceDirPath, getValuesDirectoryName(lang));
-      if (!valuesDir.exists()) {
-        if (!valuesDir.mkdirs()) {
-          LOG.warn("Create " + valuesDir.getPath() + " failed.");
-        }
-      }
-      stringFile = new File(valuesDir, NAME_STRINGS_FILE);
-      if (!stringFile.exists()) {
-        try {
-          if (!stringFile.createNewFile()) {
-            LOG.warn("Create " + stringFile.getPath() + " failed.");
-          }
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
-    } else {
-      stringFile = new File(resourceDirPath.concat(File.separator).concat(getValuesDirectoryName(lang)), NAME_STRINGS_FILE);
-    }
-    return stringFile;
+  public File getStringsFile(@NotNull VirtualFile resourceDir, @NotNull Lang lang) {
+    return new File(resourceDir.getPath().concat(File.separator).concat(getValuesDirectoryName(lang)), NAME_STRINGS_FILE);
   }
 
   private String getValuesDirectoryName(@NotNull Lang lang) {

@@ -102,8 +102,8 @@ public class TranslateTask extends Task.Backgroundable {
         List<AndroidString> translatedStrings = doTranslate(progressIndicator, toLanguage, toStringsMap, isOverwriteExistingString);
         writeTranslatedStrings(progressIndicator, new File(toStringsPsiFile.getVirtualFile().getPath()), translatedStrings);
       } else {
-        File stringsFile = mStringsService.getStringsFile(resourceDir, toLanguage, true);
         List<AndroidString> translatedStrings = doTranslate(progressIndicator, toLanguage, null, isOverwriteExistingString);
+        File stringsFile = mStringsService.getStringsFile(resourceDir, toLanguage);
         writeTranslatedStrings(progressIndicator, stringsFile, translatedStrings);
       }
     }
@@ -143,7 +143,7 @@ public class TranslateTask extends Task.Backgroundable {
   private void writeTranslatedStrings(@NotNull ProgressIndicator progressIndicator, @NotNull File stringsFile, @NotNull List<AndroidString> translatedStrings) {
     LOG.info("writeTranslatedStrings stringsFile: " + stringsFile + ", translatedStrings: " + translatedStrings);
 
-    if (progressIndicator.isCanceled()) return;
+    if (progressIndicator.isCanceled() || translatedStrings.isEmpty()) return;
 
     progressIndicator.setText("Writing to " + stringsFile.getParentFile().getName() + " data...");
     mStringsService.writeStringsFile(translatedStrings, stringsFile);
