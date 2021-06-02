@@ -64,7 +64,7 @@ public final class AndroidStringsService {
    */
   public List<AndroidString> loadStrings(@NotNull PsiFile stringsFile) {
     return ApplicationManager.getApplication().runReadAction((Computable<List<AndroidString>>) () -> {
-      LOG.info("LoadStrings stringsFile: " + stringsFile);
+      LOG.info("LoadStrings stringsFile: " + stringsFile.getName());
       List<AndroidString> androidStrings = parseStringsXml(stringsFile);
       LOG.info("Parsed " + stringsFile.getName() + " result: " + androidStrings);
       return androidStrings;

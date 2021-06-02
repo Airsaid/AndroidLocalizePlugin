@@ -21,6 +21,7 @@ import com.airsaid.localization.model.AndroidString;
 import com.airsaid.localization.services.AndroidStringsService;
 import com.airsaid.localization.translate.lang.Lang;
 import com.airsaid.localization.translate.services.TranslatorService;
+import com.airsaid.localization.utils.TextUtil;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
@@ -131,6 +132,7 @@ public class TranslateTask extends Task.Backgroundable {
       for (AndroidString.Content content : contents) {
         if (progressIndicator.isCanceled()) break;
         if (content.isIgnore()) continue;
+        if (TextUtil.isEmptyOrSpacesLineBreak(content.getText())) continue;
 
         String translatedText = mTranslatorService.doTranslate(Lang.AUTO, toLanguage, content.getText());
         content.setText(translatedText);
