@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.airsaid.localization.logic;
+package com.airsaid.localization.utils;
 
 import com.airsaid.localization.constant.Constants;
 import com.airsaid.localization.translate.lang.Lang;
@@ -29,16 +29,16 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * A helper class that operates on language data.
+ * A util class that operates on language data.
  *
  * @author airsaid
  */
-public class LanguageHelper {
+public class LanguageUtil {
 
   private static final String SEPARATOR_SELECTED_LANGUAGES_CODE = ",";
 
-  private LanguageHelper() {
-    throw new AssertionError("No LanguageHelper instances for you!");
+  private LanguageUtil() {
+    throw new AssertionError("No com.airsaid.localization.utils.LanguageUtil instances for you!");
   }
 
   /**

@@ -17,7 +17,7 @@
 package com.airsaid.localization.ui;
 
 import com.airsaid.localization.constant.Constants;
-import com.airsaid.localization.logic.LanguageHelper;
+import com.airsaid.localization.utils.LanguageUtil;
 import com.airsaid.localization.translate.lang.Lang;
 import com.airsaid.localization.translate.services.TranslatorService;
 import com.intellij.ide.util.PropertiesComponent;
@@ -85,7 +85,7 @@ public class SelectLanguagesDialog extends DialogWrapper {
   }
 
   private void addLanguageList(List<Lang> supportedLanguages) {
-    List<String> selectedLanguageCodes = LanguageHelper.getSelectedLanguageCodes(project);
+    List<String> selectedLanguageCodes = LanguageUtil.getSelectedLanguageCodes(project);
     languagesPanel.setLayout(new GridLayout(supportedLanguages.size() / 4, 4));
     for (Lang language : supportedLanguages) {
       String code = language.getCode();
@@ -159,7 +159,7 @@ public class SelectLanguagesDialog extends DialogWrapper {
 
   @Override
   protected void doOKAction() {
-    LanguageHelper.saveSelectedLanguage(project, selectedLanguages);
+    LanguageUtil.saveSelectedLanguage(project, selectedLanguages);
     if (onClickListener != null) {
       onClickListener.onClickListener(selectedLanguages);
     }
