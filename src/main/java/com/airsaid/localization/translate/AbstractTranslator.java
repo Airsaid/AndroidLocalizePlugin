@@ -66,6 +66,11 @@ public abstract class AbstractTranslator implements Translator, TranslatorConfig
     return SettingsState.getInstance().getAppKey(getKey());
   }
 
+  @Override
+  public @Nullable String getApplyAppIdUrl() {
+    return null;
+  }
+
   @NotNull
   public abstract String getRequestUrl(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text);
 

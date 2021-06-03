@@ -72,6 +72,14 @@
             </constraints>
             <properties/>
           </component>
+          <component id="4ef73" class="javax.swing.JButton" binding="applyButton">
+            <constraints>
+              <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Apply..."/>
+            </properties>
+          </component>
         </children>
       </grid>
       <vspacer id="90550">

@@ -30,4 +30,7 @@ public interface TranslatorConfigurable {
   @Nullable
   String getAppKey();
 
+  @Nullable
+  String getApplyAppIdUrl();
+
 }

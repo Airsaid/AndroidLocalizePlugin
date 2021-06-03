@@ -24,6 +24,7 @@ public class BaiduTranslator extends AbstractTranslator {
   private static final String KEY = "Baidu";
   private static final String HOST_URL = "http://api.fanyi.baidu.com";
   private static final String TRANSLATE_URL = HOST_URL.concat("/api/trans/vip/translate");
+  private static final String APPLY_APP_ID_URL = "http://api.fanyi.baidu.com/api/trans/product/desktop?req=developer";
 
   @Override
   public @NotNull String getKey() {
@@ -70,6 +71,11 @@ public class BaiduTranslator extends AbstractTranslator {
     result.add(Lang.CHINESE_TRADITIONAL.setCode("cht"));
     result.add(Lang.VIETNAMESE.setCode("vie"));
     return result;
+  }
+
+  @Override
+  public @Nullable String getApplyAppIdUrl() {
+    return APPLY_APP_ID_URL;
   }
 
   @Override

@@ -2,8 +2,10 @@ package com.airsaid.localization.config;
 
 import com.airsaid.localization.translate.AbstractTranslator;
 import com.airsaid.localization.translate.services.TranslatorService;
+import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.ui.ComboBox;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.ui.CollectionComboBoxModel;
 import com.intellij.ui.SimpleListCellRenderer;
 import com.intellij.ui.components.JBLabel;
@@ -29,6 +31,7 @@ public class SettingsComponent {
   private JBTextField appIdField;
   private JBLabel appKeyLabel;
   private JBPasswordField appKeyField;
+  private JButton applyButton;
 
   public SettingsComponent() {
     translatorsComboBox.setRenderer(new SimpleListCellRenderer<AbstractTranslator>() {
@@ -41,6 +44,14 @@ public class SettingsComponent {
     translatorsComboBox.addItemListener(itemEvent -> {
       if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
         setSelectedTranslator(getSelectedTranslator());
+      }
+    });
+    applyButton.addActionListener(actionEvent -> {
+      AbstractTranslator selectedTranslator = getSelectedTranslator();
+      String applyAppIdUrl = selectedTranslator.getApplyAppIdUrl();
+      if (!StringUtil.isEmpty(applyAppIdUrl)) {
+        BrowserUtil.browse(applyAppIdUrl);
+        applyButton.setFocusable(false);
       }
     });
   }
@@ -79,6 +90,8 @@ public class SettingsComponent {
       appIdField.setText(selected.getAppId());
       appKeyField.setText(selected.getAppKey());
     }
+    String applyAppIdUrl = selected.getApplyAppIdUrl();
+    applyButton.setVisible(!StringUtil.isEmpty(applyAppIdUrl));
   }
 
   public boolean isSelectedDefaultTranslator() {
