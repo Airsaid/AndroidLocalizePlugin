@@ -16,10 +16,13 @@
 
 package com.airsaid.localization.action;
 
+import com.airsaid.localization.config.SettingsState;
 import com.airsaid.localization.model.AndroidString;
 import com.airsaid.localization.services.AndroidStringsService;
 import com.airsaid.localization.task.TranslateTask;
+import com.airsaid.localization.translate.AbstractTranslator;
 import com.airsaid.localization.translate.lang.Lang;
+import com.airsaid.localization.translate.services.TranslatorService;
 import com.airsaid.localization.ui.SelectLanguagesDialog;
 import com.airsaid.localization.utils.NotificationUtil;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -47,6 +50,12 @@ public class TranslateAction extends AnAction implements SelectLanguagesDialog.O
   public void actionPerformed(AnActionEvent e) {
     mProject = e.getRequiredData(CommonDataKeys.PROJECT);
     mStringsFile = e.getRequiredData(CommonDataKeys.PSI_FILE);
+
+    TranslatorService translatorService = TranslatorService.getInstance();
+    AbstractTranslator selectedTranslator = translatorService.getSelectedTranslator();
+    if (selectedTranslator == null) {
+      translatorService.setSelectedTranslator(SettingsState.getInstance().getSelectedTranslator());
+    }
 
     mStringsService.loadStringsByAsync(mStringsFile, androidStrings -> {
       if (!isTranslatable(androidStrings)) {

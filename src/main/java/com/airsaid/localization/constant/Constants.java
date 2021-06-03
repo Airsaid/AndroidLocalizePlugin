@@ -23,6 +23,8 @@ package com.airsaid.localization.constant;
  */
 public interface Constants {
 
+  String PLUGIN_NAME = "AndroidLocalize";
+
   String PLUGIN_ID = "com.github.airsaid.androidlocalize";
 
   String KEY_SELECTED_LANGUAGES = PLUGIN_ID.concat(".selected_languages");

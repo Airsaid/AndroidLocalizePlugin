@@ -29,7 +29,9 @@
     <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-
+        <applicationConfigurable parentId="tools"
+                                 instance="com.airsaid.localization.config.SettingsConfigurable"
+                                 id="com.airsaid.localization.config.SettingsConfigurable"/>
     </extensions>
 
     <actions>

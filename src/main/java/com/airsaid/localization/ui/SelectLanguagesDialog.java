@@ -16,10 +16,11 @@
 
 package com.airsaid.localization.ui;
 
+import com.airsaid.localization.config.SettingsState;
 import com.airsaid.localization.constant.Constants;
-import com.airsaid.localization.utils.LanguageUtil;
 import com.airsaid.localization.translate.lang.Lang;
 import com.airsaid.localization.translate.services.TranslatorService;
+import com.airsaid.localization.utils.LanguageUtil;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -32,6 +33,7 @@ import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Select the language dialog you want to Translate.
@@ -74,7 +76,7 @@ public class SelectLanguagesDialog extends DialogWrapper {
   private void doCreateCenterPanel() {
     // add languages
     selectedLanguages.clear();
-    List<Lang> supportedLanguages = TranslatorService.getInstance().getTranslator().getSupportedLanguages();
+    List<Lang> supportedLanguages = Objects.requireNonNull(TranslatorService.getInstance().getSelectedTranslator()).getSupportedLanguages();
     supportedLanguages.sort(new EnglishNameComparator()); // sort by english name, easy to find
     addLanguageList(supportedLanguages);
 
@@ -154,7 +156,8 @@ public class SelectLanguagesDialog extends DialogWrapper {
 
   @Override
   protected @Nullable String getDimensionServiceKey() {
-    return "#com.airsaid.localization.ui.SelectLanguagesDialog";
+    String key = SettingsState.getInstance().getSelectedTranslator().getKey();
+    return "#com.airsaid.localization.ui.SelectLanguagesDialog#".concat(key);
   }
 
   @Override
