@@ -3,6 +3,7 @@ package com.airsaid.localization.config;
 import com.airsaid.localization.translate.AbstractTranslator;
 import com.airsaid.localization.translate.services.TranslatorService;
 import com.airsaid.localization.ui.FixedLinkLabel;
+import com.airsaid.localization.ui.SupportLanguagesDialog;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.ide.HelpTooltip;
 import com.intellij.openapi.diagnostic.Logger;
@@ -34,6 +35,7 @@ public class SettingsComponent {
   private JBLabel appKeyLabel;
   private JBPasswordField appKeyField;
   private FixedLinkLabel applyLink;
+  private JButton supportLanguagesButton;
 
   public SettingsComponent() {
     translatorsComboBox.setRenderer(new SimpleListCellRenderer<AbstractTranslator>() {
@@ -56,11 +58,18 @@ public class SettingsComponent {
         applyLink.setFocusable(false);
       }
     }, null);
+    supportLanguagesButton.addActionListener(actionEvent -> {
+      showSupportLanguagesDialog(getSelectedTranslator());
+    });
   }
 
   @NotNull
   public AbstractTranslator getSelectedTranslator() {
     return (AbstractTranslator) Objects.requireNonNull(translatorsComboBox.getSelectedItem());
+  }
+
+  private void showSupportLanguagesDialog(AbstractTranslator selectedTranslator) {
+    new SupportLanguagesDialog(selectedTranslator).show();
   }
 
   public JPanel getContent() {
