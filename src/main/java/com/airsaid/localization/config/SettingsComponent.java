@@ -4,6 +4,7 @@ import com.airsaid.localization.translate.AbstractTranslator;
 import com.airsaid.localization.translate.services.TranslatorService;
 import com.airsaid.localization.ui.FixedLinkLabel;
 import com.intellij.ide.BrowserUtil;
+import com.intellij.ide.HelpTooltip;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.util.text.StringUtil;
@@ -92,7 +93,14 @@ public class SettingsComponent {
       appKeyField.setText(selected.getAppKey());
     }
     String applyAppIdUrl = selected.getApplyAppIdUrl();
-    applyLink.setVisible(!StringUtil.isEmpty(applyAppIdUrl));
+    if (!StringUtil.isEmpty(applyAppIdUrl)) {
+      applyLink.setVisible(true);
+      new HelpTooltip()
+          .setDescription("Apply for " + selected.getName() + " translation API service")
+          .installOn(applyLink);
+    } else {
+      applyLink.setVisible(false);
+    }
   }
 
   public boolean isSelectedDefaultTranslator() {
