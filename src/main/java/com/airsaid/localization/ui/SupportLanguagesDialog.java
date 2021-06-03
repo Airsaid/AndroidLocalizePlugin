@@ -30,7 +30,7 @@ public class SupportLanguagesDialog extends DialogWrapper {
   protected @Nullable JComponent createCenterPanel() {
     List<Lang> supportedLanguages = mTranslator.getSupportedLanguages();
     supportedLanguages.sort(new EnglishNameComparator());
-    JPanel contentPanel = new JPanel(new GridLayout(supportedLanguages.size() / 4, 4));
+    JPanel contentPanel = new JPanel(new GridLayout(supportedLanguages.size() / 4, 4, 10, 20));
     for (Lang supportedLanguage : supportedLanguages) {
       contentPanel.add(new JBLabel(supportedLanguage.getEnglishName()));
     }
