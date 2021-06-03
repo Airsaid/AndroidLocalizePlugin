@@ -87,7 +87,7 @@ public class SelectLanguagesDialog extends DialogWrapper {
   }
 
   private void addLanguageList(List<Lang> supportedLanguages) {
-    List<String> selectedLanguageCodes = LanguageUtil.getSelectedLanguageCodes(project);
+    List<String> selectedLanguageIds = LanguageUtil.getSelectedLanguageIds(project);
     languagesPanel.setLayout(new GridLayout(supportedLanguages.size() / 4, 4));
     for (Lang language : supportedLanguages) {
       String code = language.getCode();
@@ -105,7 +105,7 @@ public class SelectLanguagesDialog extends DialogWrapper {
         // Update the OK button UI
         getOKAction().setEnabled(selectedLanguages.size() > 0);
       });
-      if (selectedLanguageCodes != null && selectedLanguageCodes.contains(code)) {
+      if (selectedLanguageIds != null && selectedLanguageIds.contains(String.valueOf(language.getId()))) {
         checkBoxLanguage.setSelected(true);
       }
     }

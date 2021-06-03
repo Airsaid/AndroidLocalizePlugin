@@ -52,17 +52,17 @@ public class LanguageUtil {
     Objects.requireNonNull(languages);
 
     PropertiesComponent.getInstance(project)
-        .setValue(Constants.KEY_SELECTED_LANGUAGES, getLanguageCodeString(languages));
+        .setValue(Constants.KEY_SELECTED_LANGUAGES, getLanguageIdString(languages));
   }
 
   /**
    * Get saved language code data in the current project.
    *
    * @param project current project.
-   * @return null if not saved, otherwise return the saved language code data.
+   * @return null if not saved, otherwise return the saved language id data.
    */
   @Nullable
-  public static List<String> getSelectedLanguageCodes(@NotNull Project project) {
+  public static List<String> getSelectedLanguageIds(@NotNull Project project) {
     Objects.requireNonNull(project);
 
     String codeString = PropertiesComponent.getInstance(project)
@@ -76,12 +76,11 @@ public class LanguageUtil {
   }
 
   @NotNull
-  private static String getLanguageCodeString(@NotNull List<Lang> language) {
+  private static String getLanguageIdString(@NotNull List<Lang> language) {
     StringBuilder codes = new StringBuilder(language.size());
     for (int i = 0, len = language.size(); i < len; i++) {
       Lang lang = language.get(i);
-      String code = lang.getCode();
-      codes.append(code);
+      codes.append(lang.getId());
       if (i < len - 1) {
         codes.append(SEPARATOR_SELECTED_LANGUAGES_CODE);
       }
