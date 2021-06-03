@@ -3,6 +3,7 @@ package com.airsaid.localization.translate.impl.baidu;
 import com.airsaid.localization.translate.AbstractTranslator;
 import com.airsaid.localization.translate.TranslationException;
 import com.airsaid.localization.translate.lang.Lang;
+import com.airsaid.localization.translate.lang.Languages;
 import com.airsaid.localization.translate.util.GsonUtil;
 import com.airsaid.localization.translate.util.MD5;
 import com.airsaid.localization.translate.util.UrlBuilder;
@@ -26,6 +27,8 @@ public class BaiduTranslator extends AbstractTranslator {
   private static final String TRANSLATE_URL = HOST_URL.concat("/api/trans/vip/translate");
   private static final String APPLY_APP_ID_URL = "http://api.fanyi.baidu.com/api/trans/product/desktop?req=developer";
 
+  private List<Lang> supportedLanguages;
+
   @Override
   public @NotNull String getKey() {
     return KEY;
@@ -43,34 +46,36 @@ public class BaiduTranslator extends AbstractTranslator {
 
   @Override
   public @NotNull List<Lang> getSupportedLanguages() {
-    List<Lang> result = new ArrayList<>();
-    result.add(Lang.CHINESE_SIMPLIFIED.setCode("zh"));
-    result.add(Lang.ENGLISH);
-    result.add(Lang.JAPANESE.setCode("jp"));
-    result.add(Lang.KOREAN.setCode("kor"));
-    result.add(Lang.FRENCH.setCode("fra"));
-    result.add(Lang.SPANISH.setCode("spa"));
-    result.add(Lang.THAI);
-    result.add(Lang.ARABIC.setCode("ara"));
-    result.add(Lang.RUSSIAN);
-    result.add(Lang.PORTUGUESE);
-    result.add(Lang.GERMAN);
-    result.add(Lang.ITALIAN);
-    result.add(Lang.GREEK);
-    result.add(Lang.DUTCH);
-    result.add(Lang.POLISH);
-    result.add(Lang.BULGARIAN.setCode("bul"));
-    result.add(Lang.ESTONIAN.setCode("est"));
-    result.add(Lang.DANISH.setCode("dan"));
-    result.add(Lang.FINNISH.setCode("fin"));
-    result.add(Lang.CZECH);
-    result.add(Lang.ROMANIAN.setCode("rom"));
-    result.add(Lang.SLOVENIAN.setCode("slo"));
-    result.add(Lang.SWEDISH.setCode("swe"));
-    result.add(Lang.HUNGARIAN);
-    result.add(Lang.CHINESE_TRADITIONAL.setCode("cht"));
-    result.add(Lang.VIETNAMESE.setCode("vie"));
-    return result;
+    if (supportedLanguages == null) {
+      supportedLanguages = new ArrayList<>();
+      supportedLanguages.add(Languages.CHINESE_SIMPLIFIED.clone().setCode("zh"));
+      supportedLanguages.add(Languages.ENGLISH);
+      supportedLanguages.add(Languages.JAPANESE.clone().setCode("jp"));
+      supportedLanguages.add(Languages.KOREAN.clone().setCode("kor"));
+      supportedLanguages.add(Languages.FRENCH.clone().setCode("fra"));
+      supportedLanguages.add(Languages.SPANISH.clone().setCode("spa"));
+      supportedLanguages.add(Languages.THAI);
+      supportedLanguages.add(Languages.ARABIC.clone().setCode("ara"));
+      supportedLanguages.add(Languages.RUSSIAN);
+      supportedLanguages.add(Languages.PORTUGUESE);
+      supportedLanguages.add(Languages.GERMAN);
+      supportedLanguages.add(Languages.ITALIAN);
+      supportedLanguages.add(Languages.GREEK);
+      supportedLanguages.add(Languages.DUTCH);
+      supportedLanguages.add(Languages.POLISH);
+      supportedLanguages.add(Languages.BULGARIAN.clone().setCode("bul"));
+      supportedLanguages.add(Languages.ESTONIAN.clone().setCode("est"));
+      supportedLanguages.add(Languages.DANISH.clone().setCode("dan"));
+      supportedLanguages.add(Languages.FINNISH.clone().setCode("fin"));
+      supportedLanguages.add(Languages.CZECH);
+      supportedLanguages.add(Languages.ROMANIAN.clone().setCode("rom"));
+      supportedLanguages.add(Languages.SLOVENIAN.clone().setCode("slo"));
+      supportedLanguages.add(Languages.SWEDISH.clone().setCode("swe"));
+      supportedLanguages.add(Languages.HUNGARIAN);
+      supportedLanguages.add(Languages.CHINESE_TRADITIONAL.clone().setCode("cht"));
+      supportedLanguages.add(Languages.VIETNAMESE.clone().setCode("vie"));
+    }
+    return supportedLanguages;
   }
 
   @Override

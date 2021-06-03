@@ -2,6 +2,7 @@ package com.airsaid.localization.services;
 
 import com.airsaid.localization.model.AndroidString;
 import com.airsaid.localization.translate.lang.Lang;
+import com.airsaid.localization.translate.lang.Languages;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.components.ServiceManager;
@@ -202,19 +203,18 @@ public final class AndroidStringsService {
 
   private String getValuesDirectoryName(@NotNull Lang lang) {
     String suffix;
-    String langCode = lang.getCode();
-    if (langCode.equals(Lang.CHINESE_SIMPLIFIED.getCode())) {
+    if (lang == Languages.CHINESE_SIMPLIFIED) {
       suffix = "zh-rCN";
-    } else if (langCode.equals(Lang.CHINESE_TRADITIONAL.getCode())) {
+    } else if (lang == Languages.CHINESE_TRADITIONAL) {
       suffix = "zh-rTW";
-    } else if (langCode.equals(Lang.FILIPINO.getCode())) {
+    } else if (lang == Languages.FILIPINO) {
       suffix = "fil";
-    } else if (langCode.equals(Lang.INDONESIAN.getCode())) {
+    } else if (lang == Languages.INDONESIAN) {
       suffix = "in-rID";
-    } else if (langCode.equals(Lang.JAVANESE.getCode())) {
+    } else if (lang == Languages.JAVANESE) {
       suffix = "jv";
     } else {
-      suffix = langCode;
+      suffix = lang.getCode();
     }
     return "values-".concat(suffix);
   }

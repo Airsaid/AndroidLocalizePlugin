@@ -20,6 +20,7 @@ import com.airsaid.localization.constant.Constants;
 import com.airsaid.localization.model.AndroidString;
 import com.airsaid.localization.services.AndroidStringsService;
 import com.airsaid.localization.translate.lang.Lang;
+import com.airsaid.localization.translate.lang.Languages;
 import com.airsaid.localization.translate.services.TranslatorService;
 import com.airsaid.localization.utils.TextUtil;
 import com.intellij.ide.util.PropertiesComponent;
@@ -134,7 +135,7 @@ public class TranslateTask extends Task.Backgroundable {
         if (content.isIgnore()) continue;
         if (TextUtil.isEmptyOrSpacesLineBreak(content.getText())) continue;
 
-        String translatedText = mTranslatorService.doTranslate(Lang.AUTO, toLanguage, content.getText());
+        String translatedText = mTranslatorService.doTranslate(Languages.AUTO, toLanguage, content.getText());
         content.setText(translatedText);
       }
       translatedStrings.add(translatedString);

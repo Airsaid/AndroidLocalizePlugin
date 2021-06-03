@@ -2,6 +2,7 @@ package com.airsaid.localization.translate.impl.google;
 
 import com.airsaid.localization.translate.AbstractTranslator;
 import com.airsaid.localization.translate.lang.Lang;
+import com.airsaid.localization.translate.lang.Languages;
 import com.airsaid.localization.translate.util.AgentUtil;
 import com.airsaid.localization.translate.util.GsonUtil;
 import com.airsaid.localization.translate.util.UrlBuilder;
@@ -24,6 +25,8 @@ public class GoogleTranslator extends AbstractTranslator {
   public static final String HOST_URL = "https://translate.google.cn";
   public static final String BASE_URL = HOST_URL.concat("/translate_a/single");
 
+  private List<Lang> supportedLanguages;
+
   @Override
   public @NotNull String getKey() {
     return KEY;
@@ -42,14 +45,16 @@ public class GoogleTranslator extends AbstractTranslator {
   @Override
   @NotNull
   public List<Lang> getSupportedLanguages() {
-    Lang[] values = Lang.values();
-    List<Lang> result = new ArrayList<>(values.length - 1);
-    for (Lang lang : values) {
-      if (lang != Lang.AUTO) {
-        result.add(lang);
+    if (supportedLanguages == null) {
+      List<Lang> languages = Languages.getLanguages();
+      supportedLanguages = new ArrayList<>(languages.size() - 1);
+      for (Lang lang : languages) {
+        if (lang != Languages.AUTO) {
+          supportedLanguages.add(lang);
+        }
       }
     }
-    return result;
+    return supportedLanguages;
   }
 
   @Override
