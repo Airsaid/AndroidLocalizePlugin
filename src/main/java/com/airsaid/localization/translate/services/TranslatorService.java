@@ -1,15 +1,18 @@
 package com.airsaid.localization.translate.services;
 
 import com.airsaid.localization.translate.AbstractTranslator;
+import com.airsaid.localization.translate.impl.baidu.BaiduTranslator;
 import com.airsaid.localization.translate.impl.google.GoogleTranslator;
 import com.airsaid.localization.translate.lang.Lang;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
-import org.apache.log4j.Level;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -20,15 +23,21 @@ public final class TranslatorService {
 
   private static final Logger LOG = Logger.getInstance(TranslatorService.class);
 
-  private AbstractTranslator translator;
+  private AbstractTranslator selectedTranslator;
+  private final AbstractTranslator defaultTranslator;
   private final TranslationCacheService cacheService;
-
-  static {
-    LOG.setLevel(Level.DEBUG);
-  }
+  private final Map<String, AbstractTranslator> translators;
 
   public TranslatorService() {
-    translator = new GoogleTranslator();
+    translators = new HashMap<>();
+
+    GoogleTranslator googleTranslator = new GoogleTranslator();
+    translators.put(googleTranslator.getKey(), googleTranslator);
+    defaultTranslator = googleTranslator;
+
+    BaiduTranslator baiduTranslator = new BaiduTranslator();
+    translators.put(baiduTranslator.getKey(), baiduTranslator);
+
     cacheService = TranslationCacheService.getInstance();
   }
 
@@ -37,14 +46,24 @@ public final class TranslatorService {
     return ServiceManager.getService(TranslatorService.class);
   }
 
-  public void setTranslator(@NotNull AbstractTranslator translator) {
-    LOG.info(String.format("setTranslator: %s", translator));
-    this.translator = translator;
+  public AbstractTranslator getDefaultTranslator() {
+    return defaultTranslator;
   }
 
-  @NotNull
-  public AbstractTranslator getTranslator() {
-    return translator;
+  public Map<String, AbstractTranslator> getTranslators() {
+    return translators;
+  }
+
+  public void setSelectedTranslator(@NotNull AbstractTranslator selectedTranslator) {
+    if (this.selectedTranslator != selectedTranslator) {
+      LOG.info(String.format("setTranslator: %s", selectedTranslator));
+      this.selectedTranslator = selectedTranslator;
+    }
+  }
+
+  @Nullable
+  public AbstractTranslator getSelectedTranslator() {
+    return selectedTranslator;
   }
 
   public void doTranslateByAsync(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text, @NotNull Consumer<String> consumer) {
@@ -58,19 +77,19 @@ public final class TranslatorService {
   public String doTranslate(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
     LOG.info(String.format("doTranslate fromLang: %s, toLang: %s, text: %s", fromLang, toLang, text));
 
-    String cacheResult = cacheService.get(getKey(fromLang, toLang, text));
+    String cacheResult = cacheService.get(getCacheKey(fromLang, toLang, text));
     if (!cacheResult.isEmpty()) {
       LOG.info(String.format("doTranslate cache result: %s", cacheResult));
       return cacheResult;
     }
 
-    String result = translator.doTranslate(fromLang, toLang, text);
+    String result = selectedTranslator.doTranslate(fromLang, toLang, text);
     LOG.info(String.format("doTranslate result: %s", result));
-    cacheService.put(getKey(fromLang, toLang, text), result);
+    cacheService.put(getCacheKey(fromLang, toLang, text), result);
     return result;
   }
 
-  private String getKey(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
+  private String getCacheKey(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
     return fromLang.getCode() + "_" + toLang.getCode() + "_" + text;
   }
 

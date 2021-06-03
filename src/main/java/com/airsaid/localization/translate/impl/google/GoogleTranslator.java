@@ -7,9 +7,11 @@ import com.airsaid.localization.translate.util.GsonUtil;
 import com.airsaid.localization.translate.util.UrlBuilder;
 import com.intellij.openapi.util.Pair;
 import com.intellij.util.io.RequestBuilder;
+import icons.PluginIcons;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,9 +19,25 @@ import java.util.List;
  * @author airsaid
  */
 public class GoogleTranslator extends AbstractTranslator {
+  private static final String KEY = "Google";
 
   public static final String HOST_URL = "https://translate.google.cn";
   public static final String BASE_URL = HOST_URL.concat("/translate_a/single");
+
+  @Override
+  public @NotNull String getKey() {
+    return KEY;
+  }
+
+  @Override
+  public @NotNull String getName() {
+    return "Google";
+  }
+
+  @Override
+  public @NotNull Icon getIcon() {
+    return PluginIcons.GOOGLE_ICON;
+  }
 
   @Override
   @NotNull
@@ -63,6 +81,7 @@ public class GoogleTranslator extends AbstractTranslator {
 
   @Override
   public @NotNull String parsingResult(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text, @NotNull String resultText) {
+    LOG.info("parsingResult: " + resultText);
     GoogleTranslationResult googleTranslationResult = GsonUtil.getInstance().getGson().fromJson(resultText, GoogleTranslationResult.class);
     return googleTranslationResult.getTranslationResult();
   }

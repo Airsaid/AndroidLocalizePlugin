@@ -1,11 +1,15 @@
 package com.airsaid.localization.translate;
 
+import com.airsaid.localization.config.SettingsState;
 import com.airsaid.localization.translate.lang.Lang;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.Pair;
 import com.intellij.util.io.HttpRequests;
 import com.intellij.util.io.RequestBuilder;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,7 +17,9 @@ import java.util.stream.Collectors;
 /**
  * @author airsaid
  */
-public abstract class AbstractTranslator implements Translator {
+public abstract class AbstractTranslator implements Translator, TranslatorConfigurable {
+
+  protected static final Logger LOG = Logger.getInstance(AbstractTranslator.class);
 
   private static final String CONTENT_TYPE = "application/x-www-form-urlencoded";
 
@@ -45,8 +51,20 @@ public abstract class AbstractTranslator implements Translator {
     }
   }
 
-  @NotNull
-  public abstract List<Lang> getSupportedLanguages();
+  @Override
+  public @Nullable Icon getIcon() {
+    return null;
+  }
+
+  @Override
+  public @Nullable String getAppId() {
+    return SettingsState.getInstance().getAppId(getKey());
+  }
+
+  @Override
+  public @Nullable String getAppKey() {
+    return SettingsState.getInstance().getAppKey(getKey());
+  }
 
   @NotNull
   public abstract String getRequestUrl(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text);
@@ -58,5 +76,4 @@ public abstract class AbstractTranslator implements Translator {
 
   @NotNull
   public abstract String parsingResult(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text, @NotNull String resultText);
-
 }

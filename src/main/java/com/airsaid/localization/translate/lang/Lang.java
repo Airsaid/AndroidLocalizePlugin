@@ -134,24 +134,27 @@ public enum Lang {
     return code;
   }
 
-  public void setCode(String code) {
+  public Lang setCode(String code) {
     this.code = code;
+    return this;
   }
 
   public String getName() {
     return name;
   }
 
-  public void setName(String name) {
+  public Lang setName(String name) {
     this.name = name;
+    return this;
   }
 
   public String getEnglishName() {
     return englishName;
   }
 
-  public void setEnglishName(String englishName) {
+  public Lang setEnglishName(String englishName) {
     this.englishName = englishName;
+    return this;
   }
 
   @Override
