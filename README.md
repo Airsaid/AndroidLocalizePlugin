@@ -1,58 +1,53 @@
 # AndroidLocalizePlugin
-:earth_asia: Android/IDEA localization plugin. support multiple languages, no need to apply for key. ([中文文档](https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/README_CN.md))
+[![Plugin Version](https://img.shields.io/jetbrains/plugin/v/11174)](https://plugins.jetbrains.com/plugin/11174-androidlocalize)
+[![Plugin Rating](https://img.shields.io/jetbrains/plugin/r/rating/11174)](https://plugins.jetbrains.com/plugin/11174-androidlocalize)
 
-# Feature
-- Support 104 languages.
-- No need to apply for key.
+:earth_asia: Android/IDEA localization plugin. supports multiple languages and multiple translators. ([中文文档](https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/README_CN.md))
+
+# Features
+- Multiple translator support:
+  - Google translator. 
+  - Baidu translator.
+  - Youdao translator.
+- Supports up to 100+ languages.
 - One key generates all translation files.
 - Support no translation of existing string.
 - Support for specifying that text is not translated.
+- Support for caching translated strings.
 
 # Preview
 ![image](https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/preview/preview.gif)
+![image](https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/preview/settings.png)
 
 # Install
-## Online installation
-- Step 1: Open AndroidStudio or IDEA.
-- Step 2: Preferences -> Plugins -> Browse repositories...
-- Step 3: Search AndroidLocalize and install. Then restart IDE.
-
-## Local installation
-- Step 1: Download AndroidLocalizePlugin.zip file.
-- Step 2: Open AndroidStudio or IDEA.
-- Step 3: Preferences -> Plugins -> Install plugin from disk...
-- Step 4: Select AndroidLocalizePlugin.zip and Restart IDE.
+[![Install Plugin](https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/preview/install.png)](https://plugins.jetbrains.com/plugin/11174-androidlocalize)
 
 # Usage
 - Step 1: Select the values/strings.xml.
-- Step 2: Right-click and select Convert to other languages.
-- Step 3: Select the language to be translated.
-- Step 4: Click ok.
+- Step 2: Right click and select "Translate to Other Languages".
+- Step 3: Select the languages to be translated.
+- Step 4: Click OK.
 
 # FAQ
-- Q1: Empty characters after translation?
+- Q: How to ignore translation?
 
-    A: You need to set an proxy or replace an proxy address or wait a while before trying. set proxy:
-
-    ![image](https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/preview/setproxy.png)
-
-- Q2: How to ignore translation?
-
-    A: Use the translatable or xliff:g tags. for example:
+    A: Use the [translatable or xliff:g](https://developer.android.com/guide/topics/resources/localization#managing-strings) tags. for example:
     ```
-    <string name="name" translatable="false">AndroidLocalizePlugin</string>
-    <string name="detail">detail<xliff:g>: %1$s</xliff:g></string>
+    <string name="app_name" translatable="false">HelloAndroid</string>
+    <string name="star_rating">Check out our 5<xliff:g id="star">\u2605</xliff:g></string>
+    <string name="app_home_url">Visit us at <xliff:g id="application_homepage">https://github.com/Airsaid/AndroidLocalizePlugin</xliff:g></string>
+    <string name="prod_name">Learn more at <xliff:g id="game_group">Muggle Game Studio</xliff:g></string>
     ```
+    **Note: Display one line without extra line breaks and spaces in between.**
 
-# Thanks
-- MTrans：[https://github.com/hujingshuang/MTrans](https://github.com/hujingshuang/MTrans)
+# ChangeLog
+[Change Log List](https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/CHANGELOG.md)
 
 # ContactMe
 - Telegram: [https://t.me/airsaids/](https://t.me/airsaids/)
 
 # Invite me for coffee :coffee:
 If this project has helped you, you can [invite me for coffee](https://25e37ece.wiz03.com/wapp/pages/view/share/s/0BUTXe15Q4mk28KWtW0l7BLh1Y6ijp02l4Ct2gxqhW0OmYvl).
-
 
 # License
 ```
