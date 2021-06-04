@@ -203,15 +203,15 @@ public final class AndroidStringsService {
 
   private String getValuesDirectoryName(@NotNull Lang lang) {
     String suffix;
-    if (lang == Languages.CHINESE_SIMPLIFIED) {
+    if (lang.equals(Languages.CHINESE_SIMPLIFIED)) {
       suffix = "zh-rCN";
-    } else if (lang == Languages.CHINESE_TRADITIONAL) {
+    } else if (lang.equals(Languages.CHINESE_TRADITIONAL)) {
       suffix = "zh-rTW";
-    } else if (lang == Languages.FILIPINO) {
+    } else if (lang.equals(Languages.FILIPINO)) {
       suffix = "fil";
-    } else if (lang == Languages.INDONESIAN) {
+    } else if (lang.equals(Languages.INDONESIAN)) {
       suffix = "in-rID";
-    } else if (lang == Languages.JAVANESE) {
+    } else if (lang.equals(Languages.JAVANESE)) {
       suffix = "jv";
     } else {
       suffix = lang.getCode();
