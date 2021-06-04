@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'com.airsaid'
-version '1.5.1-SNAPSHOT'
+version '2.0.0'
 
 sourceCompatibility = 1.8
 
@@ -19,12 +19,16 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
 }
 
-// See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
     version '2020.2.4'
+    updateSinceUntilBuild false
     plugins = ['com.intellij.java']
 }
 
 test {
     useJUnitPlatform()
+}
+
+publishPlugin {
+    token = System.getenv("INTELLIJ_PUBLISH_TOKEN")
 }
