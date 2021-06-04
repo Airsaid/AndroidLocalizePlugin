@@ -3,6 +3,7 @@ package com.airsaid.localization.translate.services;
 import com.airsaid.localization.translate.AbstractTranslator;
 import com.airsaid.localization.translate.impl.baidu.BaiduTranslator;
 import com.airsaid.localization.translate.impl.google.GoogleTranslator;
+import com.airsaid.localization.translate.impl.youdao.YoudaoTranslator;
 import com.airsaid.localization.translate.lang.Lang;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.Service;
@@ -37,6 +38,9 @@ public final class TranslatorService {
 
     BaiduTranslator baiduTranslator = new BaiduTranslator();
     translators.put(baiduTranslator.getKey(), baiduTranslator);
+
+    YoudaoTranslator youdaoTranslator = new YoudaoTranslator();
+    translators.put(youdaoTranslator.getKey(), youdaoTranslator);
 
     cacheService = TranslationCacheService.getInstance();
   }

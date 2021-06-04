@@ -27,4 +27,5 @@ public interface PluginIcons {
   Icon TRANSLATE_ACTION_ICON = IconLoader.getIcon("/icons/icon_translate.svg");
   Icon GOOGLE_ICON = IconLoader.getIcon("/icons/icon_google.svg");
   Icon BAIDU_ICON = IconLoader.getIcon("/icons/icon_baidu.svg");
+  Icon YOUDAO_ICON = IconLoader.getIcon("/icons/icon_youdao.svg");
 }
