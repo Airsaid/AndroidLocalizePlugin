@@ -41,6 +41,8 @@ public class SettingsConfigurable implements Configurable {
     Map<String, AbstractTranslator> translators = TranslatorService.getInstance().getTranslators();
     settingsComponent.setTranslators(translators);
     settingsComponent.setSelectedTranslator(translators.get(settingsState.getSelectedTranslator().getKey()));
+    settingsComponent.setEnableCache(settingsState.isEnableCache());
+    settingsComponent.setMaxCacheSize(settingsState.getMaxCacheSize());
   }
 
   @Override
@@ -50,6 +52,8 @@ public class SettingsConfigurable implements Configurable {
     boolean isChanged = settingsState.getSelectedTranslator() == selectedTranslator;
     isChanged |= settingsState.getAppId(selectedTranslator.getKey()).equals(selectedTranslator.getAppId());
     isChanged |= settingsState.getAppKey(selectedTranslator.getKey()).equals(selectedTranslator.getAppKey());
+    isChanged |= settingsState.isEnableCache() == settingsComponent.isEnableCache();
+    isChanged |= settingsState.getMaxCacheSize() == settingsComponent.getMaxCacheSize();
     LOG.info("isModified: " + isChanged);
     return isChanged;
   }
@@ -64,7 +68,13 @@ public class SettingsConfigurable implements Configurable {
       settingsState.setAppId(selectedTranslator.getKey(), settingsComponent.getAppId());
       settingsState.setAppKey(selectedTranslator.getKey(), settingsComponent.getAppKey());
     }
-    TranslatorService.getInstance().setSelectedTranslator(selectedTranslator);
+    settingsState.setEnableCache(settingsComponent.isEnableCache());
+    settingsState.setMaxCacheSize(settingsComponent.getMaxCacheSize());
+
+    TranslatorService translatorService = TranslatorService.getInstance();
+    translatorService.setSelectedTranslator(selectedTranslator);
+    translatorService.setEnableCache(settingsComponent.isEnableCache());
+    translatorService.setMaxCacheSize(settingsComponent.getMaxCacheSize());
   }
 
   @Override
@@ -75,6 +85,8 @@ public class SettingsConfigurable implements Configurable {
     settingsComponent.setSelectedTranslator(selectedTranslator);
     settingsComponent.setAppId(settingsState.getAppId(selectedTranslator.getKey()));
     settingsComponent.setAppKey(settingsState.getAppKey(selectedTranslator.getKey()));
+    settingsComponent.setEnableCache(settingsState.isEnableCache());
+    settingsComponent.setMaxCacheSize(settingsState.getMaxCacheSize());
   }
 
   @Override

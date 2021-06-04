@@ -13,21 +13,20 @@ public class LRUCache<K, V> {
   private Node<K, V> head;
   private Node<K, V> tail;
 
-  private final int initialCapacity;
+  private int maxCapacity;
 
   public LRUCache(int initialCapacity) {
-    this.initialCapacity = initialCapacity;
+    maxCapacity = initialCapacity;
     if (initialCapacity <= 0) {
       throw new IllegalArgumentException("Illegal Capacity: " + initialCapacity);
     }
-    caches = new LinkedHashMap<>(this.initialCapacity);
+    caches = new LinkedHashMap<>(initialCapacity);
   }
 
   public void put(K key, V value) {
-    if (isFull()) {
+    while (isFull()) {
       removeTailNode();
     }
-
     Node<K, V> newNode = new Node<>(key, value);
     caches.put(key, newNode);
     moveToHeadNode(newNode);
@@ -47,7 +46,7 @@ public class LRUCache<K, V> {
   }
 
   public boolean isFull() {
-    return size() >= initialCapacity;
+    return size() > 0 && size() >= maxCapacity;
   }
 
   public boolean isEmpty() {
@@ -90,6 +89,14 @@ public class LRUCache<K, V> {
       tail.prev = null;
     }
     tail = prev;
+  }
+
+  public void setMaxCapacity(int maxCapacity) {
+    this.maxCapacity = maxCapacity;
+  }
+
+  public int getMaxCapacity() {
+    return maxCapacity;
   }
 
   private static class Node<K, V> {

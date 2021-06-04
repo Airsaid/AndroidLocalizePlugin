@@ -19,7 +19,8 @@ import java.util.Map;
 /**
  * Cache the translated text to local disk.
  * <p>
- * Cache up to {@link #CACHE_ITEM_SIZE} data, after which the old text is removed according to the LRU algorithm..
+ * The maximum number of caches is set by the {@link #setMaxCacheSize(int)} method,
+ * if exceed this size, remove old data through the LRU algorithm.
  *
  * @author airsaid
  */
@@ -31,10 +32,10 @@ import java.util.Map;
 public final class TranslationCacheService implements PersistentStateComponent<TranslationCacheService>, Disposable {
 
   @Transient
-  private static final int CACHE_ITEM_SIZE = 100;
+  private static final int CACHE_MAX_SIZE = 500;
 
   @OptionTag(converter = LruCacheConverter.class)
-  private final LRUCache<String, String> lruCache = new LRUCache<>(CACHE_ITEM_SIZE);
+  private final LRUCache<String, String> lruCache = new LRUCache<>(CACHE_MAX_SIZE);
 
   public static TranslationCacheService getInstance() {
     return ServiceManager.getService(TranslationCacheService.class);
@@ -48,6 +49,10 @@ public final class TranslationCacheService implements PersistentStateComponent<T
   public String get(String key) {
     String value = lruCache.get(key);
     return value != null ? value : "";
+  }
+
+  public void setMaxCacheSize(int maxCacheSize) {
+    lruCache.setMaxCapacity(maxCacheSize);
   }
 
   @Override
@@ -70,7 +75,7 @@ public final class TranslationCacheService implements PersistentStateComponent<T
     public @Nullable LRUCache<String, String> fromString(@NotNull String value) {
       Type type = new TypeToken<Map<String, String>>() {}.getType();
       Map<String, String> map = GsonUtil.getInstance().getGson().fromJson(value, type);
-      LRUCache<String, String> lruCache = new LRUCache<>(CACHE_ITEM_SIZE);
+      LRUCache<String, String> lruCache = new LRUCache<>(CACHE_MAX_SIZE);
       for (Map.Entry<String, String> entry : map.entrySet()) {
         lruCache.put(entry.getKey(), entry.getValue());
       }

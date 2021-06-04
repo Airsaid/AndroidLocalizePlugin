@@ -4,6 +4,7 @@ import com.airsaid.localization.translate.AbstractTranslator;
 import com.airsaid.localization.translate.services.TranslatorService;
 import com.airsaid.localization.utils.SecureStorage;
 import com.intellij.openapi.components.*;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.text.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,6 +23,8 @@ import java.util.Map;
 @Service
 public final class SettingsState implements PersistentStateComponent<SettingsState.State> {
 
+  private static final Logger LOG = Logger.getInstance(SettingsState.class);
+
   private final Map<String, SecureStorage> appKeyStorage;
 
   private State state = new State();
@@ -39,6 +42,17 @@ public final class SettingsState implements PersistentStateComponent<SettingsSta
 
   public static SettingsState getInstance() {
     return ServiceManager.getService(SettingsState.class);
+  }
+
+  public void initSetting() {
+    TranslatorService translatorService = TranslatorService.getInstance();
+    AbstractTranslator selectedTranslator = translatorService.getSelectedTranslator();
+    if (selectedTranslator == null) {
+      LOG.info("initSetting");
+      translatorService.setSelectedTranslator(getSelectedTranslator());
+      translatorService.setEnableCache(isEnableCache());
+      translatorService.setMaxCacheSize(getMaxCacheSize());
+    }
   }
 
   public AbstractTranslator getSelectedTranslator() {
@@ -73,6 +87,22 @@ public final class SettingsState implements PersistentStateComponent<SettingsSta
     return secureStorage != null ? secureStorage.read() : "";
   }
 
+  public boolean isEnableCache() {
+    return state.isEnableCache;
+  }
+
+  public void setEnableCache(boolean isEnable) {
+    state.isEnableCache = isEnable;
+  }
+
+  public int getMaxCacheSize() {
+    return state.maxCacheSize;
+  }
+
+  public void setMaxCacheSize(int maxCacheSize) {
+    state.maxCacheSize = maxCacheSize;
+  }
+
   @Override
   public @Nullable SettingsState.State getState() {
     return state;
@@ -86,5 +116,7 @@ public final class SettingsState implements PersistentStateComponent<SettingsSta
   static class State {
     public String selectedTranslatorKey;
     public Map<String, String> appIds = new HashMap<>();
+    public boolean isEnableCache = true;
+    public int maxCacheSize = 100;
   }
 }

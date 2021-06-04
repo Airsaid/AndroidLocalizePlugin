@@ -28,6 +28,7 @@ public final class TranslatorService {
   private final AbstractTranslator defaultTranslator;
   private final TranslationCacheService cacheService;
   private final Map<String, AbstractTranslator> translators;
+  private boolean isEnableCache = true;
 
   public TranslatorService() {
     translators = new HashMap<>();
@@ -81,16 +82,30 @@ public final class TranslatorService {
   public String doTranslate(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
     LOG.info(String.format("doTranslate fromLang: %s, toLang: %s, text: %s", fromLang, toLang, text));
 
-    String cacheResult = cacheService.get(getCacheKey(fromLang, toLang, text));
-    if (!cacheResult.isEmpty()) {
-      LOG.info(String.format("doTranslate cache result: %s", cacheResult));
-      return cacheResult;
+    if (isEnableCache) {
+      String cacheResult = cacheService.get(getCacheKey(fromLang, toLang, text));
+      if (!cacheResult.isEmpty()) {
+        LOG.info(String.format("doTranslate cache result: %s", cacheResult));
+        return cacheResult;
+      }
     }
 
     String result = selectedTranslator.doTranslate(fromLang, toLang, text);
     LOG.info(String.format("doTranslate result: %s", result));
     cacheService.put(getCacheKey(fromLang, toLang, text), result);
     return result;
+  }
+
+  public void setEnableCache(boolean isEnableCache) {
+    this.isEnableCache = isEnableCache;
+  }
+
+  public boolean isEnableCache() {
+    return isEnableCache;
+  }
+
+  public void setMaxCacheSize(int maxCacheSize) {
+    cacheService.setMaxCacheSize(maxCacheSize);
   }
 
   private String getCacheKey(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {

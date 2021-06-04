@@ -11,6 +11,7 @@ import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.ui.CollectionComboBoxModel;
 import com.intellij.ui.SimpleListCellRenderer;
+import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPasswordField;
 import com.intellij.ui.components.JBTextField;
@@ -36,8 +37,16 @@ public class SettingsComponent {
   private JBPasswordField appKeyField;
   private FixedLinkLabel applyLink;
   private JButton supportLanguagesButton;
+  private JLabel maxCacheSizeLabel;
+  private JBCheckBox enableCacheCheckBox;
+  private ComboBox<String> maxCacheSizeComboBox;
 
   public SettingsComponent() {
+    initTranslatorComponents();
+    initCacheComponents();
+  }
+
+  private void initTranslatorComponents() {
     translatorsComboBox.setRenderer(new SimpleListCellRenderer<AbstractTranslator>() {
       @Override
       public void customize(@NotNull JList<? extends AbstractTranslator> list, AbstractTranslator value, int index, boolean selected, boolean hasFocus) {
@@ -60,6 +69,16 @@ public class SettingsComponent {
     }, null);
     supportLanguagesButton.addActionListener(actionEvent -> {
       showSupportLanguagesDialog(getSelectedTranslator());
+    });
+  }
+
+  private void initCacheComponents() {
+    enableCacheCheckBox.addItemListener(event -> {
+      if (event.getStateChange() == ItemEvent.SELECTED) {
+        setEnableCache(true);
+      } else if (event.getStateChange() == ItemEvent.DESELECTED) {
+        setEnableCache(false);
+      }
     });
   }
 
@@ -139,4 +158,23 @@ public class SettingsComponent {
   public void setAppKey(@NotNull String appKey) {
     appKeyField.setText(appKey);
   }
+
+  public void setEnableCache(boolean isEnable) {
+    enableCacheCheckBox.setSelected(isEnable);
+    maxCacheSizeComboBox.setVisible(isEnable);
+    maxCacheSizeLabel.setVisible(isEnable);
+  }
+
+  public boolean isEnableCache() {
+    return enableCacheCheckBox.isSelected();
+  }
+
+  public int getMaxCacheSize() {
+    return Integer.parseInt((String) Objects.requireNonNull(maxCacheSizeComboBox.getSelectedItem()));
+  }
+
+  public void setMaxCacheSize(int maxCacheSize) {
+    maxCacheSizeComboBox.setSelectedItem(String.valueOf(maxCacheSize));
+  }
+
 }
