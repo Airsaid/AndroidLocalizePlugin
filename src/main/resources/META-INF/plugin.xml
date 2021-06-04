@@ -4,20 +4,46 @@
     <vendor email="airsaid1024@gmail.com" url="https://github.com/Airsaid/AndroidLocalizePlugin">Airsaid</vendor>
 
     <description><![CDATA[
-      Android localization plugin. Support multiple languages, No need to apply for key.<br>
-      <li>1. Select the values/strings.xml.</li>
-      <li>2. Right-click and select Convert to other languages.</li>
-      <li>3. Select the language to be translated.</li>
-      <li>4. Click ok.</li>
+        <h3>Android localization plugin, supports multiple languages and multiple translators.</h3>
+        <b>
+        <a href="https://github.com/Airsaid/AndroidLocalizePlugin">GitHub</a> |
+        <a href="https://github.com/Airsaid/AndroidLocalizePlugin/issues">Issues</a> |
+        <a href="https://plugins.jetbrains.com/plugin/11174-androidlocalize">Rate</a>
+        </b>
+        <h4>Features:</h4>
+        <ul>
+        <li>Multiple translator support:
+          <ul>
+            <li>Google translator.</li>
+            <li>Baidu translator.</li>
+            <li>Youdao translator.</li>
+          </ul>
+        </li>
+        <li>Supports up to 100+ languages.</li>
+        <li>One key generates all translation files.</li>
+        <li>Support no translation of existing string.</li>
+        <li>Support for specifying that text is not translated.</li>
+        <li>Support for caching translated strings.</li>
+        </ul>
+        <h4>Usage:</h4>
+        <ol>
+        <li>Select the values/strings.xml.</li>
+        <li>Right click and select "Translate to Other Languages".</li>
+        <li>Select the languages to be translated.</li>
+        <li>Click ok.</li>
+        </ol>
     ]]></description>
 
     <change-notes><![CDATA[
-      <li>V1.0: Initial release of the plugin.</li>
-      <li>V1.1: Support for automatic detection of source file language.</li>
-      <li>V1.2: Fixed garbled bug.</li>
-      <li>V1.3: Added Overwrite Existing String function. and optimize the experience of choice.</li>
-      <li>V1.4: Added proxy support and fixed bugs.</li>
-      <li>V1.5: Added select all options.</li>
+      <ul>
+        <li>Completely refactor the code.</li>
+        <li>Added multiple translator support.</li>
+        <li>Added "Open Translated File" option.</li>
+        <li>Added translation cache.</li>
+        <li>Optimized the experience.</li>
+        <li>Fixed bugs.</li>
+      </ul>
+      <a href="https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/CHANGELOG.md"><b>Full Changelog History</b></a>
     ]]></change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
@@ -29,17 +55,18 @@
     <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <applicationConfigurable groupId="tools" id="Android.localize"
-                                 instance="com.airsaid.localization.config.AndroidLocalizeConfigurable"/>
+        <applicationConfigurable parentId="tools"
+                                 instance="com.airsaid.localization.config.SettingsConfigurable"
+                                 id="com.airsaid.localization.config.SettingsConfigurable"/>
     </extensions>
 
     <actions>
-        <action id="AndroidLocalizePlugin.ConvertAction" class="com.airsaid.localization.action.ConvertAction"
-                text="Convert to other languages"
-                icon="PluginIcons.CONVERT_ACTION_ICON"
-                description="Convert this strings.xml to other languages that can be used to localize your Android app.">
+        <action id="com.airsaid.localization.action.TranslateAction"
+                class="com.airsaid.localization.action.TranslateAction"
+                text="Translate to Other Languages"
+                icon="PluginIcons.TRANSLATE_ACTION_ICON"
+                description="Translate this strings.xml to other languages that can be used to localize your Android APP.">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="EditSource"/>
         </action>
     </actions>
-
 </idea-plugin>

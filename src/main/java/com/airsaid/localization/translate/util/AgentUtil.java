@@ -1,0 +1,38 @@
+package com.airsaid.localization.translate.util;
+
+import com.intellij.openapi.util.SystemInfo;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * @author airsaid
+ */
+public class AgentUtil {
+
+  private static final String CHROME_VERSION = "90.0.4430.85";
+
+  private AgentUtil() {
+    throw new AssertionError("No com.airsaid.localization.translate.util.AgentUtil instances for you!");
+  }
+
+  public static String getUserAgent() {
+    String arch = System.getProperty("os.arch");
+    boolean is64Bit = arch != null && arch.contains("64");
+    String systemInformation;
+    if (SystemInfo.isWindows) {
+      systemInformation = is64Bit ? "Windows NT; Win64; x64" : "Windows NT ";
+    } else if (SystemInfo.isMac) {
+      List<String> parts = Arrays.stream(SystemInfo.OS_VERSION.split("\\.")).collect(Collectors.toList());
+      if (parts.size() < 3) {
+        parts.add("0");
+      }
+      systemInformation = String.format("Macintosh; Intel Mac OS X %s", String.join("_", parts));
+    } else {
+      systemInformation = is64Bit ? "X11; Linux x86_64" : "X11; Linux x86";
+    }
+    return "Mozilla/5.0 (".concat(systemInformation).concat(") AppleWebKit/537.36 (KHTML, like Gecko) Chrome/").concat(CHROME_VERSION).concat(" Safari/537.36");
+  }
+
+}

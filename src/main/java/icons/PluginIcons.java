@@ -20,6 +20,12 @@ import com.intellij.openapi.util.IconLoader;
 
 import javax.swing.*;
 
+/**
+ * @author airsaid
+ */
 public interface PluginIcons {
-  Icon CONVERT_ACTION_ICON = IconLoader.getIcon("/icons/icon.png");
+  Icon TRANSLATE_ACTION_ICON = IconLoader.getIcon("/icons/icon_translate.svg");
+  Icon GOOGLE_ICON = IconLoader.getIcon("/icons/icon_google.svg");
+  Icon BAIDU_ICON = IconLoader.getIcon("/icons/icon_baidu.svg");
+  Icon YOUDAO_ICON = IconLoader.getIcon("/icons/icon_youdao.svg");
 }

@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'com.airsaid'
-version '1.5.1-SNAPSHOT'
+version '2.0.0'
 
 sourceCompatibility = 1.8
 
@@ -13,22 +13,22 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.apache.httpcomponents:httpclient:4.5.5'
-    implementation 'org.apache.httpcomponents:httpcore:4.4.9'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.9.5'
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.9.5'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.5'
+    implementation 'com.google.code.gson:gson:2.8.7'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
 }
 
-// See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
     version '2020.2.4'
+    updateSinceUntilBuild false
     plugins = ['com.intellij.java']
 }
 
 test {
     useJUnitPlatform()
+}
+
+publishPlugin {
+    token = System.getenv("INTELLIJ_PUBLISH_TOKEN")
 }
