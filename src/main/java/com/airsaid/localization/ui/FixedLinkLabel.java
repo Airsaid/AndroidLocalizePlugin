@@ -2,7 +2,6 @@ package com.airsaid.localization.ui;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.ui.components.labels.LinkLabel;
-import jdk.javadoc.internal.doclets.toolkit.util.DocLink;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
