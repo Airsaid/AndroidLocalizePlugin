@@ -1,5 +1,10 @@
 # Change Log
 
+## [V2.1.0](https://github.com/Airsaid/AndroidLocalizePlugin/releases/tag/v2.1.0) (2021-06-05)
+- Added Microsoft Translator.
+- Added "Use google.com" setting.
+- Supported more languages.
+
 ## [V2.0.0](https://github.com/Airsaid/AndroidLocalizePlugin/releases/tag/v2.0.0) (2021-06-04)
 - Completely refactor the code.
 - Added multiple translator support.

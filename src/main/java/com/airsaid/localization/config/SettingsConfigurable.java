@@ -1,7 +1,25 @@
+/*
+ * Copyright 2021 Airsaid. https://github.com/airsaid
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.airsaid.localization.config;
 
 import com.airsaid.localization.constant.Constants;
 import com.airsaid.localization.translate.AbstractTranslator;
+import com.airsaid.localization.translate.impl.google.GoogleTranslator;
 import com.airsaid.localization.translate.services.TranslatorService;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.options.Configurable;
@@ -40,6 +58,7 @@ public class SettingsConfigurable implements Configurable {
     SettingsState settingsState = SettingsState.getInstance();
     Map<String, AbstractTranslator> translators = TranslatorService.getInstance().getTranslators();
     settingsComponent.setTranslators(translators);
+    settingsComponent.setUseGoogleCom(settingsState.isUseGoogleCom());
     settingsComponent.setSelectedTranslator(translators.get(settingsState.getSelectedTranslator().getKey()));
     settingsComponent.setEnableCache(settingsState.isEnableCache());
     settingsComponent.setMaxCacheSize(settingsState.getMaxCacheSize());
@@ -50,6 +69,7 @@ public class SettingsConfigurable implements Configurable {
     SettingsState settingsState = SettingsState.getInstance();
     AbstractTranslator selectedTranslator = settingsComponent.getSelectedTranslator();
     boolean isChanged = settingsState.getSelectedTranslator() == selectedTranslator;
+    isChanged |= settingsState.isUseGoogleCom() == settingsComponent.isUseGoogleCom();
     isChanged |= settingsState.getAppId(selectedTranslator.getKey()).equals(selectedTranslator.getAppId());
     isChanged |= settingsState.getAppKey(selectedTranslator.getKey()).equals(selectedTranslator.getAppKey());
     isChanged |= settingsState.isEnableCache() == settingsComponent.isEnableCache();
@@ -64,8 +84,13 @@ public class SettingsConfigurable implements Configurable {
     AbstractTranslator selectedTranslator = settingsComponent.getSelectedTranslator();
     LOG.info("apply selectedTranslator: " + selectedTranslator.getName());
     settingsState.setSelectedTranslator(selectedTranslator);
-    if (!settingsComponent.isSelectedDefaultTranslator()) {
+    if (selectedTranslator.getClass() == GoogleTranslator.class) {
+      settingsState.setUseGoogleCom(settingsComponent.isUseGoogleCom());
+    }
+    if (selectedTranslator.isNeedAppId()) {
       settingsState.setAppId(selectedTranslator.getKey(), settingsComponent.getAppId());
+    }
+    if (selectedTranslator.isNeedAppKey()) {
       settingsState.setAppKey(selectedTranslator.getKey(), settingsComponent.getAppKey());
     }
     settingsState.setEnableCache(settingsComponent.isEnableCache());
@@ -73,6 +98,7 @@ public class SettingsConfigurable implements Configurable {
 
     TranslatorService translatorService = TranslatorService.getInstance();
     translatorService.setSelectedTranslator(selectedTranslator);
+    translatorService.setUseGoogleComHost(settingsComponent.isUseGoogleCom());
     translatorService.setEnableCache(settingsComponent.isEnableCache());
     translatorService.setMaxCacheSize(settingsComponent.getMaxCacheSize());
   }
@@ -83,6 +109,7 @@ public class SettingsConfigurable implements Configurable {
     SettingsState settingsState = SettingsState.getInstance();
     AbstractTranslator selectedTranslator = settingsState.getSelectedTranslator();
     settingsComponent.setSelectedTranslator(selectedTranslator);
+    settingsComponent.setUseGoogleCom(settingsState.isUseGoogleCom());
     settingsComponent.setAppId(settingsState.getAppId(selectedTranslator.getKey()));
     settingsComponent.setAppKey(settingsState.getAppKey(selectedTranslator.getKey()));
     settingsComponent.setEnableCache(settingsState.isEnableCache());

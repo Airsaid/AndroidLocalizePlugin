@@ -1,6 +1,24 @@
+/*
+ * Copyright 2021 Airsaid. https://github.com/airsaid
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.airsaid.localization.config;
 
 import com.airsaid.localization.translate.AbstractTranslator;
+import com.airsaid.localization.translate.impl.google.GoogleTranslator;
 import com.airsaid.localization.translate.services.TranslatorService;
 import com.airsaid.localization.ui.FixedLinkLabel;
 import com.airsaid.localization.ui.SupportLanguagesDialog;
@@ -40,6 +58,7 @@ public class SettingsComponent {
   private JLabel maxCacheSizeLabel;
   private JBCheckBox enableCacheCheckBox;
   private ComboBox<String> maxCacheSizeComboBox;
+  private JCheckBox useGoogleComCheckBox;
 
   public SettingsComponent() {
     initTranslatorComponents();
@@ -107,19 +126,19 @@ public class SettingsComponent {
   public void setSelectedTranslator(@NotNull AbstractTranslator selected) {
     LOG.info("setSelectedTranslator: " + selected);
     translatorsComboBox.setSelectedItem(selected);
-    if (isSelectedDefaultTranslator(selected)) {
-      appIdLabel.setVisible(false);
-      appKeyLabel.setVisible(false);
-      appIdField.setVisible(false);
-      appKeyField.setVisible(false);
-    } else {
-      appIdLabel.setVisible(true);
-      appKeyLabel.setVisible(true);
-      appIdField.setVisible(true);
-      appKeyField.setVisible(true);
-      appIdField.setText(selected.getAppId());
-      appKeyField.setText(selected.getAppKey());
-    }
+
+    useGoogleComCheckBox.setVisible(selected.getClass() == GoogleTranslator.class);
+
+    boolean isNeedAppId = selected.isNeedAppId();
+    appIdLabel.setVisible(isNeedAppId);
+    appIdField.setVisible(isNeedAppId);
+    if (isNeedAppId) appIdField.setText(selected.getAppId());
+
+    boolean isNeedAppKey = selected.isNeedAppKey();
+    appKeyLabel.setVisible(isNeedAppKey);
+    appKeyField.setVisible(isNeedAppKey);
+    if (isNeedAppKey) appKeyField.setText(selected.getAppKey());
+
     String applyAppIdUrl = selected.getApplyAppIdUrl();
     if (!StringUtil.isEmpty(applyAppIdUrl)) {
       applyLink.setVisible(true);
@@ -137,6 +156,14 @@ public class SettingsComponent {
 
   private boolean isSelectedDefaultTranslator(@NotNull AbstractTranslator selected) {
     return selected == TranslatorService.getInstance().getDefaultTranslator();
+  }
+
+  public boolean isUseGoogleCom() {
+    return useGoogleComCheckBox.isSelected();
+  }
+
+  public void setUseGoogleCom(boolean useGoogleCom) {
+    useGoogleComCheckBox.setSelected(useGoogleCom);
   }
 
   @NotNull

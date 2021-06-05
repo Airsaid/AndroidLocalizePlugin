@@ -1,8 +1,24 @@
+/*
+ * Copyright 2021 Airsaid. https://github.com/airsaid
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.airsaid.localization.translate.impl.youdao;
 
 import com.airsaid.localization.translate.AbstractTranslator;
 import com.airsaid.localization.translate.TranslationException;
-import com.airsaid.localization.translate.impl.baidu.BaiduTranslationResult;
 import com.airsaid.localization.translate.lang.Lang;
 import com.airsaid.localization.translate.lang.Languages;
 import com.airsaid.localization.translate.util.GsonUtil;
@@ -78,7 +94,7 @@ public class YoudaoTranslator extends AbstractTranslator {
       supportedLanguages.add(Languages.HAITIAN_CREOLE);
       supportedLanguages.add(Languages.HINDI);
       supportedLanguages.add(Languages.HUNGARIAN);
-      supportedLanguages.add(Languages.SWAHILI_SWAHILI);
+      supportedLanguages.add(Languages.SWAHILI);
       supportedLanguages.add(Languages.LITHUANIAN);
       supportedLanguages.add(Languages.MALAY);
       supportedLanguages.add(Languages.MALTESE);
@@ -95,7 +111,7 @@ public class YoudaoTranslator extends AbstractTranslator {
       supportedLanguages.add(Languages.URDU);
       supportedLanguages.add(Languages.AMHARIC);
       supportedLanguages.add(Languages.AZERBAIJANI);
-      supportedLanguages.add(Languages.BENGALI);
+      supportedLanguages.add(Languages.BANGLA);
       supportedLanguages.add(Languages.BASQUE);
       supportedLanguages.add(Languages.BELARUSIAN);
       supportedLanguages.add(Languages.CEBUANO);
@@ -113,7 +129,7 @@ public class YoudaoTranslator extends AbstractTranslator {
       supportedLanguages.add(Languages.KHMER);
       supportedLanguages.add(Languages.KURDISH);
       supportedLanguages.add(Languages.KYRGYZ);
-      supportedLanguages.add(Languages.LAOTIAN);
+      supportedLanguages.add(Languages.LAO);
       supportedLanguages.add(Languages.LATIN);
       supportedLanguages.add(Languages.LUXEMBOURGISH);
       supportedLanguages.add(Languages.MACEDONIAN);

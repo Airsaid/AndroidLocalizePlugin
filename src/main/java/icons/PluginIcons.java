@@ -28,4 +28,5 @@ public interface PluginIcons {
   Icon GOOGLE_ICON = IconLoader.getIcon("/icons/icon_google.svg");
   Icon BAIDU_ICON = IconLoader.getIcon("/icons/icon_baidu.svg");
   Icon YOUDAO_ICON = IconLoader.getIcon("/icons/icon_youdao.svg");
+  Icon MICROSOFT_ICON = IconLoader.getIcon("/icons/icon_microsoft.svg");
 }

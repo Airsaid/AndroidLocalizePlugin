@@ -1,3 +1,20 @@
+/*
+ * Copyright 2021 Airsaid. https://github.com/airsaid
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.airsaid.localization.translate.impl.google;
 
 import com.airsaid.localization.translate.AbstractTranslator;
@@ -22,10 +39,17 @@ import java.util.List;
 public class GoogleTranslator extends AbstractTranslator {
   private static final String KEY = "Google";
 
-  public static final String HOST_URL = "https://translate.google.cn";
-  public static final String BASE_URL = HOST_URL.concat("/translate_a/single");
+  private static final String HOST_URL_CN = "https://translate.google.cn";
+  private static final String HOST_URL_COM = "https://translate.google.com";
+  public static String HOST_URL = HOST_URL_CN;
+  private static String BASE_URL = HOST_URL.concat("/translate_a/single");
 
   private List<Lang> supportedLanguages;
+
+  public static void setUseComHost(boolean useComHost) {
+    HOST_URL = useComHost ? HOST_URL_COM : HOST_URL_CN;
+    BASE_URL = HOST_URL.concat("/translate_a/single");
+  }
 
   @Override
   public @NotNull String getKey() {
@@ -43,15 +67,23 @@ public class GoogleTranslator extends AbstractTranslator {
   }
 
   @Override
+  public boolean isNeedAppId() {
+    return false;
+  }
+
+  @Override
+  public boolean isNeedAppKey() {
+    return false;
+  }
+
+  @Override
   @NotNull
   public List<Lang> getSupportedLanguages() {
     if (supportedLanguages == null) {
       List<Lang> languages = Languages.getLanguages();
-      supportedLanguages = new ArrayList<>(languages.size() - 1);
-      for (Lang lang : languages) {
-        if (lang != Languages.AUTO) {
-          supportedLanguages.add(lang);
-        }
+      supportedLanguages = new ArrayList<>(104);
+      for (int i = 1; i <= 104; i++) {
+        supportedLanguages.add(languages.get(i));
       }
     }
     return supportedLanguages;
