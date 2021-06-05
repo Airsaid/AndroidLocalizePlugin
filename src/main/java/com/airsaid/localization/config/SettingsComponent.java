@@ -107,19 +107,17 @@ public class SettingsComponent {
   public void setSelectedTranslator(@NotNull AbstractTranslator selected) {
     LOG.info("setSelectedTranslator: " + selected);
     translatorsComboBox.setSelectedItem(selected);
-    if (isSelectedDefaultTranslator(selected)) {
-      appIdLabel.setVisible(false);
-      appKeyLabel.setVisible(false);
-      appIdField.setVisible(false);
-      appKeyField.setVisible(false);
-    } else {
-      appIdLabel.setVisible(true);
-      appKeyLabel.setVisible(true);
-      appIdField.setVisible(true);
-      appKeyField.setVisible(true);
-      appIdField.setText(selected.getAppId());
-      appKeyField.setText(selected.getAppKey());
-    }
+
+    boolean isNeedAppId = selected.isNeedAppId();
+    appIdLabel.setVisible(isNeedAppId);
+    appIdField.setVisible(isNeedAppId);
+    if (isNeedAppId) appIdField.setText(selected.getAppId());
+
+    boolean isNeedAppKey = selected.isNeedAppKey();
+    appKeyLabel.setVisible(isNeedAppKey);
+    appKeyField.setVisible(isNeedAppKey);
+    if (isNeedAppKey) appKeyField.setText(selected.getAppKey());
+
     String applyAppIdUrl = selected.getApplyAppIdUrl();
     if (!StringUtil.isEmpty(applyAppIdUrl)) {
       applyLink.setVisible(true);

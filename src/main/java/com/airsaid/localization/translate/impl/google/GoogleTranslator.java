@@ -43,6 +43,16 @@ public class GoogleTranslator extends AbstractTranslator {
   }
 
   @Override
+  public boolean isNeedAppId() {
+    return false;
+  }
+
+  @Override
+  public boolean isNeedAppKey() {
+    return false;
+  }
+
+  @Override
   @NotNull
   public List<Lang> getSupportedLanguages() {
     if (supportedLanguages == null) {

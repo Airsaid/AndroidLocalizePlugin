@@ -24,8 +24,12 @@ public interface TranslatorConfigurable {
   @NotNull
   List<Lang> getSupportedLanguages();
 
+  boolean isNeedAppId();
+
   @Nullable
   String getAppId();
+
+  boolean isNeedAppKey();
 
   @Nullable
   String getAppKey();
