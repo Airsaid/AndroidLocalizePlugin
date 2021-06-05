@@ -47,11 +47,9 @@ public class GoogleTranslator extends AbstractTranslator {
   public List<Lang> getSupportedLanguages() {
     if (supportedLanguages == null) {
       List<Lang> languages = Languages.getLanguages();
-      supportedLanguages = new ArrayList<>(languages.size() - 1);
-      for (Lang lang : languages) {
-        if (lang != Languages.AUTO) {
-          supportedLanguages.add(lang);
-        }
+      supportedLanguages = new ArrayList<>(104);
+      for (int i = 1; i <= 104; i++) {
+        supportedLanguages.add(languages.get(i));
       }
     }
     return supportedLanguages;
