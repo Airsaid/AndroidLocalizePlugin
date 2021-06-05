@@ -31,17 +31,22 @@ public abstract class AbstractTranslator implements Translator, TranslatorConfig
     }
 
     String requestUrl = getRequestUrl(fromLang, toLang, text);
-    String requestParams = getRequestParams(fromLang, toLang, text)
-        .stream()
-        .map(pair -> pair.first.concat("=").concat(pair.second))
-        .collect(Collectors.joining("&"));
-
     RequestBuilder requestBuilder = HttpRequests.post(requestUrl, CONTENT_TYPE);
     configureRequestBuilder(requestBuilder);
 
     try {
       return requestBuilder.connect(request -> {
-        request.write(requestParams);
+        String requestParams = getRequestParams(fromLang, toLang, text)
+            .stream()
+            .map(pair -> pair.first.concat("=").concat(pair.second))
+            .collect(Collectors.joining("&"));
+        if (!requestParams.isEmpty()) {
+          request.write(requestParams);
+        }
+        String requestBody = getRequestBody(fromLang, toLang, text);
+        if (!requestBody.isEmpty()) {
+          request.write(requestBody);
+        }
         String resultText = request.readString();
         return parsingResult(fromLang, toLang, text, resultText);
       });
@@ -57,8 +62,18 @@ public abstract class AbstractTranslator implements Translator, TranslatorConfig
   }
 
   @Override
+  public boolean isNeedAppId() {
+    return true;
+  }
+
+  @Override
   public @Nullable String getAppId() {
     return SettingsState.getInstance().getAppId(getKey());
+  }
+
+  @Override
+  public boolean isNeedAppKey() {
+    return true;
   }
 
   @Override
@@ -76,6 +91,11 @@ public abstract class AbstractTranslator implements Translator, TranslatorConfig
 
   @NotNull
   public abstract List<Pair<String, String>> getRequestParams(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text);
+
+  @NotNull
+  public String getRequestBody(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
+    return "";
+  }
 
   public abstract void configureRequestBuilder(@NotNull RequestBuilder requestBuilder);
 
