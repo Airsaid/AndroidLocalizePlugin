@@ -15,6 +15,7 @@
         <li>Multiple translator support:
           <ul>
             <li>Google translator.</li>
+            <li>Microsoft translator.</li>
             <li>Baidu translator.</li>
             <li>Youdao translator.</li>
           </ul>
@@ -36,12 +37,9 @@
 
     <change-notes><![CDATA[
       <ul>
-        <li>Completely refactor the code.</li>
-        <li>Added multiple translator support.</li>
-        <li>Added "Open Translated File" option.</li>
-        <li>Added translation cache.</li>
-        <li>Optimized the experience.</li>
-        <li>Fixed bugs.</li>
+        <li>Added Microsoft Translator.</li>
+        <li>Added "Use google.com" setting.</li>
+        <li>Supported more languages.</li>
       </ul>
       <a href="https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/CHANGELOG.md"><b>Full Changelog History</b></a>
     ]]></change-notes>

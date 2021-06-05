@@ -7,6 +7,7 @@
 # Features
 - Multiple translator support:
   - Google translator. 
+  - Microsoft translator.
   - Baidu translator.
   - Youdao translator.
 - Supports up to 100+ languages.
