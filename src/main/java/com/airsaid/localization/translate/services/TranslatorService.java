@@ -100,6 +100,10 @@ public final class TranslatorService {
     return result;
   }
 
+  public void setUseGoogleComHost(boolean isUseGoogleComHost) {
+    GoogleTranslator.setUseComHost(isUseGoogleComHost);
+  }
+
   public void setEnableCache(boolean isEnableCache) {
     this.isEnableCache = isEnableCache;
   }

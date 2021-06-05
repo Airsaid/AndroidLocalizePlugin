@@ -22,10 +22,17 @@ import java.util.List;
 public class GoogleTranslator extends AbstractTranslator {
   private static final String KEY = "Google";
 
-  public static final String HOST_URL = "https://translate.google.cn";
-  public static final String BASE_URL = HOST_URL.concat("/translate_a/single");
+  private static final String HOST_URL_CN = "https://translate.google.cn";
+  private static final String HOST_URL_COM = "https://translate.google.com";
+  public static String HOST_URL = HOST_URL_CN;
+  private static String BASE_URL = HOST_URL.concat("/translate_a/single");
 
   private List<Lang> supportedLanguages;
+
+  public static void setUseComHost(boolean useComHost) {
+    HOST_URL = useComHost ? HOST_URL_COM : HOST_URL_CN;
+    BASE_URL = HOST_URL.concat("/translate_a/single");
+  }
 
   @Override
   public @NotNull String getKey() {
