@@ -85,8 +85,12 @@ public class GoogleTranslationResult implements TranslationResult {
     if (sentences == null || sentences.isEmpty()) {
       return "";
     }
-    String trans = sentences.get(0).getTrans();
-    return trans != null ? trans : "";
+    StringBuilder result = new StringBuilder();
+    for (Sentences sentence : sentences) {
+      String trans = sentence.getTrans();
+      if (trans != null) result.append(trans);
+    }
+    return result.toString();
   }
 
   public static class Sentences {
