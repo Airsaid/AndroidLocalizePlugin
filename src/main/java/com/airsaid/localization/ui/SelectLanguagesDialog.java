@@ -19,6 +19,7 @@ package com.airsaid.localization.ui;
 
 import com.airsaid.localization.config.SettingsState;
 import com.airsaid.localization.constant.Constants;
+import com.airsaid.localization.translate.AbstractTranslator;
 import com.airsaid.localization.translate.lang.Lang;
 import com.airsaid.localization.translate.services.TranslatorService;
 import com.airsaid.localization.utils.LanguageUtil;
@@ -47,6 +48,7 @@ public class SelectLanguagesDialog extends DialogWrapper {
   private JCheckBox selectAllCheckBox;
   private JPanel languagesPanel;
   private JCheckBox openTranslatedFileCheckBox;
+  private JLabel powerTranslatorLabel;
 
   private final Project project;
   private OnClickListener onClickListener;
@@ -85,6 +87,11 @@ public class SelectLanguagesDialog extends DialogWrapper {
     initOverwriteExistingStringOption();
     initOpenTranslatedFileCheckBox();
     initSelectAllOption();
+
+    // set power ui
+    AbstractTranslator translator = TranslatorService.getInstance().getSelectedTranslator();
+    powerTranslatorLabel.setText("Power By " + translator.getName());
+    powerTranslatorLabel.setIcon(translator.getIcon());
   }
 
   private void addLanguageList(List<Lang> supportedLanguages) {
