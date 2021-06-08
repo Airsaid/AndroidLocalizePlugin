@@ -1,5 +1,9 @@
 # Change Log
 
+## [V2.2.0](https://github.com/Airsaid/AndroidLocalizePlugin/releases/tag/v2.2.0) (2021-06-08)
+- Fix incomplete Google translation long text [#31](https://github.com/Airsaid/AndroidLocalizePlugin/issues/31).
+- Add power by translator description.
+
 ## [V2.1.0](https://github.com/Airsaid/AndroidLocalizePlugin/releases/tag/v2.1.0) (2021-06-05)
 - Added Microsoft Translator.
 - Added "Use google.com" setting.

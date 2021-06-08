@@ -37,9 +37,8 @@
 
     <change-notes><![CDATA[
       <ul>
-        <li>Added Microsoft Translator.</li>
-        <li>Added "Use google.com" setting.</li>
-        <li>Supported more languages.</li>
+        <li>Fix incomplete Google translation long text.</li>
+        <li>Add power by translator description.</li>
       </ul>
       <a href="https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/CHANGELOG.md"><b>Full Changelog History</b></a>
     ]]></change-notes>
