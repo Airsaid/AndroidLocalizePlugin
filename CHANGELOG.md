@@ -1,5 +1,8 @@
 # Change Log
 
+## [V2.2.1](https://github.com/Airsaid/AndroidLocalizePlugin/releases/tag/v2.2.1) (2021-07-06)
+- Fix translation error when source text is in chinese [#33](https://github.com/Airsaid/AndroidLocalizePlugin/issues/33).
+
 ## [V2.2.0](https://github.com/Airsaid/AndroidLocalizePlugin/releases/tag/v2.2.0) (2021-06-08)
 - Fix incomplete Google translation long text [#31](https://github.com/Airsaid/AndroidLocalizePlugin/issues/31).
 - Add power by translator description.
