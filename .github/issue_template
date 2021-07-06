@@ -5,6 +5,12 @@ Please ensure you have given all the following requested information in your rep
 - [ ] Android Studio
 - [ ] IntelliJ IDEA
 
+#### Please select the translator to use
+- [ ] Google
+- [ ] Microsoft
+- [ ] Baidu
+- [ ] Youdao
+
 #### Version of Plugin and IDE
 - Plugin Version:
 - IDE Version:
