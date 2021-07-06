@@ -26,7 +26,6 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.Pair;
 import com.intellij.util.io.RequestBuilder;
 import icons.PluginIcons;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -182,7 +181,7 @@ public class MicrosoftTranslator extends AbstractTranslator {
   @Override
   @NotNull
   public String getRequestBody(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
-    return "[{\"Text\": \"" + StringEscapeUtils.escapeJava(text) + "\"}]";
+    return "[{\"Text\": \"" + text + "\"}]";
   }
 
   @Override

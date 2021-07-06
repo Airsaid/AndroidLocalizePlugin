@@ -22,11 +22,9 @@ import com.airsaid.localization.translate.TranslationException;
 import com.airsaid.localization.translate.lang.Lang;
 import com.airsaid.localization.translate.lang.Languages;
 import com.airsaid.localization.translate.util.GsonUtil;
-import com.airsaid.localization.translate.util.UrlBuilder;
 import com.intellij.openapi.util.Pair;
 import com.intellij.util.io.RequestBuilder;
 import icons.PluginIcons;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -169,20 +167,7 @@ public class YoudaoTranslator extends AbstractTranslator {
 
   @Override
   public @NotNull String getRequestUrl(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
-    String salt = String.valueOf(System.currentTimeMillis());
-    String curTime = String.valueOf(System.currentTimeMillis() / 1000);
-    String appId = getAppId();
-    String appKey = getAppKey();
-    String sign = getDigest(appId + truncate(text) + salt + curTime + appKey);
-    return new UrlBuilder(TRANSLATE_URL)
-        .addQueryParameter("from", fromLang.getCode())
-        .addQueryParameter("to", toLang.getCode())
-        .addQueryParameter("signType", "v3")
-        .addQueryParameter("curtime", curTime)
-        .addQueryParameter("appKey", appId)
-        .addQueryParameter("salt", salt)
-        .addQueryParameter("sign", sign)
-        .build();
+    return TRANSLATE_URL;
   }
 
   private String truncate(String q) {
@@ -212,8 +197,20 @@ public class YoudaoTranslator extends AbstractTranslator {
 
   @Override
   public @NotNull List<Pair<String, String>> getRequestParams(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
+    String salt = String.valueOf(System.currentTimeMillis());
+    String curTime = String.valueOf(System.currentTimeMillis() / 1000);
+    String appId = getAppId();
+    String appKey = getAppKey();
+    String sign = getDigest(appId + truncate(text) + salt + curTime + appKey);
     List<Pair<String, String>> params = new ArrayList<>();
-    params.add(Pair.create("q", StringEscapeUtils.escapeJava(text)));
+    params.add(Pair.create("from", fromLang.getCode()));
+    params.add(Pair.create("to", toLang.getCode()));
+    params.add(Pair.create("signType", "v3"));
+    params.add(Pair.create("curtime", curTime));
+    params.add(Pair.create("appKey", appId));
+    params.add(Pair.create("salt", salt));
+    params.add(Pair.create("sign", sign));
+    params.add(Pair.create("q", text));
     return params;
   }
 
