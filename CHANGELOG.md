@@ -1,5 +1,9 @@
 # Change Log
 
+## [V2.3.0](https://github.com/Airsaid/AndroidLocalizePlugin/releases/tag/v2.3.0) (2021-07-09)
+- Add translation interval time setting.
+- Replace plugin logo.
+
 ## [V2.2.1](https://github.com/Airsaid/AndroidLocalizePlugin/releases/tag/v2.2.1) (2021-07-06)
 - Fix translation error when source text is in chinese [#33](https://github.com/Airsaid/AndroidLocalizePlugin/issues/33).
 

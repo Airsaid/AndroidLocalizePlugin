@@ -37,7 +37,8 @@
 
     <change-notes><![CDATA[
       <ul>
-        <li>Fix translation error when source text is in chinese.</li>
+        <li>Add translation interval time setting.</li>
+        <li>Replace plugin logo.</li>
       </ul>
       <a href="https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/CHANGELOG.md"><b>Full Changelog History</b></a>
     ]]></change-notes>
