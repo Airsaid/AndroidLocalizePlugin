@@ -59,6 +59,7 @@ public class SettingsComponent {
   private JBCheckBox enableCacheCheckBox;
   private ComboBox<String> maxCacheSizeComboBox;
   private JCheckBox useGoogleComCheckBox;
+  private ComboBox<String> translationIntervalComboBox;
 
   public SettingsComponent() {
     initTranslatorComponents();
@@ -204,4 +205,11 @@ public class SettingsComponent {
     maxCacheSizeComboBox.setSelectedItem(String.valueOf(maxCacheSize));
   }
 
+  public int getTranslationInterval() {
+    return Integer.parseInt((String) Objects.requireNonNull(translationIntervalComboBox.getSelectedItem()));
+  }
+
+  public void setTranslationInterval(int intervalTime) {
+    translationIntervalComboBox.setItem(String.valueOf(intervalTime));
+  }
 }

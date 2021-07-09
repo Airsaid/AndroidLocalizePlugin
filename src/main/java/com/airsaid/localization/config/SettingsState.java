@@ -70,6 +70,7 @@ public final class SettingsState implements PersistentStateComponent<SettingsSta
       translatorService.setSelectedTranslator(getSelectedTranslator());
       translatorService.setEnableCache(isEnableCache());
       translatorService.setMaxCacheSize(getMaxCacheSize());
+      translatorService.setTranslationInterval(getTranslationInterval());
     }
   }
 
@@ -129,6 +130,14 @@ public final class SettingsState implements PersistentStateComponent<SettingsSta
     state.maxCacheSize = maxCacheSize;
   }
 
+  public int getTranslationInterval() {
+    return state.translationInterval;
+  }
+
+  public void setTranslationInterval(int intervalTime) {
+    state.translationInterval = intervalTime;
+  }
+
   @Override
   public @Nullable SettingsState.State getState() {
     return state;
@@ -145,5 +154,6 @@ public final class SettingsState implements PersistentStateComponent<SettingsSta
     public boolean isEnableCache = true;
     public int maxCacheSize = 100;
     public boolean isUseGoogleCom;
+    public int translationInterval = 2; // 2 second
   }
 }

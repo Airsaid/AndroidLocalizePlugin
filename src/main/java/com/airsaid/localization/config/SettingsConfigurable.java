@@ -62,6 +62,7 @@ public class SettingsConfigurable implements Configurable {
     settingsComponent.setSelectedTranslator(translators.get(settingsState.getSelectedTranslator().getKey()));
     settingsComponent.setEnableCache(settingsState.isEnableCache());
     settingsComponent.setMaxCacheSize(settingsState.getMaxCacheSize());
+    settingsComponent.setTranslationInterval(settingsState.getTranslationInterval());
   }
 
   @Override
@@ -74,6 +75,7 @@ public class SettingsConfigurable implements Configurable {
     isChanged |= settingsState.getAppKey(selectedTranslator.getKey()).equals(selectedTranslator.getAppKey());
     isChanged |= settingsState.isEnableCache() == settingsComponent.isEnableCache();
     isChanged |= settingsState.getMaxCacheSize() == settingsComponent.getMaxCacheSize();
+    isChanged |= settingsState.getTranslationInterval() == settingsComponent.getTranslationInterval();
     LOG.info("isModified: " + isChanged);
     return isChanged;
   }
@@ -95,12 +97,14 @@ public class SettingsConfigurable implements Configurable {
     }
     settingsState.setEnableCache(settingsComponent.isEnableCache());
     settingsState.setMaxCacheSize(settingsComponent.getMaxCacheSize());
+    settingsState.setTranslationInterval(settingsComponent.getTranslationInterval());
 
     TranslatorService translatorService = TranslatorService.getInstance();
     translatorService.setSelectedTranslator(selectedTranslator);
     translatorService.setUseGoogleComHost(settingsComponent.isUseGoogleCom());
     translatorService.setEnableCache(settingsComponent.isEnableCache());
     translatorService.setMaxCacheSize(settingsComponent.getMaxCacheSize());
+    translatorService.setTranslationInterval(settingsComponent.getTranslationInterval());
   }
 
   @Override
@@ -114,6 +118,7 @@ public class SettingsConfigurable implements Configurable {
     settingsComponent.setAppKey(settingsState.getAppKey(selectedTranslator.getKey()));
     settingsComponent.setEnableCache(settingsState.isEnableCache());
     settingsComponent.setMaxCacheSize(settingsState.getMaxCacheSize());
+    settingsComponent.setTranslationInterval(settingsState.getTranslationInterval());
   }
 
   @Override

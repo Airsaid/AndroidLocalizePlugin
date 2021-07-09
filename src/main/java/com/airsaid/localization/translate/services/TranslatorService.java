@@ -47,6 +47,7 @@ public final class TranslatorService {
   private final TranslationCacheService cacheService;
   private final Map<String, AbstractTranslator> translators;
   private boolean isEnableCache = true;
+  private int intervalTime;
 
   public TranslatorService() {
     translators = new LinkedHashMap<>();
@@ -114,6 +115,7 @@ public final class TranslatorService {
     String result = selectedTranslator.doTranslate(fromLang, toLang, text);
     LOG.info(String.format("doTranslate result: %s", result));
     cacheService.put(getCacheKey(fromLang, toLang, text), result);
+    delay(intervalTime);
     return result;
   }
 
@@ -133,8 +135,21 @@ public final class TranslatorService {
     cacheService.setMaxCacheSize(maxCacheSize);
   }
 
+  public void setTranslationInterval(int intervalTime) {
+    this.intervalTime = intervalTime;
+  }
+
   private String getCacheKey(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
     return fromLang.getCode() + "_" + toLang.getCode() + "_" + text;
   }
 
+  private void delay(int second) {
+    if (second <= 0) return;
+    try {
+      LOG.info(String.format("doTranslate delay time: %d second.", second));
+      Thread.sleep(second * 1000L);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+  }
 }
