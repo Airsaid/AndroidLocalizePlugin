@@ -1,4 +1,4 @@
-# AndroidLocalizePlugin
+# ![image](https://raw.githubusercontent.com/Airsaid/AndroidLocalizePlugin/85cf5020832523ea333ad09286af55880460457a/src/main/resources/META-INF/pluginIcon.svg) AndroidLocalizePlugin
 [![Plugin Version](https://img.shields.io/jetbrains/plugin/v/11174)](https://plugins.jetbrains.com/plugin/11174-androidlocalize)
 [![Plugin Rating](https://img.shields.io/jetbrains/plugin/r/rating/11174)](https://plugins.jetbrains.com/plugin/11174-androidlocalize)
 
@@ -14,7 +14,8 @@
 - One key generates all translation files.
 - Support no translation of existing string.
 - Support for specifying that text is not translated.
-- Support for caching translated strings.
+- Support for caching translated strings. 
+- Support to set the translation interval time.
 
 # Preview
 ![image](https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/preview/preview.gif)

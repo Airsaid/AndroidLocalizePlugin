@@ -1,4 +1,4 @@
-# AndroidLocalizePlugin
+# ![image](https://raw.githubusercontent.com/Airsaid/AndroidLocalizePlugin/85cf5020832523ea333ad09286af55880460457a/src/main/resources/META-INF/pluginIcon.svg) AndroidLocalizePlugin
 [![Plugin Version](https://img.shields.io/jetbrains/plugin/v/11174)](https://plugins.jetbrains.com/plugin/11174-androidlocalize)
 [![Plugin Rating](https://img.shields.io/jetbrains/plugin/r/rating/11174)](https://plugins.jetbrains.com/plugin/11174-androidlocalize)
 
@@ -15,6 +15,7 @@
 - 支持不翻译已经存在的 string。
 - 支持不翻译指定的文本。
 - 支持缓存已翻译的 strings。
+- 支持设置翻译间隔时间。
 
 # 预览
 ![image](https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/preview/preview.gif)
