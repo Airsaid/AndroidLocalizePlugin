@@ -210,6 +210,6 @@ public class SettingsComponent {
   }
 
   public void setTranslationInterval(int intervalTime) {
-    translationIntervalComboBox.setItem(String.valueOf(intervalTime));
+    translationIntervalComboBox.setSelectedItem(String.valueOf(intervalTime));
   }
 }
