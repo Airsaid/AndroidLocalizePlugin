@@ -48,9 +48,6 @@
 # ContactMe
 - Telegram: [https://t.me/airsaids/](https://t.me/airsaids/)
 
-# Invite me for coffee :coffee:
-If this project has helped you, you can [invite me for coffee](https://25e37ece.wiz03.com/wapp/pages/view/share/s/0BUTXe15Q4mk28KWtW0l7BLh1Y6ijp02l4Ct2gxqhW0OmYvl).
-
 # Sponsors
 [![Development powered by JetBrains](https://pic.stackoverflow.wiki/uploadImages/111/201/226/60/2021/06/20/18/45/3aba65f5-1231-4c9a-817f-83cd5a29fd0c.svg)](https://jb.gg/OpenSourc)
 
