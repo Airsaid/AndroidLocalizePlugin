@@ -1,3 +1,5 @@
+[English](README.md) | **简体中文**
+
 # ![image](https://raw.githubusercontent.com/Airsaid/AndroidLocalizePlugin/85cf5020832523ea333ad09286af55880460457a/src/main/resources/META-INF/pluginIcon.svg) AndroidLocalizePlugin
 [![Plugin Version](https://img.shields.io/jetbrains/plugin/v/11174)](https://plugins.jetbrains.com/plugin/11174-androidlocalize)
 [![Plugin Rating](https://img.shields.io/jetbrains/plugin/r/rating/11174)](https://plugins.jetbrains.com/plugin/11174-androidlocalize)
@@ -18,11 +20,11 @@
 - 支持设置翻译间隔时间。
 
 # 预览
-![image](https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/preview/preview.gif)
-![image](https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/preview/settings.png)
+![image](preview/preview.gif)
+![image](preview/settings.png)
 
 # 安装
-[![Install Plugin](https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/preview/install.png)](https://plugins.jetbrains.com/plugin/11174-androidlocalize)
+[![Install Plugin](preview/install.png)](https://plugins.jetbrains.com/plugin/11174-androidlocalize)
 
 # 使用
 - 第一步：选择 values/strings.xml 文件。
@@ -43,10 +45,7 @@
   **注意：一行展示，中间不要有多余的换行和空格。**
 
 # 更新日志
-[更新日志列表](https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/CHANGELOG.md)
-
-# 联系我
-- Telegram: [https://t.me/airsaids/](https://t.me/airsaids/)
+[更新日志](CHANGELOG.md)
 
 # 赞助商
 [![Development powered by JetBrains](https://pic.stackoverflow.wiki/uploadImages/111/201/226/60/2021/06/20/18/45/3aba65f5-1231-4c9a-817f-83cd5a29fd0c.svg)](https://jb.gg/OpenSourc)
