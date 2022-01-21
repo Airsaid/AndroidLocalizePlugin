@@ -18,8 +18,8 @@
 package com.airsaid.localization.task;
 
 import com.airsaid.localization.constant.Constants;
-import com.airsaid.localization.model.AndroidString;
-import com.airsaid.localization.services.AndroidStringsService;
+import com.airsaid.localization.model.*;
+import com.airsaid.localization.services.AndroidValuesService;
 import com.airsaid.localization.translate.lang.Lang;
 import com.airsaid.localization.translate.lang.Languages;
 import com.airsaid.localization.translate.services.TranslatorService;
@@ -52,10 +52,10 @@ public class TranslateTask extends Task.Backgroundable {
   private static final Logger LOG = Logger.getInstance(TranslateTask.class);
 
   private final List<Lang> mToLanguages;
-  private final List<AndroidString> mAndroidStrings;
-  private final VirtualFile mStringsFile;
+  private final List<AbstractValue> mValues;
+  private final VirtualFile mValueFile;
   private final TranslatorService mTranslatorService;
-  private final AndroidStringsService mStringsService;
+  private final AndroidValuesService mValueService;
 
   private OnTranslateListener mOnTranslateListener;
 
@@ -66,13 +66,13 @@ public class TranslateTask extends Task.Backgroundable {
   }
 
   public TranslateTask(@Nullable Project project, @Nls @NotNull String title, List<Lang> languages,
-                       List<AndroidString> androidStrings, PsiFile stringsFile) {
+                       List<AbstractValue> values, PsiFile valueFile) {
     super(project, title);
     mToLanguages = languages;
-    mAndroidStrings = androidStrings;
-    mStringsFile = stringsFile.getVirtualFile();
+    mValues = values;
+    mValueFile = valueFile.getVirtualFile();
     mTranslatorService = TranslatorService.getInstance();
-    mStringsService = AndroidStringsService.getInstance();
+    mValueService = AndroidValuesService.getInstance();
   }
 
   /**
@@ -86,9 +86,8 @@ public class TranslateTask extends Task.Backgroundable {
 
   @Override
   public void run(@NotNull ProgressIndicator progressIndicator) {
-    final boolean isOverwriteExistingString = PropertiesComponent.getInstance(myProject)
+    boolean isOverwriteExistingString = PropertiesComponent.getInstance(myProject)
         .getBoolean(Constants.KEY_IS_OVERWRITE_EXISTING_STRING);
-
     LOG.info("run isOverwriteExistingString: " + isOverwriteExistingString);
 
     for (Lang toLanguage : mToLanguages) {
@@ -96,63 +95,93 @@ public class TranslateTask extends Task.Backgroundable {
 
       progressIndicator.setText("Translating in the " + toLanguage.getEnglishName() + " language...");
 
-      final VirtualFile resourceDir = mStringsFile.getParent().getParent();
-      final PsiFile toStringsPsiFile = mStringsService.getStringsPsiFile(myProject, resourceDir, toLanguage);
-      LOG.info("Translating language: " + toLanguage.getEnglishName() + ", toStringsPsiFile: " + toStringsPsiFile);
-      if (toStringsPsiFile != null) {
-        List<AndroidString> toAndroidStrings = mStringsService.loadStrings(toStringsPsiFile);
-        Map<String, AndroidString> toStringsMap = toAndroidStrings.stream().collect(Collectors.toMap(AndroidString::getName, androidString -> androidString));
-        List<AndroidString> translatedStrings = doTranslate(progressIndicator, toLanguage, toStringsMap, isOverwriteExistingString);
-        writeTranslatedStrings(progressIndicator, new File(toStringsPsiFile.getVirtualFile().getPath()), translatedStrings);
+      VirtualFile resourceDir = mValueFile.getParent().getParent();
+      String valueFileName = mValueFile.getName();
+      PsiFile toValuePsiFile = mValueService.getValuePsiFile(myProject, resourceDir, toLanguage, valueFileName);
+      LOG.info("Translating language: " + toLanguage.getEnglishName() + ", toValuePsiFile: " + toValuePsiFile);
+      if (toValuePsiFile != null) {
+        List<AbstractValue> toValues = mValueService.loadValues(toValuePsiFile);
+        Map<String, AbstractValue> toValuesMap = toValues.stream().collect(Collectors.toMap(AbstractValue::getName, value -> value));
+        List<AbstractValue> translatedValues = doTranslate(progressIndicator, toLanguage, toValuesMap, isOverwriteExistingString);
+        writeTranslatedValues(progressIndicator, new File(toValuePsiFile.getVirtualFile().getPath()), translatedValues);
       } else {
-        List<AndroidString> translatedStrings = doTranslate(progressIndicator, toLanguage, null, isOverwriteExistingString);
-        File stringsFile = mStringsService.getStringsFile(resourceDir, toLanguage);
-        writeTranslatedStrings(progressIndicator, stringsFile, translatedStrings);
+        List<AbstractValue> translatedValues = doTranslate(progressIndicator, toLanguage, null, isOverwriteExistingString);
+        File valueFile = mValueService.getValueFile(resourceDir, toLanguage, valueFileName);
+        writeTranslatedValues(progressIndicator, valueFile, translatedValues);
       }
     }
   }
 
-  private List<AndroidString> doTranslate(@NotNull ProgressIndicator progressIndicator, @NotNull Lang toLanguage
-      , @Nullable Map<String, AndroidString> toAndroidStrings, boolean isOverwrite) {
-    LOG.info("doTranslate toLanguage: " + toLanguage.getEnglishName() + ", toAndroidStrings: " + toAndroidStrings + ", isOverwrite: " + isOverwrite);
+  private List<AbstractValue> doTranslate(@NotNull ProgressIndicator progressIndicator, @NotNull Lang toLanguage
+      , @Nullable Map<String, AbstractValue> toValues, boolean isOverwrite) {
+    LOG.info("doTranslate toLanguage: " + toLanguage.getEnglishName() + ", toValues: " + toValues + ", isOverwrite: " + isOverwrite);
 
-    final List<AndroidString> translatedStrings = new ArrayList<>();
-    for (AndroidString androidString : mAndroidStrings) {
+    List<AbstractValue> translatedValues = new ArrayList<>();
+    for (AbstractValue value : mValues) {
       if (progressIndicator.isCanceled()) break;
 
-      final boolean translatable = androidString.isTranslatable();
+      final boolean translatable = value.isTranslatable();
       if (!translatable) continue;
 
-      if (!isOverwrite && toAndroidStrings != null && toAndroidStrings.containsKey(androidString.getName())) {
-        AndroidString toAndroidString = toAndroidStrings.get(androidString.getName());
-        translatedStrings.add(toAndroidString);
+      if (!isOverwrite && toValues != null && toValues.containsKey(value.getName())) {
+        AbstractValue toAndroidString = toValues.get(value.getName());
+        translatedValues.add(toAndroidString);
         continue;
       }
 
-      final AndroidString translatedString = androidString.clone();
-      final List<AndroidString.Content> contents = translatedString.getContents();
-      for (AndroidString.Content content : contents) {
-        if (progressIndicator.isCanceled()) break;
-        if (content.isIgnore()) continue;
-        if (TextUtil.isEmptyOrSpacesLineBreak(content.getText())) continue;
-
-        String translatedText = mTranslatorService.doTranslate(Languages.AUTO, toLanguage, content.getText());
-        content.setText(translatedText);
+      if (value instanceof StringValue) {
+        StringValue stringValue = (StringValue) value;
+        StringValue translatedValue = stringValue.clone();
+        List<Content> contents = translatedValue.getContents();
+        doTranslateContents(progressIndicator, toLanguage, contents);
+        translatedValues.add(translatedValue);
+      } else if (value instanceof PluralsValue) {
+        PluralsValue pluralsValue = (PluralsValue) value;
+        PluralsValue translatedValue = pluralsValue.clone();
+        List<PluralsValue.Item> items = translatedValue.getItems();
+        for (PluralsValue.Item item : items) {
+          List<Content> contents = item.getContents();
+          doTranslateContents(progressIndicator, toLanguage, contents);
+        }
+        translatedValues.add(translatedValue);
+      } else if (value instanceof StringArrayValue) {
+        StringArrayValue stringArrayValue = (StringArrayValue) value;
+        StringArrayValue translatedValue = stringArrayValue.clone();
+        List<StringArrayValue.Item> items = translatedValue.getItems();
+        for (StringArrayValue.Item item : items) {
+          List<Content> contents = item.getContents();
+          doTranslateContents(progressIndicator, toLanguage, contents);
+        }
+        translatedValues.add(translatedValue);
       }
-      translatedStrings.add(translatedString);
     }
-    return translatedStrings;
+    return translatedValues;
   }
 
-  private void writeTranslatedStrings(@NotNull ProgressIndicator progressIndicator, @NotNull File stringsFile, @NotNull List<AndroidString> translatedStrings) {
-    LOG.info("writeTranslatedStrings stringsFile: " + stringsFile + ", translatedStrings: " + translatedStrings);
+  private void doTranslateContents(@NotNull ProgressIndicator progressIndicator,
+                                   @NotNull Lang toLanguage,
+                                   @NotNull List<Content> contents) {
+    for (Content content : contents) {
+      if (progressIndicator.isCanceled()) break;
+      if (content.isIgnore()) continue;
+      if (TextUtil.isEmptyOrSpacesLineBreak(content.getText())) continue;
 
-    if (progressIndicator.isCanceled() || translatedStrings.isEmpty()) return;
+      String translatedText = mTranslatorService.doTranslate(Languages.AUTO, toLanguage, content.getText());
+      content.setText(translatedText);
+    }
+  }
 
-    progressIndicator.setText("Writing to " + stringsFile.getParentFile().getName() + " data...");
-    mStringsService.writeStringsFile(translatedStrings, stringsFile);
+  private void writeTranslatedValues(@NotNull ProgressIndicator progressIndicator,
+                                     @NotNull File valueFile,
+                                     @NotNull List<AbstractValue> translatedValues) {
+    LOG.info("writeTranslatedValues valueFile: " + valueFile + ", translatedValues: " + translatedValues);
 
-    refreshAndOpenFile(stringsFile);
+    if (progressIndicator.isCanceled() || translatedValues.isEmpty()) return;
+
+    progressIndicator.setText("Writing to " + valueFile.getParentFile().getName() + " data...");
+    mValueService.writeValueFile(translatedValues, valueFile);
+
+    refreshAndOpenFile(valueFile);
   }
 
   private void refreshAndOpenFile(File file) {
@@ -188,5 +217,4 @@ public class TranslateTask extends Task.Backgroundable {
       mOnTranslateListener.onTranslateError(error);
     }
   }
-
 }

@@ -18,8 +18,8 @@
 package com.airsaid.localization.action;
 
 import com.airsaid.localization.config.SettingsState;
-import com.airsaid.localization.model.AndroidString;
-import com.airsaid.localization.services.AndroidStringsService;
+import com.airsaid.localization.model.AbstractValue;
+import com.airsaid.localization.services.AndroidValuesService;
 import com.airsaid.localization.task.TranslateTask;
 import com.airsaid.localization.translate.lang.Lang;
 import com.airsaid.localization.ui.SelectLanguagesDialog;
@@ -34,38 +34,38 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 /**
- * Translate strings.xml to other languages that can be used to localize your Android APP.
+ * Translate android string value to other languages that can be used to localize your Android APP.
  *
  * @author airsaid
  */
 public class TranslateAction extends AnAction implements SelectLanguagesDialog.OnClickListener {
 
   private Project mProject;
-  private PsiFile mStringsFile;
-  private List<AndroidString> mAndroidStrings;
-  private final AndroidStringsService mStringsService = AndroidStringsService.getInstance();
+  private PsiFile mValueFile;
+  private List<AbstractValue> mValues;
+  private final AndroidValuesService mValueService = AndroidValuesService.getInstance();
 
   @Override
   public void actionPerformed(AnActionEvent e) {
     mProject = e.getRequiredData(CommonDataKeys.PROJECT);
-    mStringsFile = e.getRequiredData(CommonDataKeys.PSI_FILE);
+    mValueFile = e.getRequiredData(CommonDataKeys.PSI_FILE);
 
     SettingsState.getInstance().initSetting();
 
-    mStringsService.loadStringsByAsync(mStringsFile, androidStrings -> {
-      if (!isTranslatable(androidStrings)) {
-        NotificationUtil.notifyInfo(mProject, "The strings.xml has no text to translate.");
+    mValueService.loadValuesByAsync(mValueFile, values -> {
+      if (!isTranslatable(values)) {
+        NotificationUtil.notifyInfo(mProject, "The " + mValueFile.getName() + " has no text to translate.");
         return;
       }
-      mAndroidStrings = androidStrings;
+      mValues = values;
       showSelectLanguageDialog();
     });
   }
 
-  // Verify that there is a text in the strings.xml file that needs to be translated.
-  private boolean isTranslatable(@NotNull List<AndroidString> androidStrings) {
+  // Verify that there is a text in the value file that needs to be translated.
+  private boolean isTranslatable(@NotNull List<AbstractValue> values) {
     boolean isTranslatable = false;
-    for (AndroidString androidString : androidStrings) {
+    for (AbstractValue androidString : values) {
       if (androidString.isTranslatable()) {
         isTranslatable = true;
         break;
@@ -82,15 +82,15 @@ public class TranslateAction extends AnAction implements SelectLanguagesDialog.O
 
   @Override
   public void update(@NotNull AnActionEvent e) {
-    // The translation option is only show when strings.xml is selected
+    // The translation option is only show when strings.xml/plurals.xml/arrays.xml is selected
     Project project = e.getData(CommonDataKeys.PROJECT);
-    boolean isSelectStringsFile = mStringsService.isStringsFile(e.getData(CommonDataKeys.PSI_FILE));
-    e.getPresentation().setEnabledAndVisible(project != null && isSelectStringsFile);
+    boolean isSelectValueFile = mValueService.isValueFile(e.getData(CommonDataKeys.PSI_FILE));
+    e.getPresentation().setEnabledAndVisible(project != null && isSelectValueFile);
   }
 
   @Override
   public void onClickListener(List<Lang> selectedLanguage) {
-    TranslateTask translationTask = new TranslateTask(mProject, "Translating...", selectedLanguage, mAndroidStrings, mStringsFile);
+    TranslateTask translationTask = new TranslateTask(mProject, "Translating...", selectedLanguage, mValues, mValueFile);
     translationTask.setOnTranslateListener(new TranslateTask.OnTranslateListener() {
       @Override
       public void onTranslateSuccess() {
@@ -104,5 +104,4 @@ public class TranslateAction extends AnAction implements SelectLanguagesDialog.O
     });
     translationTask.queue();
   }
-
 }
