@@ -37,8 +37,8 @@
 
     <change-notes><![CDATA[
       <ul>
-        <li>Add translation interval time setting.</li>
-        <li>Replace plugin logo.</li>
+        <li>Supported custom google api key.</li>
+        <li>Supported plurals&string-array tags.</li>
       </ul>
       <a href="https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/CHANGELOG.md"><b>Full Changelog History</b></a>
     ]]></change-notes>
@@ -59,7 +59,7 @@
                 class="com.airsaid.localization.action.TranslateAction"
                 text="Translate to Other Languages"
                 icon="PluginIcons.TRANSLATE_ACTION_ICON"
-                description="Translate this strings.xml to other languages that can be used to localize your Android APP.">
+                description="Translate strings to other languages.">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="EditSource"/>
         </action>
     </actions>

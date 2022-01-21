@@ -1,5 +1,11 @@
 # Change Log
 
+## [V2.4.0](https://github.com/Airsaid/AndroidLocalizePlugin/releases/tag/v2.4.0) (2022-01-21)
+- Supported custom google api key.
+- Supported plurals&string-array tags.
+- Changed maximum number of cacheable items to 1000.
+- Added baidu icon of light mode.
+
 ## [V2.3.0](https://github.com/Airsaid/AndroidLocalizePlugin/releases/tag/v2.3.0) (2021-07-09)
 - Add translation interval time setting.
 - Replace plugin logo.
