@@ -152,7 +152,7 @@ public final class SettingsState implements PersistentStateComponent<SettingsSta
     public String selectedTranslatorKey;
     public Map<String, String> appIds = new HashMap<>();
     public boolean isEnableCache = true;
-    public int maxCacheSize = 100;
+    public int maxCacheSize = 500;
     public boolean isUseGoogleCom;
     public int translationInterval = 2; // 2 second
   }
