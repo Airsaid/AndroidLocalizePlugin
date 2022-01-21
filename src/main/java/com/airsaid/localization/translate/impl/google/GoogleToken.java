@@ -38,7 +38,7 @@ public class GoogleToken {
   private static final int MIM = 60 * 60 * 1000;
   private static final Random GENERATOR = new Random();
   private static final Pattern TKK_PATTERN = Pattern.compile("tkk='(\\d+).(-?\\d+)'");
-  private static final String ELEMENT_URL = "https://translate.google.cn/translate_a/element.js";
+  private static final String ELEMENT_URL = "%s/translate_a/element.js";
 
   private static Pair<Long, Long> sInnerValue = Pair.create(0L, 0L);
   private static boolean sNeedUpdate = true;
@@ -120,7 +120,9 @@ public class GoogleToken {
 
   private static Pair<Long, Long> getTKKFromGoogle() {
     try {
-      String elementJs = HttpRequests.request(ELEMENT_URL)
+      String url = String.format(ELEMENT_URL, GoogleTranslator.HOST_URL);
+      LOG.info("getTKKFromGoogle url: " + url);
+      String elementJs = HttpRequests.request(url)
           .userAgent(AgentUtil.getUserAgent())
           .tuner(connection -> connection.setRequestProperty("Referer", GoogleTranslator.HOST_URL))
           .readString();
