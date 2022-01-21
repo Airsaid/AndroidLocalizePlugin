@@ -24,9 +24,13 @@ import javax.swing.*;
  * @author airsaid
  */
 public interface PluginIcons {
-  Icon TRANSLATE_ACTION_ICON = IconLoader.getIcon("/icons/icon_translate.svg");
-  Icon GOOGLE_ICON = IconLoader.getIcon("/icons/icon_google.svg");
-  Icon BAIDU_ICON = IconLoader.getIcon("/icons/icon_baidu.svg");
-  Icon YOUDAO_ICON = IconLoader.getIcon("/icons/icon_youdao.svg");
-  Icon MICROSOFT_ICON = IconLoader.getIcon("/icons/icon_microsoft.svg");
+  Icon TRANSLATE_ACTION_ICON = load("/icons/icon_translate.svg");
+  Icon GOOGLE_ICON = load("/icons/icon_google.svg");
+  Icon BAIDU_ICON = load("/icons/icon_baidu.svg");
+  Icon YOUDAO_ICON = load("/icons/icon_youdao.svg");
+  Icon MICROSOFT_ICON = load("/icons/icon_microsoft.svg");
+
+  private static Icon load(String path) {
+    return IconLoader.getIcon(path, PluginIcons.class);
+  }
 }
