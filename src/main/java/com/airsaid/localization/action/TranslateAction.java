@@ -18,7 +18,6 @@
 package com.airsaid.localization.action;
 
 import com.airsaid.localization.config.SettingsState;
-import com.airsaid.localization.model.AbstractValue;
 import com.airsaid.localization.services.AndroidValuesService;
 import com.airsaid.localization.task.TranslateTask;
 import com.airsaid.localization.translate.lang.Lang;
@@ -28,7 +27,9 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.project.Project;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.xml.XmlTag;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -40,68 +41,72 @@ import java.util.List;
  */
 public class TranslateAction extends AnAction implements SelectLanguagesDialog.OnClickListener {
 
-  private Project mProject;
-  private PsiFile mValueFile;
-  private List<AbstractValue> mValues;
-  private final AndroidValuesService mValueService = AndroidValuesService.getInstance();
+    private Project mProject;
+    private PsiFile mValueFile;
+    private List<PsiElement> mValues;
+    private final AndroidValuesService mValueService = AndroidValuesService.getInstance();
 
-  @Override
-  public void actionPerformed(AnActionEvent e) {
-    mProject = e.getRequiredData(CommonDataKeys.PROJECT);
-    mValueFile = e.getRequiredData(CommonDataKeys.PSI_FILE);
+    @Override
+    public void actionPerformed(AnActionEvent e) {
+        mProject = e.getRequiredData(CommonDataKeys.PROJECT);
+        mValueFile = e.getRequiredData(CommonDataKeys.PSI_FILE);
 
-    SettingsState.getInstance().initSetting();
+        SettingsState.getInstance().initSetting();
 
-    mValueService.loadValuesByAsync(mValueFile, values -> {
-      if (!isTranslatable(values)) {
-        NotificationUtil.notifyInfo(mProject, "The " + mValueFile.getName() + " has no text to translate.");
-        return;
-      }
-      mValues = values;
-      showSelectLanguageDialog();
-    });
-  }
-
-  // Verify that there is a text in the value file that needs to be translated.
-  private boolean isTranslatable(@NotNull List<AbstractValue> values) {
-    boolean isTranslatable = false;
-    for (AbstractValue androidString : values) {
-      if (androidString.isTranslatable()) {
-        isTranslatable = true;
-        break;
-      }
+        mValueService.loadValuesByAsync(mValueFile, values -> {
+            if (!isTranslatable(values)) {
+                NotificationUtil.notifyInfo(mProject, "The " + mValueFile.getName() + " has no text to translate.");
+                return;
+            }
+            mValues = values;
+            showSelectLanguageDialog();
+        });
     }
-    return isTranslatable;
-  }
 
-  private void showSelectLanguageDialog() {
-    SelectLanguagesDialog dialog = new SelectLanguagesDialog(mProject);
-    dialog.setOnClickListener(this);
-    dialog.show();
-  }
+    // Verify that there is a text in the value file that needs to be translated.
+    private boolean isTranslatable(@NotNull List<PsiElement> values) {
+        boolean isTranslatable = false;
+        for (PsiElement psiElement : values) {
+            if (psiElement instanceof XmlTag) {
+                String translatableStr = ((XmlTag) psiElement).getAttributeValue("translatable");
+                boolean translatable = Boolean.parseBoolean(translatableStr == null ? "true" : translatableStr);
+                if (translatable) {
+                    isTranslatable = true;
+                    break;
+                }
+            }
+        }
+        return isTranslatable;
+    }
 
-  @Override
-  public void update(@NotNull AnActionEvent e) {
-    // The translation option is only show when strings.xml/plurals.xml/arrays.xml is selected
-    Project project = e.getData(CommonDataKeys.PROJECT);
-    boolean isSelectValueFile = mValueService.isValueFile(e.getData(CommonDataKeys.PSI_FILE));
-    e.getPresentation().setEnabledAndVisible(project != null && isSelectValueFile);
-  }
+    private void showSelectLanguageDialog() {
+        SelectLanguagesDialog dialog = new SelectLanguagesDialog(mProject);
+        dialog.setOnClickListener(this);
+        dialog.show();
+    }
 
-  @Override
-  public void onClickListener(List<Lang> selectedLanguage) {
-    TranslateTask translationTask = new TranslateTask(mProject, "Translating...", selectedLanguage, mValues, mValueFile);
-    translationTask.setOnTranslateListener(new TranslateTask.OnTranslateListener() {
-      @Override
-      public void onTranslateSuccess() {
-        NotificationUtil.notifyInfo(mProject, "Translation completed!");
-      }
+    @Override
+    public void update(@NotNull AnActionEvent e) {
+        // The translation option is only show when strings.xml/plurals.xml/arrays.xml is selected
+        Project project = e.getData(CommonDataKeys.PROJECT);
+        boolean isSelectValueFile = mValueService.isValueFile(e.getData(CommonDataKeys.PSI_FILE));
+        e.getPresentation().setEnabledAndVisible(project != null && isSelectValueFile);
+    }
 
-      @Override
-      public void onTranslateError(Throwable e) {
-        NotificationUtil.notifyWarning(mProject, "Translation error: " + e);
-      }
-    });
-    translationTask.queue();
-  }
+    @Override
+    public void onClickListener(List<Lang> selectedLanguage) {
+        TranslateTask translationTask = new TranslateTask(mProject, "Translating...", selectedLanguage, mValues, mValueFile);
+        translationTask.setOnTranslateListener(new TranslateTask.OnTranslateListener() {
+            @Override
+            public void onTranslateSuccess() {
+                NotificationUtil.notifyInfo(mProject, "Translation completed!");
+            }
+
+            @Override
+            public void onTranslateError(Throwable e) {
+                NotificationUtil.notifyWarning(mProject, "Translation error: " + e);
+            }
+        });
+        translationTask.queue();
+    }
 }

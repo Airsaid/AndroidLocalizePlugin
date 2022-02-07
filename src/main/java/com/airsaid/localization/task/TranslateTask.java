@@ -18,7 +18,6 @@
 package com.airsaid.localization.task;
 
 import com.airsaid.localization.constant.Constants;
-import com.airsaid.localization.model.*;
 import com.airsaid.localization.services.AndroidValuesService;
 import com.airsaid.localization.translate.lang.Lang;
 import com.airsaid.localization.translate.lang.Languages;
@@ -33,7 +32,10 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.xml.XmlComment;
+import com.intellij.psi.xml.XmlTag;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,6 +44,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -49,172 +53,186 @@ import java.util.stream.Collectors;
  */
 public class TranslateTask extends Task.Backgroundable {
 
-  private static final Logger LOG = Logger.getInstance(TranslateTask.class);
+    private static final String NAME_TAG_STRING = "string";
+    private static final String NAME_TAG_PLURALS = "plurals";
+    private static final String NAME_TAG_STRING_ARRAY = "string-array";
 
-  private final List<Lang> mToLanguages;
-  private final List<AbstractValue> mValues;
-  private final VirtualFile mValueFile;
-  private final TranslatorService mTranslatorService;
-  private final AndroidValuesService mValueService;
+    private static final Logger LOG = Logger.getInstance(TranslateTask.class);
 
-  private OnTranslateListener mOnTranslateListener;
+    private final List<Lang> mToLanguages;
+    private final List<PsiElement> mValues;
+    private final VirtualFile mValueFile;
+    private final TranslatorService mTranslatorService;
+    private final AndroidValuesService mValueService;
 
-  public interface OnTranslateListener {
-    void onTranslateSuccess();
+    private OnTranslateListener mOnTranslateListener;
 
-    void onTranslateError(Throwable e);
-  }
+    public interface OnTranslateListener {
+        void onTranslateSuccess();
 
-  public TranslateTask(@Nullable Project project, @Nls @NotNull String title, List<Lang> languages,
-                       List<AbstractValue> values, PsiFile valueFile) {
-    super(project, title);
-    mToLanguages = languages;
-    mValues = values;
-    mValueFile = valueFile.getVirtualFile();
-    mTranslatorService = TranslatorService.getInstance();
-    mValueService = AndroidValuesService.getInstance();
-  }
-
-  /**
-   * Set translate result listener.
-   *
-   * @param listener callback interface. success or fail.
-   */
-  public void setOnTranslateListener(OnTranslateListener listener) {
-    mOnTranslateListener = listener;
-  }
-
-  @Override
-  public void run(@NotNull ProgressIndicator progressIndicator) {
-    boolean isOverwriteExistingString = PropertiesComponent.getInstance(myProject)
-        .getBoolean(Constants.KEY_IS_OVERWRITE_EXISTING_STRING);
-    LOG.info("run isOverwriteExistingString: " + isOverwriteExistingString);
-
-    for (Lang toLanguage : mToLanguages) {
-      if (progressIndicator.isCanceled()) break;
-
-      progressIndicator.setText("Translating in the " + toLanguage.getEnglishName() + " language...");
-
-      VirtualFile resourceDir = mValueFile.getParent().getParent();
-      String valueFileName = mValueFile.getName();
-      PsiFile toValuePsiFile = mValueService.getValuePsiFile(myProject, resourceDir, toLanguage, valueFileName);
-      LOG.info("Translating language: " + toLanguage.getEnglishName() + ", toValuePsiFile: " + toValuePsiFile);
-      if (toValuePsiFile != null) {
-        List<AbstractValue> toValues = mValueService.loadValues(toValuePsiFile);
-        Map<String, AbstractValue> toValuesMap = toValues.stream().collect(Collectors.toMap(AbstractValue::getName, value -> value));
-        List<AbstractValue> translatedValues = doTranslate(progressIndicator, toLanguage, toValuesMap, isOverwriteExistingString);
-        writeTranslatedValues(progressIndicator, new File(toValuePsiFile.getVirtualFile().getPath()), translatedValues);
-      } else {
-        List<AbstractValue> translatedValues = doTranslate(progressIndicator, toLanguage, null, isOverwriteExistingString);
-        File valueFile = mValueService.getValueFile(resourceDir, toLanguage, valueFileName);
-        writeTranslatedValues(progressIndicator, valueFile, translatedValues);
-      }
+        void onTranslateError(Throwable e);
     }
-  }
 
-  private List<AbstractValue> doTranslate(@NotNull ProgressIndicator progressIndicator, @NotNull Lang toLanguage
-      , @Nullable Map<String, AbstractValue> toValues, boolean isOverwrite) {
-    LOG.info("doTranslate toLanguage: " + toLanguage.getEnglishName() + ", toValues: " + toValues + ", isOverwrite: " + isOverwrite);
+    public TranslateTask(@Nullable Project project, @Nls @NotNull String title, List<Lang> languages,
+                         List<PsiElement> values, PsiFile valueFile) {
+        super(project, title);
+        mToLanguages = languages;
+        mValues = values;
+        mValueFile = valueFile.getVirtualFile();
+        mTranslatorService = TranslatorService.getInstance();
+        mValueService = AndroidValuesService.getInstance();
+    }
 
-    List<AbstractValue> translatedValues = new ArrayList<>();
-    for (AbstractValue value : mValues) {
-      if (progressIndicator.isCanceled()) break;
+    /**
+     * Set translate result listener.
+     *
+     * @param listener callback interface. success or fail.
+     */
+    public void setOnTranslateListener(OnTranslateListener listener) {
+        mOnTranslateListener = listener;
+    }
 
-      final boolean translatable = value.isTranslatable();
-      if (!translatable) continue;
+    @Override
+    public void run(@NotNull ProgressIndicator progressIndicator) {
+        boolean isOverwriteExistingString = PropertiesComponent.getInstance(myProject)
+                .getBoolean(Constants.KEY_IS_OVERWRITE_EXISTING_STRING);
+        LOG.info("run isOverwriteExistingString: " + isOverwriteExistingString);
 
-      if (!isOverwrite && toValues != null && toValues.containsKey(value.getName())) {
-        AbstractValue toAndroidString = toValues.get(value.getName());
-        translatedValues.add(toAndroidString);
-        continue;
-      }
+        for (Lang toLanguage : mToLanguages) {
+            if (progressIndicator.isCanceled()) break;
 
-      if (value instanceof StringValue) {
-        StringValue stringValue = (StringValue) value;
-        StringValue translatedValue = stringValue.clone();
-        List<Content> contents = translatedValue.getContents();
-        doTranslateContents(progressIndicator, toLanguage, contents);
-        translatedValues.add(translatedValue);
-      } else if (value instanceof PluralsValue) {
-        PluralsValue pluralsValue = (PluralsValue) value;
-        PluralsValue translatedValue = pluralsValue.clone();
-        List<PluralsValue.Item> items = translatedValue.getItems();
-        for (PluralsValue.Item item : items) {
-          List<Content> contents = item.getContents();
-          doTranslateContents(progressIndicator, toLanguage, contents);
+            progressIndicator.setText("Translating in the " + toLanguage.getEnglishName() + " language...");
+
+            VirtualFile resourceDir = mValueFile.getParent().getParent();
+            String valueFileName = mValueFile.getName();
+            PsiFile toValuePsiFile = mValueService.getValuePsiFile(myProject, resourceDir, toLanguage, valueFileName);
+            LOG.info("Translating language: " + toLanguage.getEnglishName() + ", toValuePsiFile: " + toValuePsiFile);
+            if (toValuePsiFile != null) {
+                List<PsiElement> toValues = mValueService.loadValues(toValuePsiFile);
+
+
+                Map<String, PsiElement> toValuesMap = toValues.stream().collect(Collectors.toMap(
+                        psiElement -> {
+                            if (psiElement instanceof XmlTag) return ((XmlTag) psiElement).getAttributeValue("name");
+                            else return UUID.randomUUID().toString();
+                        },
+                        Function.identity()
+                ));
+
+                List<PsiElement> translatedValues = doTranslate(progressIndicator, toLanguage, toValuesMap, isOverwriteExistingString);
+                writeTranslatedValues(progressIndicator, new File(toValuePsiFile.getVirtualFile().getPath()), translatedValues);
+            } else {
+                List<PsiElement> translatedValues = doTranslate(progressIndicator, toLanguage, null, isOverwriteExistingString);
+                File valueFile = mValueService.getValueFile(resourceDir, toLanguage, valueFileName);
+                writeTranslatedValues(progressIndicator, valueFile, translatedValues);
+            }
         }
-        translatedValues.add(translatedValue);
-      } else if (value instanceof StringArrayValue) {
-        StringArrayValue stringArrayValue = (StringArrayValue) value;
-        StringArrayValue translatedValue = stringArrayValue.clone();
-        List<StringArrayValue.Item> items = translatedValue.getItems();
-        for (StringArrayValue.Item item : items) {
-          List<Content> contents = item.getContents();
-          doTranslateContents(progressIndicator, toLanguage, contents);
+    }
+
+    private List<PsiElement> doTranslate(@NotNull ProgressIndicator progressIndicator, @NotNull Lang toLanguage
+            , @Nullable Map<String, PsiElement> toValues, boolean isOverwrite) {
+        LOG.info("doTranslate toLanguage: " + toLanguage.getEnglishName() + ", toValues: " + toValues + ", isOverwrite: " + isOverwrite);
+
+        List<PsiElement> translatedValues = new ArrayList<>();
+        for (PsiElement value : mValues) {
+            if (progressIndicator.isCanceled()) break;
+
+            if ((value instanceof XmlTag)) {
+                String translatableStr = ((XmlTag) value).getAttributeValue("translatable");
+                final boolean translatable = Boolean.parseBoolean(translatableStr == null ? "true" : translatableStr);
+                if (!translatable) continue;
+
+
+                if (!isOverwrite && toValues != null && toValues.containsKey(((XmlTag) value).getAttributeValue("name"))) {
+                    PsiElement toAndroidString = toValues.get(((XmlTag) value).getAttributeValue("name"));
+                    translatedValues.add(toAndroidString);
+                    continue;
+                }
+
+
+                String tagName = ((XmlTag) value).getName();
+                switch (tagName) {
+                    case NAME_TAG_STRING:
+                    case NAME_TAG_STRING_ARRAY:
+                    case NAME_TAG_PLURALS:
+                        XmlTag translateValue = ((XmlTag) value.copy());
+                        translatedValues.add(translateValue);
+                        doTranslate(progressIndicator, toLanguage, translateValue);
+                }
+
+            } else {
+                if (value instanceof XmlComment) continue;
+                translatedValues.add(value);
+            }
         }
-        translatedValues.add(translatedValue);
-      }
+        return translatedValues;
     }
-    return translatedValues;
-  }
 
-  private void doTranslateContents(@NotNull ProgressIndicator progressIndicator,
-                                   @NotNull Lang toLanguage,
-                                   @NotNull List<Content> contents) {
-    for (Content content : contents) {
-      if (progressIndicator.isCanceled()) break;
-      if (content.isIgnore()) continue;
-      if (TextUtil.isEmptyOrSpacesLineBreak(content.getText())) continue;
+    private void doTranslate(@NotNull ProgressIndicator progressIndicator,
+                             @NotNull Lang toLanguage,
+                             @NotNull XmlTag xmlTag) {
 
-      String translatedText = mTranslatorService.doTranslate(Languages.AUTO, toLanguage, content.getText());
-      content.setText(translatedText);
+        if (xmlTag.getName().equals(NAME_TAG_STRING)) {
+            if (progressIndicator.isCanceled()) return;
+            if (TextUtil.isEmptyOrSpacesLineBreak(xmlTag.getValue().getText())) return;
+
+            String translatedText = mTranslatorService.doTranslate(Languages.AUTO, toLanguage, xmlTag.getValue().getText());
+            xmlTag.getValue().setText(translatedText);
+        } else {
+            for (XmlTag subTag : xmlTag.getSubTags()) {
+                if (progressIndicator.isCanceled()) break;
+                if (TextUtil.isEmptyOrSpacesLineBreak(subTag.getValue().getText())) continue;
+
+                String translatedText = mTranslatorService.doTranslate(Languages.AUTO, toLanguage, subTag.getValue().getText());
+                subTag.getValue().setText(translatedText);
+            }
+        }
     }
-  }
 
-  private void writeTranslatedValues(@NotNull ProgressIndicator progressIndicator,
-                                     @NotNull File valueFile,
-                                     @NotNull List<AbstractValue> translatedValues) {
-    LOG.info("writeTranslatedValues valueFile: " + valueFile + ", translatedValues: " + translatedValues);
+    private void writeTranslatedValues(@NotNull ProgressIndicator progressIndicator,
+                                       @NotNull File valueFile,
+                                       @NotNull List<PsiElement> translatedValues) {
+        LOG.info("writeTranslatedValues valueFile: " + valueFile + ", translatedValues: " + translatedValues);
 
-    if (progressIndicator.isCanceled() || translatedValues.isEmpty()) return;
+        if (progressIndicator.isCanceled() || translatedValues.isEmpty()) return;
 
-    progressIndicator.setText("Writing to " + valueFile.getParentFile().getName() + " data...");
-    mValueService.writeValueFile(translatedValues, valueFile);
+        progressIndicator.setText("Writing to " + valueFile.getParentFile().getName() + " data...");
+        mValueService.writeValueFile(translatedValues, valueFile);
 
-    refreshAndOpenFile(valueFile);
-  }
-
-  private void refreshAndOpenFile(File file) {
-    VirtualFile virtualFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(file);
-    boolean isOpenTranslatedFile = PropertiesComponent.getInstance(myProject)
-        .getBoolean(Constants.KEY_IS_OPEN_TRANSLATED_FILE);
-    if (virtualFile != null && isOpenTranslatedFile) {
-      ApplicationManager.getApplication().invokeLater(() ->
-          FileEditorManager.getInstance(myProject).openFile(virtualFile, true));
+        refreshAndOpenFile(valueFile);
     }
-  }
 
-  @Override
-  public void onSuccess() {
-    super.onSuccess();
-    translateSuccess();
-  }
-
-  @Override
-  public void onThrowable(@NotNull Throwable error) {
-    super.onThrowable(error);
-    translateError(error);
-  }
-
-  private void translateSuccess() {
-    if (mOnTranslateListener != null) {
-      mOnTranslateListener.onTranslateSuccess();
+    private void refreshAndOpenFile(File file) {
+        VirtualFile virtualFile = LocalFileSystem.getInstance().refreshAndFindFileByIoFile(file);
+        boolean isOpenTranslatedFile = PropertiesComponent.getInstance(myProject)
+                .getBoolean(Constants.KEY_IS_OPEN_TRANSLATED_FILE);
+        if (virtualFile != null && isOpenTranslatedFile) {
+            ApplicationManager.getApplication().invokeLater(() ->
+                    FileEditorManager.getInstance(myProject).openFile(virtualFile, true));
+        }
     }
-  }
 
-  private void translateError(Throwable error) {
-    if (mOnTranslateListener != null) {
-      mOnTranslateListener.onTranslateError(error);
+    @Override
+    public void onSuccess() {
+        super.onSuccess();
+        translateSuccess();
     }
-  }
+
+    @Override
+    public void onThrowable(@NotNull Throwable error) {
+        super.onThrowable(error);
+        translateError(error);
+    }
+
+    private void translateSuccess() {
+        if (mOnTranslateListener != null) {
+            mOnTranslateListener.onTranslateSuccess();
+        }
+    }
+
+    private void translateError(Throwable error) {
+        if (mOnTranslateListener != null) {
+            mOnTranslateListener.onTranslateError(error);
+        }
+    }
 }
