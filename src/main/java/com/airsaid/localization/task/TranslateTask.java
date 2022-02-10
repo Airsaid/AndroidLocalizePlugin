@@ -34,7 +34,6 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.xml.XmlComment;
 import com.intellij.psi.xml.XmlTag;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
@@ -137,7 +136,10 @@ public class TranslateTask extends Task.Backgroundable {
       if ((value instanceof XmlTag)) {
         String translatableStr = ((XmlTag) value).getAttributeValue("translatable");
         final boolean translatable = Boolean.parseBoolean(translatableStr == null ? "true" : translatableStr);
-        if (!translatable) continue;
+        if (!translatable) {
+          translatedValues.add(value);
+          continue;
+        }
 
         if (!isOverwrite && toValues != null && toValues.containsKey(((XmlTag) value).getAttributeValue("name"))) {
           PsiElement toAndroidString = toValues.get(((XmlTag) value).getAttributeValue("name"));
@@ -154,9 +156,7 @@ public class TranslateTask extends Task.Backgroundable {
             translatedValues.add(translateValue);
             doTranslate(progressIndicator, toLanguage, translateValue);
         }
-
       } else {
-        if (value instanceof XmlComment) continue;
         translatedValues.add(value);
       }
     }
