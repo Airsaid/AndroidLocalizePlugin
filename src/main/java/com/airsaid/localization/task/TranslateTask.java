@@ -35,6 +35,8 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.xml.XmlTag;
+import com.intellij.psi.xml.XmlTagChild;
+import com.intellij.psi.xml.XmlText;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -125,8 +127,10 @@ public class TranslateTask extends Task.Backgroundable {
     }
   }
 
-  private List<PsiElement> doTranslate(@NotNull ProgressIndicator progressIndicator, @NotNull Lang toLanguage
-      , @Nullable Map<String, PsiElement> toValues, boolean isOverwrite) {
+  private List<PsiElement> doTranslate(@NotNull ProgressIndicator progressIndicator,
+                                       @NotNull Lang toLanguage,
+                                       @Nullable Map<String, PsiElement> toValues,
+                                       boolean isOverwrite) {
     LOG.info("doTranslate toLanguage: " + toLanguage.getEnglishName() + ", toValues: " + toValues + ", isOverwrite: " + isOverwrite);
 
     List<PsiElement> translatedValues = new ArrayList<>();
@@ -148,13 +152,18 @@ public class TranslateTask extends Task.Backgroundable {
         }
 
         String tagName = ((XmlTag) value).getName();
+        XmlTag translateValue = ((XmlTag) value.copy());
+        translatedValues.add(translateValue);
         switch (tagName) {
           case NAME_TAG_STRING:
+            doTranslate(progressIndicator, toLanguage, translateValue);
+            break;
           case NAME_TAG_STRING_ARRAY:
           case NAME_TAG_PLURALS:
-            XmlTag translateValue = ((XmlTag) value.copy());
-            translatedValues.add(translateValue);
-            doTranslate(progressIndicator, toLanguage, translateValue);
+            for (XmlTag subTag : translateValue.getSubTags()) {
+              doTranslate(progressIndicator, toLanguage, subTag);
+            }
+            break;
         }
       } else {
         translatedValues.add(value);
@@ -166,20 +175,17 @@ public class TranslateTask extends Task.Backgroundable {
   private void doTranslate(@NotNull ProgressIndicator progressIndicator,
                            @NotNull Lang toLanguage,
                            @NotNull XmlTag xmlTag) {
+    if (progressIndicator.isCanceled()) return;
 
-    if (xmlTag.getName().equals(NAME_TAG_STRING)) {
-      if (progressIndicator.isCanceled()) return;
-      if (TextUtil.isEmptyOrSpacesLineBreak(xmlTag.getValue().getText())) return;
-
-      String translatedText = mTranslatorService.doTranslate(Languages.AUTO, toLanguage, xmlTag.getValue().getText());
-      xmlTag.getValue().setText(translatedText);
-    } else {
-      for (XmlTag subTag : xmlTag.getSubTags()) {
-        if (progressIndicator.isCanceled()) break;
-        if (TextUtil.isEmptyOrSpacesLineBreak(subTag.getValue().getText())) continue;
-
-        String translatedText = mTranslatorService.doTranslate(Languages.AUTO, toLanguage, subTag.getValue().getText());
-        subTag.getValue().setText(translatedText);
+    XmlTagChild[] children = xmlTag.getValue().getChildren();
+    for (XmlTagChild child : children) {
+      if (child instanceof XmlText) {
+        String text = child.getText();
+        if (TextUtil.isEmptyOrSpacesLineBreak(text)) {
+          continue;
+        }
+        String translatedText = mTranslatorService.doTranslate(Languages.AUTO, toLanguage, text);
+        ((XmlText) child).setValue(translatedText);
       }
     }
   }
