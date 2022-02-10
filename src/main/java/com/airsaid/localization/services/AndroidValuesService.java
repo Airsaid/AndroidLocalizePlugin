@@ -109,12 +109,10 @@ public final class AndroidValuesService {
     }
     ApplicationManager.getApplication().invokeLater(() -> ApplicationManager.getApplication().runWriteAction(() -> {
       try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(valueFile, false), StandardCharsets.UTF_8))) {
-        bw.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\t");
         for (PsiElement value : values) {
           bw.write(value.getText());
         }
         bw.flush();
-
       } catch (IOException e) {
         e.printStackTrace();
         LOG.error("Failed to write to " + valueFile.getPath() + " file.", e);
