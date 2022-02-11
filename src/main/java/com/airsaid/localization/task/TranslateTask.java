@@ -18,7 +18,6 @@
 package com.airsaid.localization.task;
 
 import com.airsaid.localization.constant.Constants;
-import com.airsaid.localization.model.*;
 import com.airsaid.localization.services.AndroidValuesService;
 import com.airsaid.localization.translate.lang.Lang;
 import com.airsaid.localization.translate.lang.Languages;
@@ -31,9 +30,15 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.xml.XmlTag;
+import com.intellij.psi.xml.XmlTagChild;
+import com.intellij.psi.xml.XmlTagValue;
+import com.intellij.psi.xml.XmlText;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,6 +47,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -49,10 +56,14 @@ import java.util.stream.Collectors;
  */
 public class TranslateTask extends Task.Backgroundable {
 
+  private static final String NAME_TAG_STRING = "string";
+  private static final String NAME_TAG_PLURALS = "plurals";
+  private static final String NAME_TAG_STRING_ARRAY = "string-array";
+
   private static final Logger LOG = Logger.getInstance(TranslateTask.class);
 
   private final List<Lang> mToLanguages;
-  private final List<AbstractValue> mValues;
+  private final List<PsiElement> mValues;
   private final VirtualFile mValueFile;
   private final TranslatorService mTranslatorService;
   private final AndroidValuesService mValueService;
@@ -66,7 +77,7 @@ public class TranslateTask extends Task.Backgroundable {
   }
 
   public TranslateTask(@Nullable Project project, @Nls @NotNull String title, List<Lang> languages,
-                       List<AbstractValue> values, PsiFile valueFile) {
+                       List<PsiElement> values, PsiFile valueFile) {
     super(project, title);
     mToLanguages = languages;
     mValues = values;
@@ -100,80 +111,100 @@ public class TranslateTask extends Task.Backgroundable {
       PsiFile toValuePsiFile = mValueService.getValuePsiFile(myProject, resourceDir, toLanguage, valueFileName);
       LOG.info("Translating language: " + toLanguage.getEnglishName() + ", toValuePsiFile: " + toValuePsiFile);
       if (toValuePsiFile != null) {
-        List<AbstractValue> toValues = mValueService.loadValues(toValuePsiFile);
-        Map<String, AbstractValue> toValuesMap = toValues.stream().collect(Collectors.toMap(AbstractValue::getName, value -> value));
-        List<AbstractValue> translatedValues = doTranslate(progressIndicator, toLanguage, toValuesMap, isOverwriteExistingString);
+        List<PsiElement> toValues = mValueService.loadValues(toValuePsiFile);
+        Map<String, PsiElement> toValuesMap = toValues.stream().collect(Collectors.toMap(
+            psiElement -> {
+              if (psiElement instanceof XmlTag)
+                return ApplicationManager.getApplication().runReadAction((Computable<String>) () ->
+                    ((XmlTag) psiElement).getAttributeValue("name"));
+              else return UUID.randomUUID().toString();
+            },
+            Function.identity()
+        ));
+        List<PsiElement> translatedValues = doTranslate(progressIndicator, toLanguage, toValuesMap, isOverwriteExistingString);
         writeTranslatedValues(progressIndicator, new File(toValuePsiFile.getVirtualFile().getPath()), translatedValues);
       } else {
-        List<AbstractValue> translatedValues = doTranslate(progressIndicator, toLanguage, null, isOverwriteExistingString);
+        List<PsiElement> translatedValues = doTranslate(progressIndicator, toLanguage, null, isOverwriteExistingString);
         File valueFile = mValueService.getValueFile(resourceDir, toLanguage, valueFileName);
         writeTranslatedValues(progressIndicator, valueFile, translatedValues);
       }
     }
   }
 
-  private List<AbstractValue> doTranslate(@NotNull ProgressIndicator progressIndicator, @NotNull Lang toLanguage
-      , @Nullable Map<String, AbstractValue> toValues, boolean isOverwrite) {
+  private List<PsiElement> doTranslate(@NotNull ProgressIndicator progressIndicator,
+                                       @NotNull Lang toLanguage,
+                                       @Nullable Map<String, PsiElement> toValues,
+                                       boolean isOverwrite) {
     LOG.info("doTranslate toLanguage: " + toLanguage.getEnglishName() + ", toValues: " + toValues + ", isOverwrite: " + isOverwrite);
 
-    List<AbstractValue> translatedValues = new ArrayList<>();
-    for (AbstractValue value : mValues) {
+    List<PsiElement> translatedValues = new ArrayList<>();
+    for (PsiElement value : mValues) {
       if (progressIndicator.isCanceled()) break;
 
-      final boolean translatable = value.isTranslatable();
-      if (!translatable) continue;
-
-      if (!isOverwrite && toValues != null && toValues.containsKey(value.getName())) {
-        AbstractValue toAndroidString = toValues.get(value.getName());
-        translatedValues.add(toAndroidString);
-        continue;
-      }
-
-      if (value instanceof StringValue) {
-        StringValue stringValue = (StringValue) value;
-        StringValue translatedValue = stringValue.clone();
-        List<Content> contents = translatedValue.getContents();
-        doTranslateContents(progressIndicator, toLanguage, contents);
-        translatedValues.add(translatedValue);
-      } else if (value instanceof PluralsValue) {
-        PluralsValue pluralsValue = (PluralsValue) value;
-        PluralsValue translatedValue = pluralsValue.clone();
-        List<PluralsValue.Item> items = translatedValue.getItems();
-        for (PluralsValue.Item item : items) {
-          List<Content> contents = item.getContents();
-          doTranslateContents(progressIndicator, toLanguage, contents);
+      if (value instanceof XmlTag) {
+        XmlTag xmlTag = (XmlTag) value;
+        if (!mValueService.isTranslatable(xmlTag)) {
+          translatedValues.add(value);
+          continue;
         }
-        translatedValues.add(translatedValue);
-      } else if (value instanceof StringArrayValue) {
-        StringArrayValue stringArrayValue = (StringArrayValue) value;
-        StringArrayValue translatedValue = stringArrayValue.clone();
-        List<StringArrayValue.Item> items = translatedValue.getItems();
-        for (StringArrayValue.Item item : items) {
-          List<Content> contents = item.getContents();
-          doTranslateContents(progressIndicator, toLanguage, contents);
+
+        String name = ApplicationManager.getApplication().runReadAction((Computable<String>) () ->
+            xmlTag.getAttributeValue("name")
+        );
+        if (!isOverwrite && toValues != null && toValues.containsKey(name)) {
+          translatedValues.add(toValues.get(name));
+          continue;
         }
-        translatedValues.add(translatedValue);
+
+        XmlTag translateValue = ApplicationManager.getApplication().runReadAction((Computable<XmlTag>) () ->
+            (XmlTag) xmlTag.copy()
+        );
+        translatedValues.add(translateValue);
+        switch (translateValue.getName()) {
+          case NAME_TAG_STRING:
+            doTranslate(progressIndicator, toLanguage, translateValue);
+            break;
+          case NAME_TAG_STRING_ARRAY:
+          case NAME_TAG_PLURALS:
+            XmlTag[] subTags = ApplicationManager.getApplication()
+                .runReadAction((Computable<XmlTag[]>) translateValue::getSubTags);
+            for (XmlTag subTag : subTags) {
+              doTranslate(progressIndicator, toLanguage, subTag);
+            }
+            break;
+        }
+      } else {
+        translatedValues.add(value);
       }
     }
     return translatedValues;
   }
 
-  private void doTranslateContents(@NotNull ProgressIndicator progressIndicator,
-                                   @NotNull Lang toLanguage,
-                                   @NotNull List<Content> contents) {
-    for (Content content : contents) {
-      if (progressIndicator.isCanceled()) break;
-      if (content.isIgnore()) continue;
-      if (TextUtil.isEmptyOrSpacesLineBreak(content.getText())) continue;
+  private void doTranslate(@NotNull ProgressIndicator progressIndicator,
+                           @NotNull Lang toLanguage,
+                           @NotNull XmlTag xmlTag) {
+    if (progressIndicator.isCanceled()) return;
 
-      String translatedText = mTranslatorService.doTranslate(Languages.AUTO, toLanguage, content.getText());
-      content.setText(translatedText);
+    XmlTagValue xmlTagValue = ApplicationManager.getApplication()
+        .runReadAction((Computable<XmlTagValue>) xmlTag::getValue);
+    XmlTagChild[] children = xmlTagValue.getChildren();
+    for (XmlTagChild child : children) {
+      if (child instanceof XmlText) {
+        XmlText xmlText = (XmlText) child;
+        String text = ApplicationManager.getApplication()
+            .runReadAction((Computable<String>) xmlText::getText);
+        if (TextUtil.isEmptyOrSpacesLineBreak(text)) {
+          continue;
+        }
+        String translatedText = mTranslatorService.doTranslate(Languages.AUTO, toLanguage, text);
+        ApplicationManager.getApplication().runReadAction(() -> xmlText.setValue(translatedText));
+      }
     }
   }
 
   private void writeTranslatedValues(@NotNull ProgressIndicator progressIndicator,
                                      @NotNull File valueFile,
-                                     @NotNull List<AbstractValue> translatedValues) {
+                                     @NotNull List<PsiElement> translatedValues) {
     LOG.info("writeTranslatedValues valueFile: " + valueFile + ", translatedValues: " + translatedValues);
 
     if (progressIndicator.isCanceled() || translatedValues.isEmpty()) return;

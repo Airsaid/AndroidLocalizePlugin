@@ -17,7 +17,6 @@
 
 package com.airsaid.localization.services;
 
-import com.airsaid.localization.model.*;
 import com.airsaid.localization.translate.lang.Lang;
 import com.airsaid.localization.translate.lang.Languages;
 import com.intellij.openapi.application.ApplicationManager;
@@ -30,9 +29,12 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
-import com.intellij.psi.xml.*;
+import com.intellij.psi.xml.XmlDocument;
+import com.intellij.psi.xml.XmlFile;
+import com.intellij.psi.xml.XmlTag;
 import com.intellij.util.Consumer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -40,8 +42,8 @@ import org.jetbrains.annotations.Nullable;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Operation service for the android value files. eg: strings.xml or plurals.xml or arrays.xml.
@@ -57,10 +59,6 @@ public final class AndroidValuesService {
   private static final String NAME_PLURALS_FILE = "plurals.xml";
   private static final String NAME_ARRAYS_FILE = "arrays.xml";
 
-  private static final String NAME_TAG_STRING = "string";
-  private static final String NAME_TAG_PLURALS = "plurals";
-  private static final String NAME_TAG_STRING_ARRAY = "string-array";
-
   /**
    * Returns the {@link AndroidValuesService} object instance.
    *
@@ -71,14 +69,14 @@ public final class AndroidValuesService {
   }
 
   /**
-   * Asynchronous loading the value file as the {@link AbstractValue} collection.
+   * Asynchronous loading the value file as the {@link PsiElement} collection.
    *
    * @param valueFile the value file.
    * @param consumer  load result. called in the event dispatch thread.
    */
-  public void loadValuesByAsync(@NotNull PsiFile valueFile, @NotNull Consumer<List<AbstractValue>> consumer) {
+  public void loadValuesByAsync(@NotNull PsiFile valueFile, @NotNull Consumer<List<PsiElement>> consumer) {
     ApplicationManager.getApplication().executeOnPooledThread(() -> {
-          List<AbstractValue> values = loadValues(valueFile);
+          List<PsiElement> values = loadValues(valueFile);
           ApplicationManager.getApplication().invokeLater(() ->
               consumer.consume(values));
         }
@@ -86,22 +84,22 @@ public final class AndroidValuesService {
   }
 
   /**
-   * Loading the value file as the {@link AbstractValue} collection.
+   * Loading the value file as the {@link PsiElement} collection.
    *
    * @param valueFile the value file.
-   * @return {@link AbstractValue} collection.
+   * @return {@link PsiElement} collection.
    */
-  public List<AbstractValue> loadValues(@NotNull PsiFile valueFile) {
-    return ApplicationManager.getApplication().runReadAction((Computable<List<AbstractValue>>) () -> {
-      LOG.info("LoadValues valueFile: " + valueFile.getName());
-      List<AbstractValue> values = parseValuesXml(valueFile);
-      LOG.info("Parsed " + valueFile.getName() + " result: " + values);
+  public List<PsiElement> loadValues(@NotNull PsiFile valueFile) {
+    return ApplicationManager.getApplication().runReadAction((Computable<List<PsiElement>>) () -> {
+      LOG.info("loadValues valueFile: " + valueFile.getName());
+      List<PsiElement> values = parseValuesXml(valueFile);
+      LOG.info("loadValues parsed " + valueFile.getName() + " result: " + values);
       return values;
     });
   }
 
-  private List<AbstractValue> parseValuesXml(@NotNull PsiFile valueFile) {
-    final List<AbstractValue> values = new ArrayList<>();
+  private List<PsiElement> parseValuesXml(@NotNull PsiFile valueFile) {
+    final List<PsiElement> values = new ArrayList<>();
     final XmlFile xmlFile = (XmlFile) valueFile;
 
     final XmlDocument document = xmlFile.getDocument();
@@ -110,77 +108,19 @@ public final class AndroidValuesService {
     final XmlTag rootTag = document.getRootTag();
     if (rootTag == null) return values;
 
-    XmlTag[] subTags = rootTag.getSubTags();
-    for (XmlTag subTag : subTags) {
-      String subTagName = subTag.getName();
-      String name = subTag.getAttributeValue("name");
-      String translatableStr = subTag.getAttributeValue("translatable");
-      boolean translatable = Boolean.parseBoolean(translatableStr == null ? "true" : translatableStr);
+    PsiElement[] subTags = rootTag.getChildren();
+    values.addAll(Arrays.asList(subTags));
 
-      switch (subTagName) {
-        case NAME_TAG_STRING:
-          values.add(new StringValue(name, translatable, parseContent(subTag)));
-          break;
-        case NAME_TAG_PLURALS:
-          values.add(new PluralsValue(name, translatable, parsePluralsItems(subTag)));
-          break;
-        case NAME_TAG_STRING_ARRAY:
-          values.add(new StringArrayValue(name, translatable, parseStringArrayItems(subTag)));
-          break;
-      }
-    }
     return values;
   }
 
-  private List<Content> parseContent(XmlTag contentTag) {
-    List<Content> contents = new ArrayList<>();
-    XmlTagChild[] contentTags = contentTag.getValue().getChildren();
-    for (XmlTagChild content : contentTags) {
-      if (content instanceof XmlText) {
-        final XmlText xmlText = (XmlText) content;
-        final String text = xmlText.getValue();
-        contents.add(new Content(text));
-      } else if (content instanceof XmlTag) {
-        final XmlTag xmlTag = (XmlTag) content;
-        if (!xmlTag.getName().equals("xliff:g")) continue;
-
-        final String text = xmlTag.getValue().getText();
-        final String id = xmlTag.getAttributeValue("id");
-        final String example = xmlTag.getAttributeValue("example");
-        contents.add(new Content(text, id, example, true));
-      }
-    }
-    return contents;
-  }
-
-  private List<PluralsValue.Item> parsePluralsItems(XmlTag pluralsTag) {
-    List<PluralsValue.Item> items = new ArrayList<>();
-    XmlTag[] itemTags = pluralsTag.getSubTags();
-    for (XmlTag itemTag : itemTags) {
-      String quantity = itemTag.getAttributeValue("quantity");
-      List<Content> contents = parseContent(itemTag);
-      items.add(new PluralsValue.Item(quantity, contents));
-    }
-    return items;
-  }
-
-  private List<StringArrayValue.Item> parseStringArrayItems(XmlTag stringArrayTag) {
-    List<StringArrayValue.Item> items = new ArrayList<>();
-    XmlTag[] itemTags = stringArrayTag.getSubTags();
-    for (XmlTag itemTag : itemTags) {
-      List<Content> contents = parseContent(itemTag);
-      items.add(new StringArrayValue.Item(contents));
-    }
-    return items;
-  }
-
   /**
-   * Write {@link AbstractValue} collection data to the specified file.
+   * Write {@link PsiElement} collection data to the specified file.
    *
-   * @param values    specified {@link AbstractValue} collection data.
+   * @param values    specified {@link PsiElement} collection data.
    * @param valueFile specified file.
    */
-  public void writeValueFile(List<AbstractValue> values, @NotNull File valueFile) {
+  public void writeValueFile(@NotNull List<PsiElement> values, @NotNull File valueFile) {
     boolean isCreateSuccess = FileUtil.createIfDoesntExist(valueFile);
     if (!isCreateSuccess) {
       LOG.error("Failed to write to " + valueFile.getPath() + " file: create failed!");
@@ -188,63 +128,15 @@ public final class AndroidValuesService {
     }
     ApplicationManager.getApplication().invokeLater(() -> ApplicationManager.getApplication().runWriteAction(() -> {
       try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(valueFile, false), StandardCharsets.UTF_8))) {
-        bw.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-        bw.newLine();
-        bw.write("<resources>");
-        bw.newLine();
-        for (AbstractValue value : values) {
-          if (value instanceof StringValue) {
-            writeStringValue(bw, (StringValue) value);
-          } else if (value instanceof PluralsValue) {
-            writePluralsValue(bw, (PluralsValue) value);
-          } else if (value instanceof StringArrayValue) {
-            writeStringArrayValue(bw, (StringArrayValue) value);
-          }
-          bw.newLine();
+        for (PsiElement value : values) {
+          bw.write(value.getText());
         }
-        bw.write("</resources>");
         bw.flush();
       } catch (IOException e) {
         e.printStackTrace();
         LOG.error("Failed to write to " + valueFile.getPath() + " file.", e);
       }
     }));
-  }
-
-  private void writeStringValue(BufferedWriter bw, StringValue value) throws IOException {
-    bw.write("\t<" + NAME_TAG_STRING + " name=\"" + value.getName() + "\">");
-    for (Content content : value.getContents()) {
-      bw.write(content.getText());
-    }
-    bw.write("</" + NAME_TAG_STRING + ">");
-  }
-
-  private void writePluralsValue(BufferedWriter bw, PluralsValue value) throws IOException {
-    bw.write("\t<" + NAME_TAG_PLURALS + " name=\"" + value.getName() + "\">");
-    bw.newLine();
-    for (PluralsValue.Item item : value.getItems()) {
-      bw.write("\t\t<item quantity=\"" + item.getQuantityName() + "\">");
-      for (Content content : item.getContents()) {
-        bw.write(content.getText());
-      }
-      bw.write("</item>");
-      bw.newLine();
-    }
-    bw.write("\t</" + NAME_TAG_PLURALS + ">");
-  }
-
-  private void writeStringArrayValue(BufferedWriter bw, StringArrayValue value) throws IOException {
-    bw.write("\t<" + NAME_TAG_STRING_ARRAY + " name=\"" + value.getName() + "\">");
-    bw.newLine();
-    for (StringArrayValue.Item item : value.getItems()) {
-      bw.write("\t\t<item>");
-      for (Content content : item.getContents()) {
-        bw.write(content.getText());
-      }
-      bw.write("</item>");
-      bw.newLine();
-    }
-    bw.write("\t</" + NAME_TAG_STRING_ARRAY + ">");
   }
 
   /**
@@ -278,13 +170,10 @@ public final class AndroidValuesService {
    * @return null if not exist, otherwise return the value file.
    */
   @Nullable
-  public PsiFile getValuePsiFile(@NotNull Project project, @NotNull VirtualFile resourceDir,
-                                 @NotNull Lang lang, @NotNull String fileName) {
-    Objects.requireNonNull(project);
-    Objects.requireNonNull(resourceDir);
-    Objects.requireNonNull(lang);
-    Objects.requireNonNull(fileName);
-
+  public PsiFile getValuePsiFile(@NotNull Project project,
+                                 @NotNull VirtualFile resourceDir,
+                                 @NotNull Lang lang,
+                                 @NotNull String fileName) {
     return ApplicationManager.getApplication().runReadAction((Computable<PsiFile>) () -> {
       VirtualFile virtualFile = LocalFileSystem.getInstance().findFileByIoFile(getValueFile(resourceDir, lang, fileName));
       if (virtualFile == null) {
@@ -325,4 +214,16 @@ public final class AndroidValuesService {
     return "values-".concat(suffix);
   }
 
+  /**
+   * Returns whether the specified xml tag (string entry) needs to be translated.
+   *
+   * @param xmlTag the specified xml tag of string entry.
+   * @return true: need translation. false: no translation is needed.
+   */
+  public boolean isTranslatable(@NotNull XmlTag xmlTag) {
+    return ApplicationManager.getApplication().runReadAction((Computable<Boolean>) () -> {
+      String translatableStr = xmlTag.getAttributeValue("translatable");
+      return Boolean.parseBoolean(translatableStr == null ? "true" : translatableStr);
+    });
+  }
 }

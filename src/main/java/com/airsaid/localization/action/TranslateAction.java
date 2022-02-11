@@ -18,7 +18,6 @@
 package com.airsaid.localization.action;
 
 import com.airsaid.localization.config.SettingsState;
-import com.airsaid.localization.model.AbstractValue;
 import com.airsaid.localization.services.AndroidValuesService;
 import com.airsaid.localization.task.TranslateTask;
 import com.airsaid.localization.translate.lang.Lang;
@@ -28,7 +27,9 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.project.Project;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.xml.XmlTag;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -42,7 +43,7 @@ public class TranslateAction extends AnAction implements SelectLanguagesDialog.O
 
   private Project mProject;
   private PsiFile mValueFile;
-  private List<AbstractValue> mValues;
+  private List<PsiElement> mValues;
   private final AndroidValuesService mValueService = AndroidValuesService.getInstance();
 
   @Override
@@ -63,15 +64,15 @@ public class TranslateAction extends AnAction implements SelectLanguagesDialog.O
   }
 
   // Verify that there is a text in the value file that needs to be translated.
-  private boolean isTranslatable(@NotNull List<AbstractValue> values) {
-    boolean isTranslatable = false;
-    for (AbstractValue androidString : values) {
-      if (androidString.isTranslatable()) {
-        isTranslatable = true;
-        break;
+  private boolean isTranslatable(@NotNull List<PsiElement> values) {
+    for (PsiElement psiElement : values) {
+      if (psiElement instanceof XmlTag) {
+        if (mValueService.isTranslatable((XmlTag) psiElement)) {
+          return true;
+        }
       }
     }
-    return isTranslatable;
+    return false;
   }
 
   private void showSelectLanguageDialog() {
