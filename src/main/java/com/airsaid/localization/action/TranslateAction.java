@@ -65,18 +65,14 @@ public class TranslateAction extends AnAction implements SelectLanguagesDialog.O
 
   // Verify that there is a text in the value file that needs to be translated.
   private boolean isTranslatable(@NotNull List<PsiElement> values) {
-    boolean isTranslatable = false;
     for (PsiElement psiElement : values) {
       if (psiElement instanceof XmlTag) {
-        String translatableStr = ((XmlTag) psiElement).getAttributeValue("translatable");
-        boolean translatable = Boolean.parseBoolean(translatableStr == null ? "true" : translatableStr);
-        if (translatable) {
-          isTranslatable = true;
-          break;
+        if (mValueService.isTranslatable((XmlTag) psiElement)) {
+          return true;
         }
       }
     }
-    return isTranslatable;
+    return false;
   }
 
   private void showSelectLanguageDialog() {

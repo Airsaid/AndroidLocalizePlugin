@@ -30,12 +30,14 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.xml.XmlTag;
 import com.intellij.psi.xml.XmlTagChild;
+import com.intellij.psi.xml.XmlTagValue;
 import com.intellij.psi.xml.XmlText;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
@@ -112,7 +114,9 @@ public class TranslateTask extends Task.Backgroundable {
         List<PsiElement> toValues = mValueService.loadValues(toValuePsiFile);
         Map<String, PsiElement> toValuesMap = toValues.stream().collect(Collectors.toMap(
             psiElement -> {
-              if (psiElement instanceof XmlTag) return ((XmlTag) psiElement).getAttributeValue("name");
+              if (psiElement instanceof XmlTag)
+                return ApplicationManager.getApplication().runReadAction((Computable<String>) () ->
+                    ((XmlTag) psiElement).getAttributeValue("name"));
               else return UUID.randomUUID().toString();
             },
             Function.identity()
@@ -137,30 +141,34 @@ public class TranslateTask extends Task.Backgroundable {
     for (PsiElement value : mValues) {
       if (progressIndicator.isCanceled()) break;
 
-      if ((value instanceof XmlTag)) {
-        String translatableStr = ((XmlTag) value).getAttributeValue("translatable");
-        final boolean translatable = Boolean.parseBoolean(translatableStr == null ? "true" : translatableStr);
-        if (!translatable) {
+      if (value instanceof XmlTag) {
+        XmlTag xmlTag = (XmlTag) value;
+        if (!mValueService.isTranslatable(xmlTag)) {
           translatedValues.add(value);
           continue;
         }
 
-        if (!isOverwrite && toValues != null && toValues.containsKey(((XmlTag) value).getAttributeValue("name"))) {
-          PsiElement toAndroidString = toValues.get(((XmlTag) value).getAttributeValue("name"));
-          translatedValues.add(toAndroidString);
+        String name = ApplicationManager.getApplication().runReadAction((Computable<String>) () ->
+            xmlTag.getAttributeValue("name")
+        );
+        if (!isOverwrite && toValues != null && toValues.containsKey(name)) {
+          translatedValues.add(toValues.get(name));
           continue;
         }
 
-        String tagName = ((XmlTag) value).getName();
-        XmlTag translateValue = ((XmlTag) value.copy());
+        XmlTag translateValue = ApplicationManager.getApplication().runReadAction((Computable<XmlTag>) () ->
+            (XmlTag) xmlTag.copy()
+        );
         translatedValues.add(translateValue);
-        switch (tagName) {
+        switch (translateValue.getName()) {
           case NAME_TAG_STRING:
             doTranslate(progressIndicator, toLanguage, translateValue);
             break;
           case NAME_TAG_STRING_ARRAY:
           case NAME_TAG_PLURALS:
-            for (XmlTag subTag : translateValue.getSubTags()) {
+            XmlTag[] subTags = ApplicationManager.getApplication()
+                .runReadAction((Computable<XmlTag[]>) translateValue::getSubTags);
+            for (XmlTag subTag : subTags) {
               doTranslate(progressIndicator, toLanguage, subTag);
             }
             break;
@@ -177,15 +185,19 @@ public class TranslateTask extends Task.Backgroundable {
                            @NotNull XmlTag xmlTag) {
     if (progressIndicator.isCanceled()) return;
 
-    XmlTagChild[] children = xmlTag.getValue().getChildren();
+    XmlTagValue xmlTagValue = ApplicationManager.getApplication()
+        .runReadAction((Computable<XmlTagValue>) xmlTag::getValue);
+    XmlTagChild[] children = xmlTagValue.getChildren();
     for (XmlTagChild child : children) {
       if (child instanceof XmlText) {
-        String text = child.getText();
+        XmlText xmlText = (XmlText) child;
+        String text = ApplicationManager.getApplication()
+            .runReadAction((Computable<String>) xmlText::getText);
         if (TextUtil.isEmptyOrSpacesLineBreak(text)) {
           continue;
         }
         String translatedText = mTranslatorService.doTranslate(Languages.AUTO, toLanguage, text);
-        ((XmlText) child).setValue(translatedText);
+        ApplicationManager.getApplication().runReadAction(() -> xmlText.setValue(translatedText));
       }
     }
   }

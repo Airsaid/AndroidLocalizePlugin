@@ -32,7 +32,9 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
-import com.intellij.psi.xml.*;
+import com.intellij.psi.xml.XmlDocument;
+import com.intellij.psi.xml.XmlFile;
+import com.intellij.psi.xml.XmlTag;
 import com.intellij.util.Consumer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,7 +44,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Operation service for the android value files. eg: strings.xml or plurals.xml or arrays.xml.
@@ -67,6 +68,12 @@ public final class AndroidValuesService {
     return ServiceManager.getService(AndroidValuesService.class);
   }
 
+  /**
+   * Asynchronous loading the value file as the {@link PsiElement} collection.
+   *
+   * @param valueFile the value file.
+   * @param consumer  load result. called in the event dispatch thread.
+   */
   public void loadValuesByAsync(@NotNull PsiFile valueFile, @NotNull Consumer<List<PsiElement>> consumer) {
     ApplicationManager.getApplication().executeOnPooledThread(() -> {
           List<PsiElement> values = loadValues(valueFile);
@@ -76,11 +83,17 @@ public final class AndroidValuesService {
     );
   }
 
+  /**
+   * Loading the value file as the {@link PsiElement} collection.
+   *
+   * @param valueFile the value file.
+   * @return {@link PsiElement} collection.
+   */
   public List<PsiElement> loadValues(@NotNull PsiFile valueFile) {
     return ApplicationManager.getApplication().runReadAction((Computable<List<PsiElement>>) () -> {
-      LOG.info("LoadValues valueFile: " + valueFile.getName());
+      LOG.info("loadValues valueFile: " + valueFile.getName());
       List<PsiElement> values = parseValuesXml(valueFile);
-      LOG.info("Parsed " + valueFile.getName() + " result: " + values);
+      LOG.info("loadValues parsed " + valueFile.getName() + " result: " + values);
       return values;
     });
   }
@@ -101,7 +114,13 @@ public final class AndroidValuesService {
     return values;
   }
 
-  public void writeValueFile(List<PsiElement> values, @NotNull File valueFile) {
+  /**
+   * Write {@link PsiElement} collection data to the specified file.
+   *
+   * @param values    specified {@link PsiElement} collection data.
+   * @param valueFile specified file.
+   */
+  public void writeValueFile(@NotNull List<PsiElement> values, @NotNull File valueFile) {
     boolean isCreateSuccess = FileUtil.createIfDoesntExist(valueFile);
     if (!isCreateSuccess) {
       LOG.error("Failed to write to " + valueFile.getPath() + " file: create failed!");
@@ -151,13 +170,10 @@ public final class AndroidValuesService {
    * @return null if not exist, otherwise return the value file.
    */
   @Nullable
-  public PsiFile getValuePsiFile(@NotNull Project project, @NotNull VirtualFile resourceDir,
-                                 @NotNull Lang lang, @NotNull String fileName) {
-    Objects.requireNonNull(project);
-    Objects.requireNonNull(resourceDir);
-    Objects.requireNonNull(lang);
-    Objects.requireNonNull(fileName);
-
+  public PsiFile getValuePsiFile(@NotNull Project project,
+                                 @NotNull VirtualFile resourceDir,
+                                 @NotNull Lang lang,
+                                 @NotNull String fileName) {
     return ApplicationManager.getApplication().runReadAction((Computable<PsiFile>) () -> {
       VirtualFile virtualFile = LocalFileSystem.getInstance().findFileByIoFile(getValueFile(resourceDir, lang, fileName));
       if (virtualFile == null) {
@@ -198,4 +214,16 @@ public final class AndroidValuesService {
     return "values-".concat(suffix);
   }
 
+  /**
+   * Returns whether the specified xml tag (string entry) needs to be translated.
+   *
+   * @param xmlTag the specified xml tag of string entry.
+   * @return true: need translation. false: no translation is needed.
+   */
+  public boolean isTranslatable(@NotNull XmlTag xmlTag) {
+    return ApplicationManager.getApplication().runReadAction((Computable<Boolean>) () -> {
+      String translatableStr = xmlTag.getAttributeValue("translatable");
+      return Boolean.parseBoolean(translatableStr == null ? "true" : translatableStr);
+    });
+  }
 }
