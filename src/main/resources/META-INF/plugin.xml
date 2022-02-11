@@ -37,8 +37,7 @@
 
     <change-notes><![CDATA[
       <ul>
-        <li>Supported custom google api key.</li>
-        <li>Supported plurals&string-array tags.</li>
+        <li>Support for preserving comments, blank lines and other characters.</li>
       </ul>
       <a href="https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/CHANGELOG.md"><b>Full Changelog History</b></a>
     ]]></change-notes>

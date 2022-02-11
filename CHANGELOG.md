@@ -1,5 +1,8 @@
 # Change Log
 
+## [V2.5.0](https://github.com/Airsaid/AndroidLocalizePlugin/releases/tag/v2.5.0) (2022-02-11)
+- Support for preserving comments, blank lines and other characters.
+
 ## [V2.4.0](https://github.com/Airsaid/AndroidLocalizePlugin/releases/tag/v2.4.0) (2022-01-21)
 - Supported custom google api key.
 - Supported plurals&string-array tags.
