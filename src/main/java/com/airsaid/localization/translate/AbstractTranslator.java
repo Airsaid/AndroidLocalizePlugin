@@ -49,7 +49,7 @@ public abstract class AbstractTranslator implements Translator, TranslatorConfig
     if (!supportedLanguages.contains(toLang)) {
       throw new TranslationException(fromLang, toLang, text, toLang.getEnglishName() + " is not supported.");
     }
-
+    //先获取token 再翻译
     String requestUrl = getRequestUrl(fromLang, toLang, text);
     RequestBuilder requestBuilder = HttpRequests.post(requestUrl, CONTENT_TYPE);
     configureRequestBuilder(requestBuilder);

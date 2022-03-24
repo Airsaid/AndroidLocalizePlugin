@@ -59,4 +59,16 @@ dependencies {
 
   testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.0")
+
+  implementation("com.alibaba:fastjson:1.2.76")
+  implementation("com.squareup.okhttp3:okhttp:4.9.3")
+  implementation(platform("com.squareup.okhttp3:okhttp-bom:4.9.3"))
+
+  // define any required OkHttp artifacts without version
+  implementation("com.squareup.retrofit2:retrofit:2.7.0")
+  implementation("com.squareup.okio:okio:1.8.0")
+
+
+  // Retrofit
+
 }
