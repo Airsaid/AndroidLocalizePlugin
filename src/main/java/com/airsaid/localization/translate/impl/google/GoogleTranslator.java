@@ -99,15 +99,11 @@ public class GoogleTranslator extends AbstractTranslator {
     public String doTranslate(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) throws TranslationException {
         //翻译部分
         String result = "";
-
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
-
         String params2 = getRequestParams2(fromLang, toLang, text);
-
         Request request = new Request.Builder()
                 .url(TRANSL_URL + params2)
-//               .url("https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=auto&tl=zh-cn&q=dog")
                 .method("GET", null)
                 .build();
         try {
