@@ -28,6 +28,7 @@ import com.intellij.openapi.util.Pair;
 import com.intellij.util.io.RequestBuilder;
 import icons.PluginIcons;
 import okhttp3.*;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,6 +45,8 @@ public class BaiduTranslator extends AbstractTranslator {
     private static final String HOST_URL = "https://aip.baidubce.com";
     private static final String TRANSLATE_URL = HOST_URL.concat("/rpc/2.0/mt/texttrans/v1");
     private static final String APPLY_APP_ID_URL = "https://aip.baidubce.com/oauth/2.0/token";
+
+    private String BaiDuToken = "";
 
     private List<Lang> supportedLanguages;
 
@@ -99,22 +102,31 @@ public class BaiduTranslator extends AbstractTranslator {
 
     @Override
     public String doTranslate(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) throws TranslationException {
-        //百度的翻译
-
         String result = "";
+        // 检查是否有token
+        if (StringUtils.isAllEmpty(BaiDuToken)){
+            BaiDuToken =  getBaiduToken();  // 请求token
+        }
+        if (StringUtils.isAllEmpty(BaiDuToken)){
+            return result;
+        }else {
+            result= baiduTranslate(fromLang,toLang,text);
+        }
+        return result;
 
-        String appId = getAppId();
-        String appKey = getAppKey();
+
+      /*  //百度的翻译
 
         HashMap<String, String> parms = new HashMap<String, String>();
         parms.put("grant_type", "client_credentials");
-        parms.put("client_id", appId);
-        parms.put("client_secret", appKey);
+        parms.put("client_id", getAppId());
+        parms.put("client_secret",  getAppKey());
 
         String requestUrl = getApplyAppIdUrl() + getParms(parms);
         LogUtils.d("requestUrl:"+requestUrl);
 
         try {
+
             OkHttpClient client = new OkHttpClient().newBuilder().build();
             MediaType mediaType = MediaType.parse("text/plain");
             RequestBody body = RequestBody.create(mediaType, "");
@@ -139,6 +151,7 @@ public class BaiduTranslator extends AbstractTranslator {
                     body = RequestBody.create(mediaType, GsonUtil.getInstance().getGson().toJson(baiduResquest));
 
                     request = new Request.Builder()
+                            .url(getRequestUrl(fromLang,toLang,text) + tokenResult.getAccess_token())
                             .url("https://aip.baidubce.com/rpc/2.0/mt/texttrans/v1?access_token=" + tokenResult.getAccess_token())
                             .method("POST", body)
                             .addHeader("Content-Type", "application/json;charset=utf-8")
@@ -159,7 +172,77 @@ public class BaiduTranslator extends AbstractTranslator {
 
         }
 
+        return result;*/
+    }
+
+    private String baiduTranslate(Lang fromLang, Lang toLang, String text) {
+
+        String result = "";
+
+        OkHttpClient client = new OkHttpClient().newBuilder().build();
+        MediaType   mediaType = MediaType.parse("application/json;charset=utf-8");
+
+        BaiduResquest baiduResquest = new BaiduResquest();
+        baiduResquest.setQ(text);
+        baiduResquest.setFrom(fromLang.getCode());
+        baiduResquest.setTo(toLang.getCode());
+
+        RequestBody body = RequestBody.create(mediaType, GsonUtil.getInstance().getGson().toJson(baiduResquest));
+        Request request = new Request.Builder()
+                .url(getRequestUrl(fromLang,toLang,text) +"?access_token="+ BaiDuToken)
+//                .url("https://aip.baidubce.com/rpc/2.0/mt/texttrans/v1?access_token=" + BaiDuToken)
+                .method("POST", body)
+                .addHeader("Content-Type", "application/json;charset=utf-8")
+                .build();
+
+        Response response = null;
+        try {
+            response= client.newCall(request).execute();
+            String resultText = response.body().string();
+            result = parsingResult(fromLang, toLang, text, resultText);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
         return result;
+    }
+
+    private String getBaiduToken() {
+
+        String BaiDuToken = null;
+
+        HashMap<String, String> parms = new HashMap<String, String>();
+        parms.put("grant_type", "client_credentials");
+        parms.put("client_id", getAppId());
+        parms.put("client_secret", getAppKey());
+
+        String requestUrl = getApplyAppIdUrl() + getParms(parms);
+        LogUtils.d("requestUrl:" + requestUrl);
+
+        try {
+            OkHttpClient client = new OkHttpClient().newBuilder().build();
+            MediaType mediaType = MediaType.parse("text/plain");
+            RequestBody body = RequestBody.create(mediaType, "");
+            Request request = new Request.Builder()
+                    .url(requestUrl)
+                    .method("POST", body)
+                    .build();
+            Response response = client.newCall(request).execute();
+            ResponseBody responseBody = response.body();
+            String string = responseBody.string();
+            BaiduTokenRespons tokenResult = GsonUtil.getInstance().getGson().fromJson(string, BaiduTokenRespons.class);
+
+            if (tokenResult != null) {
+                BaiDuToken = tokenResult.getAccess_token();
+            }
+
+        } catch (Exception e) {
+
+        }
+
+        return BaiDuToken;
+
     }
 
     private String getParms(HashMap<String, String> parms) {
