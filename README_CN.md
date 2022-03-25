@@ -8,13 +8,19 @@
 
 修复版
 截至 2022年3月25日 修复了Google免费翻译和百度API翻译，正常使用，已申请PR
+
 本地安装 请下载 releases 版本，
+
 本地安装： File | Settings | Plugins , 选项-Install Plugin from Disk...
+
 使用方式： 选择 Res | String.xml 文件，右键，选择目标语言，貌似只能选择 values目录，建议原始语言使用英文，翻译其他语言更顺利
+
 设置方式： File | Settings | Tools | AndroidLocalize 选择翻译渠道，
   目前测试Google和Baidu 正常，百度需要申请翻译服务，注意本修覅后填写的服务KEY 是API Key和 Secret Key
+
 安装
 ![img_1.png](img_1.png)
+
 设置：
 ![img_2.png](img_2.png)
 
