@@ -1,10 +1,20 @@
 **English** | [简体中文](README_CN.md)
 
-# ![image](https://raw.githubusercontent.com/Airsaid/AndroidLocalizePlugin/85cf5020832523ea333ad09286af55880460457a/src/main/resources/META-INF/pluginIcon.svg) AndroidLocalizePlugin
+# ![image](https://raw.githubusercontent.com/Airsaid/AndroidLocalizePlugin/85cf5020832523ea333ad09286af55880460457a/src/main/resources/META-INF/pluginIcon.svg) AndroidLocalizePlugin Fix
 [![Plugin Version](https://img.shields.io/jetbrains/plugin/v/11174)](https://plugins.jetbrains.com/plugin/11174-androidlocalize)
 [![Plugin Rating](https://img.shields.io/jetbrains/plugin/r/rating/11174)](https://plugins.jetbrains.com/plugin/11174-androidlocalize)
 
 :earth_asia: Android/IDEA localization plugin. supports multiple languages and multiple translators.
+
+Fix Version
+As of March 25, 2022, Google Free Translation and Baidu API Translation have been fixed and are working properly, PR has been applied.
+Local installation Please download the releases version.
+
+Local installation: File | Settings | Plugins , Options-Install Plugin from Disk...
+How to use: Select Res | String.xml file, right click, select the target language, it seems that you can only select the values directory, it is recommended that the original language use English, translate other languages more smoothly
+Settings: File | Settings | Tools | AndroidLocalize Select the translation channel.
+
+
 
 # Features
 - Multiple translator support:
