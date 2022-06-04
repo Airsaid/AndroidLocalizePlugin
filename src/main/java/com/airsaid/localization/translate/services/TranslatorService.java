@@ -23,6 +23,7 @@ import com.airsaid.localization.translate.impl.google.GoogleTranslator;
 import com.airsaid.localization.translate.impl.googleapi.GoogleApiTranslator;
 import com.airsaid.localization.translate.impl.microsoft.MicrosoftTranslator;
 import com.airsaid.localization.translate.impl.youdao.YoudaoTranslator;
+import com.airsaid.localization.translate.interceptors.EscapeCharactersInterceptor;
 import com.airsaid.localization.translate.lang.Lang;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.Service;
@@ -31,7 +32,9 @@ import com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -47,8 +50,13 @@ public final class TranslatorService {
   private final AbstractTranslator defaultTranslator;
   private final TranslationCacheService cacheService;
   private final Map<String, AbstractTranslator> translators;
+  private final List<TranslationInterceptor> translationInterceptors;
   private boolean isEnableCache = true;
   private int intervalTime;
+
+  public interface TranslationInterceptor {
+    String process(String text);
+  }
 
   public TranslatorService() {
     translators = new LinkedHashMap<>();
@@ -70,6 +78,9 @@ public final class TranslatorService {
     translators.put(youdaoTranslator.getKey(), youdaoTranslator);
 
     cacheService = TranslationCacheService.getInstance();
+
+    translationInterceptors = new ArrayList<>();
+    translationInterceptors.add(new EscapeCharactersInterceptor());
   }
 
   @NotNull
@@ -118,6 +129,10 @@ public final class TranslatorService {
 
     String result = selectedTranslator.doTranslate(fromLang, toLang, text);
     LOG.info(String.format("doTranslate result: %s", result));
+    for (TranslationInterceptor interceptor : translationInterceptors) {
+      result = interceptor.process(result);
+      LOG.info(String.format("doTranslate interceptor process result: %s", result));
+    }
     cacheService.put(getCacheKey(fromLang, toLang, text), result);
     delay(intervalTime);
     return result;
