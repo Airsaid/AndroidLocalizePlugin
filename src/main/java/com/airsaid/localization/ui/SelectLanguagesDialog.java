@@ -62,7 +62,7 @@ public class SelectLanguagesDialog extends DialogWrapper {
     super(project, false);
     this.project = project;
     doCreateCenterPanel();
-    setTitle("Select Translate Languages");
+    setTitle("Select Translated Languages");
     init();
   }
 
@@ -90,7 +90,7 @@ public class SelectLanguagesDialog extends DialogWrapper {
 
     // set power ui
     AbstractTranslator translator = TranslatorService.getInstance().getSelectedTranslator();
-    powerTranslatorLabel.setText("Power By " + translator.getName());
+    powerTranslatorLabel.setText("Powered by " + translator.getName());
     powerTranslatorLabel.setIcon(translator.getIcon());
   }
 
