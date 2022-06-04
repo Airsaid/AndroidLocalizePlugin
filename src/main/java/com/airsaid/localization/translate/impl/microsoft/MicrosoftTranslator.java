@@ -83,8 +83,8 @@ public class MicrosoftTranslator extends AbstractTranslator {
       supportedLanguages.add(Languages.BOSNIAN);
       supportedLanguages.add(Languages.BULGARIAN);
       supportedLanguages.add(Languages.CATALAN);
-      supportedLanguages.add(Languages.CHINESE_SIMPLIFIED.clone().setCode("zh-Hans"));
-      supportedLanguages.add(Languages.CHINESE_TRADITIONAL.clone().setCode("zh-Hant"));
+      supportedLanguages.add(Languages.CHINESE_SIMPLIFIED.clone().setTranslationCode("zh-Hans"));
+      supportedLanguages.add(Languages.CHINESE_TRADITIONAL.clone().setTranslationCode("zh-Hant"));
       supportedLanguages.add(Languages.CROATIAN);
       supportedLanguages.add(Languages.CZECH);
       supportedLanguages.add(Languages.DANISH);
@@ -93,19 +93,19 @@ public class MicrosoftTranslator extends AbstractTranslator {
       supportedLanguages.add(Languages.ENGLISH);
       supportedLanguages.add(Languages.ESTONIAN);
       supportedLanguages.add(Languages.FIJIAN);
-      supportedLanguages.add(Languages.FILIPINO.clone().setCode("fil"));
+      supportedLanguages.add(Languages.FILIPINO.clone().setTranslationCode("fil"));
       supportedLanguages.add(Languages.FINNISH);
       supportedLanguages.add(Languages.FRENCH);
       supportedLanguages.add(Languages.GERMAN);
       supportedLanguages.add(Languages.GREEK);
       supportedLanguages.add(Languages.GUJARATI);
       supportedLanguages.add(Languages.HAITIAN_CREOLE);
-      supportedLanguages.add(Languages.HEBREW.clone().setCode("he"));
+      supportedLanguages.add(Languages.HEBREW.clone().setTranslationCode("he"));
       supportedLanguages.add(Languages.HINDI);
       supportedLanguages.add(Languages.HMONG_DAW);
       supportedLanguages.add(Languages.HUNGARIAN);
       supportedLanguages.add(Languages.ICELANDIC);
-      supportedLanguages.add(Languages.INDONESIAN);
+      supportedLanguages.add(Languages.INDONESIAN.clone().setTranslationCode("id"));
       supportedLanguages.add(Languages.INUKTITUT);
       supportedLanguages.add(Languages.IRISH);
       supportedLanguages.add(Languages.ITALIAN);
@@ -128,7 +128,7 @@ public class MicrosoftTranslator extends AbstractTranslator {
       supportedLanguages.add(Languages.MARATHI);
       supportedLanguages.add(Languages.BURMESE);
       supportedLanguages.add(Languages.NEPALI);
-      supportedLanguages.add(Languages.NORWEGIAN.clone().setCode("nb"));
+      supportedLanguages.add(Languages.NORWEGIAN.clone().setTranslationCode("nb"));
       supportedLanguages.add(Languages.ODIA);
       supportedLanguages.add(Languages.PASHTO);
       supportedLanguages.add(Languages.PERSIAN);
@@ -169,7 +169,7 @@ public class MicrosoftTranslator extends AbstractTranslator {
   public @NotNull String getRequestUrl(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
     return new UrlBuilder(TRANSLATE_URL)
         .addQueryParameter("api-version", "3.0")
-        .addQueryParameter("to", toLang.getCode())
+        .addQueryParameter("to", toLang.getTranslationCode())
         .build();
   }
 

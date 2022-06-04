@@ -63,14 +63,14 @@ public class BaiduTranslator extends AbstractTranslator {
   public @NotNull List<Lang> getSupportedLanguages() {
     if (supportedLanguages == null) {
       supportedLanguages = new ArrayList<>();
-      supportedLanguages.add(Languages.CHINESE_SIMPLIFIED.clone().setCode("zh"));
+      supportedLanguages.add(Languages.CHINESE_SIMPLIFIED.clone().setTranslationCode("zh"));
       supportedLanguages.add(Languages.ENGLISH);
-      supportedLanguages.add(Languages.JAPANESE.clone().setCode("jp"));
-      supportedLanguages.add(Languages.KOREAN.clone().setCode("kor"));
-      supportedLanguages.add(Languages.FRENCH.clone().setCode("fra"));
-      supportedLanguages.add(Languages.SPANISH.clone().setCode("spa"));
+      supportedLanguages.add(Languages.JAPANESE.clone().setTranslationCode("jp"));
+      supportedLanguages.add(Languages.KOREAN.clone().setTranslationCode("kor"));
+      supportedLanguages.add(Languages.FRENCH.clone().setTranslationCode("fra"));
+      supportedLanguages.add(Languages.SPANISH.clone().setTranslationCode("spa"));
       supportedLanguages.add(Languages.THAI);
-      supportedLanguages.add(Languages.ARABIC.clone().setCode("ara"));
+      supportedLanguages.add(Languages.ARABIC.clone().setTranslationCode("ara"));
       supportedLanguages.add(Languages.RUSSIAN);
       supportedLanguages.add(Languages.PORTUGUESE);
       supportedLanguages.add(Languages.GERMAN);
@@ -78,17 +78,17 @@ public class BaiduTranslator extends AbstractTranslator {
       supportedLanguages.add(Languages.GREEK);
       supportedLanguages.add(Languages.DUTCH);
       supportedLanguages.add(Languages.POLISH);
-      supportedLanguages.add(Languages.BULGARIAN.clone().setCode("bul"));
-      supportedLanguages.add(Languages.ESTONIAN.clone().setCode("est"));
-      supportedLanguages.add(Languages.DANISH.clone().setCode("dan"));
-      supportedLanguages.add(Languages.FINNISH.clone().setCode("fin"));
+      supportedLanguages.add(Languages.BULGARIAN.clone().setTranslationCode("bul"));
+      supportedLanguages.add(Languages.ESTONIAN.clone().setTranslationCode("est"));
+      supportedLanguages.add(Languages.DANISH.clone().setTranslationCode("dan"));
+      supportedLanguages.add(Languages.FINNISH.clone().setTranslationCode("fin"));
       supportedLanguages.add(Languages.CZECH);
-      supportedLanguages.add(Languages.ROMANIAN.clone().setCode("rom"));
-      supportedLanguages.add(Languages.SLOVENIAN.clone().setCode("slo"));
-      supportedLanguages.add(Languages.SWEDISH.clone().setCode("swe"));
+      supportedLanguages.add(Languages.ROMANIAN.clone().setTranslationCode("rom"));
+      supportedLanguages.add(Languages.SLOVENIAN.clone().setTranslationCode("slo"));
+      supportedLanguages.add(Languages.SWEDISH.clone().setTranslationCode("swe"));
       supportedLanguages.add(Languages.HUNGARIAN);
-      supportedLanguages.add(Languages.CHINESE_TRADITIONAL.clone().setCode("cht"));
-      supportedLanguages.add(Languages.VIETNAMESE.clone().setCode("vie"));
+      supportedLanguages.add(Languages.CHINESE_TRADITIONAL.clone().setTranslationCode("cht"));
+      supportedLanguages.add(Languages.VIETNAMESE.clone().setTranslationCode("vie"));
     }
     return supportedLanguages;
   }
@@ -110,8 +110,8 @@ public class BaiduTranslator extends AbstractTranslator {
     String securityKey = getAppKey();
     String sign = MD5.md5(appId + text + salt + securityKey);
     List<Pair<String, String>> params = new ArrayList<>();
-    params.add(Pair.create("from", fromLang.getCode()));
-    params.add(Pair.create("to", toLang.getCode()));
+    params.add(Pair.create("from", fromLang.getTranslationCode()));
+    params.add(Pair.create("to", toLang.getTranslationCode()));
     params.add(Pair.create("appid", appId));
     params.add(Pair.create("salt", salt));
     params.add(Pair.create("sign", sign));

@@ -67,7 +67,7 @@ public class YoudaoTranslator extends AbstractTranslator {
   public @NotNull List<Lang> getSupportedLanguages() {
     if (supportedLanguages == null) {
       supportedLanguages = new ArrayList<>();
-      supportedLanguages.add(Languages.CHINESE_SIMPLIFIED.clone().setCode("zh-CHS"));
+      supportedLanguages.add(Languages.CHINESE_SIMPLIFIED.clone().setTranslationCode("zh-CHS"));
       supportedLanguages.add(Languages.ENGLISH);
       supportedLanguages.add(Languages.JAPANESE);
       supportedLanguages.add(Languages.KOREAN);
@@ -78,7 +78,7 @@ public class YoudaoTranslator extends AbstractTranslator {
       supportedLanguages.add(Languages.VIETNAMESE);
       supportedLanguages.add(Languages.GERMAN);
       supportedLanguages.add(Languages.ARABIC);
-      supportedLanguages.add(Languages.INDONESIAN);
+      supportedLanguages.add(Languages.INDONESIAN.clone().setTranslationCode("id"));
       supportedLanguages.add(Languages.AFRIKAANS);
       supportedLanguages.add(Languages.BOSNIAN);
       supportedLanguages.add(Languages.BULGARIAN);
@@ -99,7 +99,7 @@ public class YoudaoTranslator extends AbstractTranslator {
       supportedLanguages.add(Languages.NORWEGIAN);
       supportedLanguages.add(Languages.POLISH);
       supportedLanguages.add(Languages.ROMANIAN);
-      supportedLanguages.add(Languages.SERBIAN.clone().setCode("sr-Cyrl"));
+      supportedLanguages.add(Languages.SERBIAN.clone().setTranslationCode("sr-Cyrl"));
       supportedLanguages.add(Languages.SLOVAK);
       supportedLanguages.add(Languages.SLOVENIAN);
       supportedLanguages.add(Languages.SWEDISH);
@@ -115,13 +115,13 @@ public class YoudaoTranslator extends AbstractTranslator {
       supportedLanguages.add(Languages.CEBUANO);
       supportedLanguages.add(Languages.CORSICAN);
       supportedLanguages.add(Languages.ESPERANTO);
-      supportedLanguages.add(Languages.FILIPINO);
+      supportedLanguages.add(Languages.FILIPINO.clone().setTranslationCode("tl"));
       supportedLanguages.add(Languages.FRISIAN);
       supportedLanguages.add(Languages.GUJARATI);
       supportedLanguages.add(Languages.HAUSA);
       supportedLanguages.add(Languages.HAWAIIAN);
       supportedLanguages.add(Languages.ICELANDIC);
-      supportedLanguages.add(Languages.JAVANESE);
+      supportedLanguages.add(Languages.JAVANESE.setTranslationCode("jw"));
       supportedLanguages.add(Languages.KANNADA);
       supportedLanguages.add(Languages.KAZAKH);
       supportedLanguages.add(Languages.KHMER);
@@ -203,8 +203,8 @@ public class YoudaoTranslator extends AbstractTranslator {
     String appKey = getAppKey();
     String sign = getDigest(appId + truncate(text) + salt + curTime + appKey);
     List<Pair<String, String>> params = new ArrayList<>();
-    params.add(Pair.create("from", fromLang.getCode()));
-    params.add(Pair.create("to", toLang.getCode()));
+    params.add(Pair.create("from", fromLang.getTranslationCode()));
+    params.add(Pair.create("to", toLang.getTranslationCode()));
     params.add(Pair.create("signType", "v3"));
     params.add(Pair.create("curtime", curTime));
     params.add(Pair.create("appKey", appId));

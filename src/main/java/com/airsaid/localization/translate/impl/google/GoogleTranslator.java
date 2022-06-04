@@ -17,33 +17,27 @@
 
 package com.airsaid.localization.translate.impl.google;
 
-import com.airsaid.localization.translate.AbstractTranslator;
 import com.airsaid.localization.translate.lang.Lang;
-import com.airsaid.localization.translate.lang.Languages;
 import com.airsaid.localization.translate.util.AgentUtil;
 import com.airsaid.localization.translate.util.GsonUtil;
 import com.airsaid.localization.translate.util.UrlBuilder;
 import com.intellij.openapi.util.Pair;
 import com.intellij.util.io.RequestBuilder;
-import icons.PluginIcons;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author airsaid
  */
-public class GoogleTranslator extends AbstractTranslator {
+public class GoogleTranslator extends AbsGoogleTranslator {
   private static final String KEY = "Google";
 
   private static final String HOST_URL_CN = "https://translate.google.cn";
   private static final String HOST_URL_COM = "https://translate.google.com";
   public static String HOST_URL = HOST_URL_CN;
   private static String BASE_URL = HOST_URL.concat("/translate_a/single");
-
-  private List<Lang> supportedLanguages;
 
   public static void setUseComHost(boolean useComHost) {
     HOST_URL = useComHost ? HOST_URL_COM : HOST_URL_CN;
@@ -61,11 +55,6 @@ public class GoogleTranslator extends AbstractTranslator {
   }
 
   @Override
-  public @NotNull Icon getIcon() {
-    return PluginIcons.GOOGLE_ICON;
-  }
-
-  @Override
   public boolean isNeedAppId() {
     return false;
   }
@@ -76,23 +65,10 @@ public class GoogleTranslator extends AbstractTranslator {
   }
 
   @Override
-  @NotNull
-  public List<Lang> getSupportedLanguages() {
-    if (supportedLanguages == null) {
-      List<Lang> languages = Languages.getLanguages();
-      supportedLanguages = new ArrayList<>(104);
-      for (int i = 1; i <= 104; i++) {
-        supportedLanguages.add(languages.get(i));
-      }
-    }
-    return supportedLanguages;
-  }
-
-  @Override
   public @NotNull String getRequestUrl(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
     return new UrlBuilder(BASE_URL)
-        .addQueryParameter("sl", fromLang.getCode()) // source language code (auto for auto detection)
-        .addQueryParameter("tl", toLang.getCode()) // translation language
+        .addQueryParameter("sl", fromLang.getTranslationCode()) // source language code (auto for auto detection)
+        .addQueryParameter("tl", toLang.getTranslationCode()) // translation language
         .addQueryParameter("client", "gtx") // client of request (guess)
         .addQueryParameters("dt", "t") // specify what to return
         .addQueryParameter("dj", "1") // json response with names

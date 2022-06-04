@@ -17,6 +17,8 @@
 
 package com.airsaid.localization.translate.lang;
 
+import com.intellij.openapi.util.text.StringUtil;
+
 import java.util.Objects;
 
 /**
@@ -24,9 +26,10 @@ import java.util.Objects;
  */
 public class Lang implements Cloneable {
   private final int id;
-  private String code;
-  private String name;
-  private String englishName;
+  private final String code;
+  private final String name;
+  private final String englishName;
+  private String translationCode;
 
   public Lang(int id, String code, String name, String englishName) {
     this.id = id;
@@ -43,27 +46,24 @@ public class Lang implements Cloneable {
     return code;
   }
 
-  public Lang setCode(String code) {
-    this.code = code;
-    return this;
-  }
-
   public String getName() {
     return name;
-  }
-
-  public Lang setName(String name) {
-    this.name = name;
-    return this;
   }
 
   public String getEnglishName() {
     return englishName;
   }
 
-  public Lang setEnglishName(String englishName) {
-    this.englishName = englishName;
+  public Lang setTranslationCode(String translationCode) {
+    this.translationCode = translationCode;
     return this;
+  }
+
+  public String getTranslationCode() {
+    if (!StringUtil.isEmpty(translationCode)) {
+      return translationCode;
+    }
+    return code;
   }
 
   @Override
@@ -96,6 +96,7 @@ public class Lang implements Cloneable {
         ", code='" + code + '\'' +
         ", name='" + name + '\'' +
         ", englishName='" + englishName + '\'' +
+        ", translationCode='" + translationCode + '\'' +
         '}';
   }
 }

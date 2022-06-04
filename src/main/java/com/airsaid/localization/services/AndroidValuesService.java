@@ -18,7 +18,6 @@
 package com.airsaid.localization.services;
 
 import com.airsaid.localization.translate.lang.Lang;
-import com.airsaid.localization.translate.lang.Languages;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.components.ServiceManager;
@@ -197,21 +196,7 @@ public final class AndroidValuesService {
   }
 
   private String getValuesDirectoryName(@NotNull Lang lang) {
-    String suffix;
-    if (lang.equals(Languages.CHINESE_SIMPLIFIED)) {
-      suffix = "zh-rCN";
-    } else if (lang.equals(Languages.CHINESE_TRADITIONAL)) {
-      suffix = "zh-rTW";
-    } else if (lang.equals(Languages.FILIPINO)) {
-      suffix = "fil";
-    } else if (lang.equals(Languages.INDONESIAN)) {
-      suffix = "in-rID";
-    } else if (lang.equals(Languages.JAVANESE)) {
-      suffix = "jv";
-    } else {
-      suffix = lang.getCode();
-    }
-    return "values-".concat(suffix);
+    return "values-".concat(lang.getCode());
   }
 
   /**

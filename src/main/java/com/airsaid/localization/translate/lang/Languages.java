@@ -44,7 +44,7 @@ public class Languages {
   public static final Lang GERMAN = new Lang(16, "de", "Deutsch", "German");
   public static final Lang RUSSIAN = new Lang(17, "ru", "Русский", "Russian");
   public static final Lang FRENCH = new Lang(18, "fr", "Français", "French");
-  public static final Lang FILIPINO = new Lang(19, "tl", "Filipino", "Filipino");
+  public static final Lang FILIPINO = new Lang(19, "fil", "Filipino", "Filipino");
   public static final Lang FINNISH = new Lang(20, "fi", "Suomi", "Finnish");
   public static final Lang FRISIAN = new Lang(21, "fy", "Frysk", "Frisian");
   public static final Lang KHMER = new Lang(22, "km", "ខ្មែរ", "Khmer");
@@ -123,13 +123,13 @@ public class Languages {
   public static final Lang YIDDISH = new Lang(95, "yi", "ייִדיש", "Yiddish");
   public static final Lang HINDI = new Lang(96, "hi", "हिंदी", "Hindi");
   public static final Lang SUNDANESE = new Lang(97, "su", "Sunda", "Sundanese");
-  public static final Lang INDONESIAN = new Lang(98, "id", "Indonesia", "Indonesian");
-  public static final Lang JAVANESE = new Lang(99, "jw", "Wong Jawa", "Javanese");
+  public static final Lang INDONESIAN = new Lang(98, "in-rID", "Indonesia", "Indonesian");
+  public static final Lang JAVANESE = new Lang(99, "jv", "Wong Jawa", "Javanese");
   public static final Lang ENGLISH = new Lang(100, "en", "English", "English");
   public static final Lang YORUBA = new Lang(101, "yo", "Yorùbá", "Yoruba");
   public static final Lang VIETNAMESE = new Lang(102, "vi", "Tiếng Việt", "Vietnamese");
-  public static final Lang CHINESE_TRADITIONAL = new Lang(103, "zh-TW", "正體中文", "Chinese Traditional");
-  public static final Lang CHINESE_SIMPLIFIED = new Lang(104, "zh-CN", "简体中文", "Chinese Simplified");
+  public static final Lang CHINESE_TRADITIONAL = new Lang(103, "zh-rTW", "正體中文", "Chinese Traditional");
+  public static final Lang CHINESE_SIMPLIFIED = new Lang(104, "zh-rCN", "简体中文", "Chinese Simplified");
   public static final Lang ASSAMESE = new Lang(105, "as", "Assamese", "Assamese");
   public static final Lang DARI = new Lang(106, "prs", "Dari", "Dari");
   public static final Lang FIJIAN = new Lang(107, "fj", "Fijian", "Fijian");
