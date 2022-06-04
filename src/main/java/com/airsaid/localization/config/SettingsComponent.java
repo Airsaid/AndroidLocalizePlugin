@@ -18,7 +18,6 @@
 package com.airsaid.localization.config;
 
 import com.airsaid.localization.translate.AbstractTranslator;
-import com.airsaid.localization.translate.impl.google.GoogleTranslator;
 import com.airsaid.localization.translate.services.TranslatorService;
 import com.airsaid.localization.ui.FixedLinkLabel;
 import com.airsaid.localization.ui.SupportLanguagesDialog;
@@ -58,7 +57,6 @@ public class SettingsComponent {
   private JLabel maxCacheSizeLabel;
   private JBCheckBox enableCacheCheckBox;
   private ComboBox<String> maxCacheSizeComboBox;
-  private JCheckBox useGoogleComCheckBox;
   private ComboBox<String> translationIntervalComboBox;
 
   public SettingsComponent() {
@@ -128,8 +126,6 @@ public class SettingsComponent {
     LOG.info("setSelectedTranslator: " + selected);
     translatorsComboBox.setSelectedItem(selected);
 
-    useGoogleComCheckBox.setVisible(selected.getClass() == GoogleTranslator.class);
-
     boolean isNeedAppId = selected.isNeedAppId();
     appIdLabel.setVisible(isNeedAppId);
     appIdField.setVisible(isNeedAppId);
@@ -157,14 +153,6 @@ public class SettingsComponent {
 
   private boolean isSelectedDefaultTranslator(@NotNull AbstractTranslator selected) {
     return selected == TranslatorService.getInstance().getDefaultTranslator();
-  }
-
-  public boolean isUseGoogleCom() {
-    return useGoogleComCheckBox.isSelected();
-  }
-
-  public void setUseGoogleCom(boolean useGoogleCom) {
-    useGoogleComCheckBox.setSelected(useGoogleCom);
   }
 
   @NotNull

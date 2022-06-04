@@ -34,15 +34,8 @@ import java.util.List;
 public class GoogleTranslator extends AbsGoogleTranslator {
   private static final String KEY = "Google";
 
-  private static final String HOST_URL_CN = "https://translate.google.cn";
-  private static final String HOST_URL_COM = "https://translate.google.com";
-  public static String HOST_URL = HOST_URL_CN;
-  private static String BASE_URL = HOST_URL.concat("/translate_a/single");
-
-  public static void setUseComHost(boolean useComHost) {
-    HOST_URL = useComHost ? HOST_URL_COM : HOST_URL_CN;
-    BASE_URL = HOST_URL.concat("/translate_a/single");
-  }
+  public static final String HOST_URL = "https://translate.googleapis.com";
+  private static final String BASE_URL = HOST_URL.concat("/translate_a/single");
 
   @Override
   public @NotNull String getKey() {

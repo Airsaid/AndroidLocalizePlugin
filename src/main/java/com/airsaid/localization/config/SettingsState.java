@@ -63,7 +63,6 @@ public final class SettingsState implements PersistentStateComponent<SettingsSta
 
   public void initSetting() {
     TranslatorService translatorService = TranslatorService.getInstance();
-    translatorService.setUseGoogleComHost(isUseGoogleCom());
     AbstractTranslator selectedTranslator = translatorService.getSelectedTranslator();
     if (selectedTranslator == null) {
       LOG.info("initSetting");
@@ -81,14 +80,6 @@ public final class SettingsState implements PersistentStateComponent<SettingsSta
 
   public void setSelectedTranslator(AbstractTranslator translator) {
     this.state.selectedTranslatorKey = translator.getKey();
-  }
-
-  public boolean isUseGoogleCom() {
-    return state.isUseGoogleCom;
-  }
-
-  public void setUseGoogleCom(boolean useGoogleCom) {
-    state.isUseGoogleCom = useGoogleCom;
   }
 
   public void setAppId(@NotNull String translatorKey, @NotNull String appId) {
@@ -153,7 +144,6 @@ public final class SettingsState implements PersistentStateComponent<SettingsSta
     public Map<String, String> appIds = new HashMap<>();
     public boolean isEnableCache = true;
     public int maxCacheSize = 500;
-    public boolean isUseGoogleCom;
     public int translationInterval = 2; // 2 second
   }
 }

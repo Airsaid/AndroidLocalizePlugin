@@ -28,7 +28,8 @@ import java.util.stream.Collectors;
  */
 public class AgentUtil {
 
-  private static final String CHROME_VERSION = "90.0.4430.85";
+  private static final String CHROME_VERSION = "98.0.4758.102";
+  private static final String EDGE_VERSION = "98.0.1108.62";
 
   private AgentUtil() {
     throw new AssertionError("No com.airsaid.localization.translate.util.AgentUtil instances for you!");
@@ -39,7 +40,7 @@ public class AgentUtil {
     boolean is64Bit = arch != null && arch.contains("64");
     String systemInformation;
     if (SystemInfo.isWindows) {
-      systemInformation = is64Bit ? "Windows NT; Win64; x64" : "Windows NT ";
+      systemInformation = is64Bit ? "Windows NT " + SystemInfo.OS_VERSION + "; Win64; x64" : "Windows NT " + SystemInfo.OS_VERSION;
     } else if (SystemInfo.isMac) {
       List<String> parts = Arrays.stream(SystemInfo.OS_VERSION.split("\\.")).collect(Collectors.toList());
       if (parts.size() < 3) {
@@ -49,7 +50,8 @@ public class AgentUtil {
     } else {
       systemInformation = is64Bit ? "X11; Linux x86_64" : "X11; Linux x86";
     }
-    return "Mozilla/5.0 (".concat(systemInformation).concat(") AppleWebKit/537.36 (KHTML, like Gecko) Chrome/").concat(CHROME_VERSION).concat(" Safari/537.36");
+    return "Mozilla/5.0 (".concat(systemInformation).concat(") AppleWebKit/537.36 (KHTML, like Gecko) Chrome/")
+        .concat(CHROME_VERSION).concat(" Safari/537.36 Edg/").concat(EDGE_VERSION);
   }
 
 }
