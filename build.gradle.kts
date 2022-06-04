@@ -4,7 +4,7 @@ plugins {
   // Java support
   id("java")
   // Gradle IntelliJ Plugin
-  id("org.jetbrains.intellij") version "1.3.0"
+  id("org.jetbrains.intellij") version "1.6.0"
 }
 
 group = properties("pluginGroup")
