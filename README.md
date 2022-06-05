@@ -12,6 +12,7 @@
   - Microsoft translator.
   - Baidu translator.
   - Youdao translator.
+  - Ali translator.
 - Supports up to 100+ languages.
 - One key generates all translation files.
 - Support no translation of existing string.
