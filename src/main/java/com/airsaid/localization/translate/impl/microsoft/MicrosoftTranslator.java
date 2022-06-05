@@ -161,6 +161,11 @@ public class MicrosoftTranslator extends AbstractTranslator {
   }
 
   @Override
+  public String getAppKeyDisplay() {
+    return "KEY";
+  }
+
+  @Override
   public @Nullable String getApplyAppIdUrl() {
     return APPLY_APP_ID_URL;
   }

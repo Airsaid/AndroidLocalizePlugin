@@ -98,6 +98,11 @@ public abstract class AbstractTranslator implements Translator, TranslatorConfig
   }
 
   @Override
+  public String getAppIdDisplay() {
+    return "APP ID";
+  }
+
+  @Override
   public boolean isNeedAppKey() {
     return true;
   }
@@ -105,6 +110,11 @@ public abstract class AbstractTranslator implements Translator, TranslatorConfig
   @Override
   public @Nullable String getAppKey() {
     return SettingsState.getInstance().getAppKey(getKey());
+  }
+
+  @Override
+  public String getAppKeyDisplay() {
+    return "APP KEY";
   }
 
   @Override

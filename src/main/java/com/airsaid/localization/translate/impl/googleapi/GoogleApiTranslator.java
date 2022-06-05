@@ -36,6 +36,11 @@ public class GoogleApiTranslator extends AbsGoogleTranslator {
     return TRANSLATE_URL;
   }
 
+  @Override
+  public String getAppKeyDisplay() {
+    return "API Key";
+  }
+
   @Nullable
   @Override
   public String getApplyAppIdUrl() {

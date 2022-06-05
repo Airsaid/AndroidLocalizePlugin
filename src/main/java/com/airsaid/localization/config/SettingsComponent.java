@@ -129,12 +129,18 @@ public class SettingsComponent {
     boolean isNeedAppId = selected.isNeedAppId();
     appIdLabel.setVisible(isNeedAppId);
     appIdField.setVisible(isNeedAppId);
-    if (isNeedAppId) appIdField.setText(selected.getAppId());
+    if (isNeedAppId) {
+      appIdLabel.setText(selected.getAppIdDisplay() + ":");
+      appIdField.setText(selected.getAppId());
+    }
 
     boolean isNeedAppKey = selected.isNeedAppKey();
     appKeyLabel.setVisible(isNeedAppKey);
     appKeyField.setVisible(isNeedAppKey);
-    if (isNeedAppKey) appKeyField.setText(selected.getAppKey());
+    if (isNeedAppKey) {
+      appKeyLabel.setText(selected.getAppKeyDisplay() + ":");
+      appKeyField.setText(selected.getAppKey());
+    }
 
     String applyAppIdUrl = selected.getApplyAppIdUrl();
     if (!StringUtil.isEmpty(applyAppIdUrl)) {

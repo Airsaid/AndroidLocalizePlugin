@@ -87,10 +87,10 @@ public class SettingsConfigurable implements Configurable {
 
     // Verify that the required parameters are not configured
     if (selectedTranslator.isNeedAppId() && StringUtil.isEmpty(settingsComponent.getAppId())) {
-      throw new ConfigurationException("APP ID not configured");
+      throw new ConfigurationException(selectedTranslator.getAppIdDisplay() + " not configured");
     }
     if (selectedTranslator.isNeedAppKey() && StringUtil.isEmpty(settingsComponent.getAppKey())) {
-      throw new ConfigurationException("Security Key not configured");
+      throw new ConfigurationException(selectedTranslator.getAppKeyDisplay() + " not configured");
     }
 
     settingsState.setSelectedTranslator(selectedTranslator);

@@ -46,12 +46,15 @@ public interface TranslatorConfigurable {
   @Nullable
   String getAppId();
 
+  String getAppIdDisplay();
+
   boolean isNeedAppKey();
 
   @Nullable
   String getAppKey();
 
+  String getAppKeyDisplay();
+
   @Nullable
   String getApplyAppIdUrl();
-
 }

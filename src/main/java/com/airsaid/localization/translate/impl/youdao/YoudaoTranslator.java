@@ -159,6 +159,16 @@ public class YoudaoTranslator extends AbstractTranslator {
     return supportedLanguages;
   }
 
+  @Override
+  public String getAppIdDisplay() {
+    return "应用 ID";
+  }
+
+  @Override
+  public String getAppKeyDisplay() {
+    return "应用秘钥";
+  }
+
   @Nullable
   @Override
   public String getApplyAppIdUrl() {
