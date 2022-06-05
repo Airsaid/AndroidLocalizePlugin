@@ -1,5 +1,12 @@
 # Change Log
 
+## [V2.6.0](https://github.com/Airsaid/AndroidLocalizePlugin/releases/tag/v2.6.0) (2022-06-05)
+- Support Ali translator.
+- Support new IDE version.
+- Fix google translator translation instability.
+- Fix single quote character must be escaped in strings.xml. [#54](https://github.com/Airsaid/AndroidLocalizePlugin/issues/54)
+- Fix target folder naming. [#61](https://github.com/Airsaid/AndroidLocalizePlugin/issues/61)
+
 ## [V2.5.0](https://github.com/Airsaid/AndroidLocalizePlugin/releases/tag/v2.5.0) (2022-02-11)
 - Support for preserving comments, blank lines and other characters.
 
