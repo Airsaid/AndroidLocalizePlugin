@@ -22,6 +22,8 @@ import com.airsaid.localization.translate.AbstractTranslator;
 import com.airsaid.localization.translate.services.TranslatorService;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.options.Configurable;
+import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.util.text.StringUtil;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -78,10 +80,19 @@ public class SettingsConfigurable implements Configurable {
   }
 
   @Override
-  public void apply() {
+  public void apply() throws ConfigurationException {
     SettingsState settingsState = SettingsState.getInstance();
     AbstractTranslator selectedTranslator = settingsComponent.getSelectedTranslator();
     LOG.info("apply selectedTranslator: " + selectedTranslator.getName());
+
+    // Verify that the required parameters are not configured
+    if (selectedTranslator.isNeedAppId() && StringUtil.isEmpty(settingsComponent.getAppId())) {
+      throw new ConfigurationException("APP ID not configured");
+    }
+    if (selectedTranslator.isNeedAppKey() && StringUtil.isEmpty(settingsComponent.getAppKey())) {
+      throw new ConfigurationException("Security Key not configured");
+    }
+
     settingsState.setSelectedTranslator(selectedTranslator);
     if (selectedTranslator.isNeedAppId()) {
       settingsState.setAppId(selectedTranslator.getKey(), settingsComponent.getAppId());

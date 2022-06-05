@@ -65,7 +65,7 @@ public class SettingsComponent {
   }
 
   private void initTranslatorComponents() {
-    translatorsComboBox.setRenderer(new SimpleListCellRenderer<AbstractTranslator>() {
+    translatorsComboBox.setRenderer(new SimpleListCellRenderer<>() {
       @Override
       public void customize(@NotNull JList<? extends AbstractTranslator> list, AbstractTranslator value, int index, boolean selected, boolean hasFocus) {
         setText(value.getName());
