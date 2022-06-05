@@ -51,6 +51,9 @@
         <applicationConfigurable parentId="tools"
                                  instance="com.airsaid.localization.config.SettingsConfigurable"
                                  id="com.airsaid.localization.config.SettingsConfigurable"/>
+
+        <notificationGroup id="Android Localize Plugin"
+                           displayType="BALLOON"/>
     </extensions>
 
     <actions>

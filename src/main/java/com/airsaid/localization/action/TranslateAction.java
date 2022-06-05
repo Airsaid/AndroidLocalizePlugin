@@ -100,7 +100,7 @@ public class TranslateAction extends AnAction implements SelectLanguagesDialog.O
 
       @Override
       public void onTranslateError(Throwable e) {
-        NotificationUtil.notifyWarning(mProject, "Translation error: " + e);
+        NotificationUtil.notifyError(mProject, "Translation failure: " + e.getLocalizedMessage());
       }
     });
     translationTask.queue();

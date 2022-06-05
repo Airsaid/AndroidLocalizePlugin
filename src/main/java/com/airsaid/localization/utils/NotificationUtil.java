@@ -17,8 +17,8 @@
 
 package com.airsaid.localization.utils;
 
-import com.intellij.notification.NotificationDisplayType;
 import com.intellij.notification.NotificationGroup;
+import com.intellij.notification.NotificationGroupManager;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.Nullable;
@@ -28,10 +28,10 @@ import org.jetbrains.annotations.Nullable;
  */
 public class NotificationUtil {
 
-  private static final String NOTIFICATION_GROUP_ID = "com.github.airsaid.androidlocalize.Notification";
+  private static final String NOTIFICATION_GROUP_ID = "Android Localize Plugin";
 
   private static final NotificationGroup NOTIFICATION_GROUP =
-      new NotificationGroup(NOTIFICATION_GROUP_ID, NotificationDisplayType.BALLOON, true);
+      NotificationGroupManager.getInstance().getNotificationGroup(NOTIFICATION_GROUP_ID);
 
   private NotificationUtil() {
     throw new AssertionError("No com.airsaid.localization.utils.NotificationUtil instances for you!");
@@ -51,5 +51,4 @@ public class NotificationUtil {
     NOTIFICATION_GROUP.createNotification(content, NotificationType.ERROR)
         .notify(project);
   }
-
 }
