@@ -18,6 +18,7 @@
             <li>Microsoft translator.</li>
             <li>Baidu translator.</li>
             <li>Youdao translator.</li>
+            <li>Ali translator.</li>
           </ul>
         </li>
         <li>Supports up to 100+ languages.</li>
@@ -37,7 +38,9 @@
 
     <change-notes><![CDATA[
       <ul>
-        <li>Support for preserving comments, blank lines and other characters.</li>
+        <li>Support ali translator.</li>
+        <li>Support new version of ide.</li>
+        <li>Fix bugs.</li>
       </ul>
       <a href="https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/CHANGELOG.md"><b>Full Changelog History</b></a>
     ]]></change-notes>
