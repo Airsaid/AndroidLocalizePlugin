@@ -56,6 +56,7 @@ tasks {
 
 dependencies {
   implementation("com.google.code.gson:gson:2.8.7")
+  implementation("com.aliyun:alimt20181012:1.0.3")
 
   testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.0")

@@ -269,7 +269,7 @@ public class Languages {
   }
 
   public static List<Lang> getLanguages() {
-    return Collections.unmodifiableList(new ArrayList<>(sLanguages.values()));
+    return List.copyOf(sLanguages.values());
   }
 
 }

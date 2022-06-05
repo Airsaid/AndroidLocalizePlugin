@@ -29,6 +29,7 @@ public interface PluginIcons {
   Icon BAIDU_ICON = load("/icons/icon_baidu.svg");
   Icon YOUDAO_ICON = load("/icons/icon_youdao.svg");
   Icon MICROSOFT_ICON = load("/icons/icon_microsoft.svg");
+  Icon ALI_ICON = load("/icons/icon_ali.svg");
 
   private static Icon load(String path) {
     return IconLoader.getIcon(path, PluginIcons.class);

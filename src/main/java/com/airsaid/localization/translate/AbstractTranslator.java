@@ -45,10 +45,7 @@ public abstract class AbstractTranslator implements Translator, TranslatorConfig
 
   @Override
   public String doTranslate(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) throws TranslationException {
-    List<Lang> supportedLanguages = getSupportedLanguages();
-    if (!supportedLanguages.contains(toLang)) {
-      throw new TranslationException(fromLang, toLang, text, toLang.getEnglishName() + " is not supported.");
-    }
+    checkSupportedLanguages(fromLang, toLang, text);
 
     String requestUrl = getRequestUrl(fromLang, toLang, text);
     RequestBuilder requestBuilder = HttpRequests.post(requestUrl, CONTENT_TYPE);
@@ -123,18 +120,33 @@ public abstract class AbstractTranslator implements Translator, TranslatorConfig
   }
 
   @NotNull
-  public abstract String getRequestUrl(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text);
+  public String getRequestUrl(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
+    throw new UnsupportedOperationException();
+  }
 
   @NotNull
-  public abstract List<Pair<String, String>> getRequestParams(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text);
+  public List<Pair<String, String>> getRequestParams(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
+    throw new UnsupportedOperationException();
+  }
 
   @NotNull
   public String getRequestBody(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
     return "";
   }
 
-  public abstract void configureRequestBuilder(@NotNull RequestBuilder requestBuilder);
+  public void configureRequestBuilder(@NotNull RequestBuilder requestBuilder) {
+
+  }
 
   @NotNull
-  public abstract String parsingResult(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text, @NotNull String resultText);
+  public String parsingResult(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text, @NotNull String resultText) {
+    throw new UnsupportedOperationException();
+  }
+
+  protected void checkSupportedLanguages(Lang fromLang, Lang toLang, String text) {
+    List<Lang> supportedLanguages = getSupportedLanguages();
+    if (!supportedLanguages.contains(toLang)) {
+      throw new TranslationException(fromLang, toLang, text, toLang.getEnglishName() + " is not supported.");
+    }
+  }
 }
