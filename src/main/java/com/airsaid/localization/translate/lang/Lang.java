@@ -22,9 +22,12 @@ import com.intellij.openapi.util.text.StringUtil;
 import java.util.Objects;
 
 /**
+ * Language data class, which is an immutable class,
+ * any modification to it will generate you a new object.
+ *
  * @author airsaid
  */
-public class Lang implements Cloneable {
+public final class Lang implements Cloneable {
   private final int id;
   private final String code;
   private final String name;
@@ -55,8 +58,9 @@ public class Lang implements Cloneable {
   }
 
   public Lang setTranslationCode(String translationCode) {
-    this.translationCode = translationCode;
-    return this;
+    final Lang newLang = this.clone();
+    Objects.requireNonNull(newLang).translationCode = translationCode;
+    return newLang;
   }
 
   public String getTranslationCode() {

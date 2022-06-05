@@ -67,7 +67,7 @@ public class YoudaoTranslator extends AbstractTranslator {
   public @NotNull List<Lang> getSupportedLanguages() {
     if (supportedLanguages == null) {
       supportedLanguages = new ArrayList<>();
-      supportedLanguages.add(Languages.CHINESE_SIMPLIFIED.clone().setTranslationCode("zh-CHS"));
+      supportedLanguages.add(Languages.CHINESE_SIMPLIFIED.setTranslationCode("zh-CHS"));
       supportedLanguages.add(Languages.ENGLISH);
       supportedLanguages.add(Languages.JAPANESE);
       supportedLanguages.add(Languages.KOREAN);
@@ -78,7 +78,7 @@ public class YoudaoTranslator extends AbstractTranslator {
       supportedLanguages.add(Languages.VIETNAMESE);
       supportedLanguages.add(Languages.GERMAN);
       supportedLanguages.add(Languages.ARABIC);
-      supportedLanguages.add(Languages.INDONESIAN.clone().setTranslationCode("id"));
+      supportedLanguages.add(Languages.INDONESIAN.setTranslationCode("id"));
       supportedLanguages.add(Languages.AFRIKAANS);
       supportedLanguages.add(Languages.BOSNIAN);
       supportedLanguages.add(Languages.BULGARIAN);
@@ -99,7 +99,7 @@ public class YoudaoTranslator extends AbstractTranslator {
       supportedLanguages.add(Languages.NORWEGIAN);
       supportedLanguages.add(Languages.POLISH);
       supportedLanguages.add(Languages.ROMANIAN);
-      supportedLanguages.add(Languages.SERBIAN.clone().setTranslationCode("sr-Cyrl"));
+      supportedLanguages.add(Languages.SERBIAN.setTranslationCode("sr-Cyrl"));
       supportedLanguages.add(Languages.SLOVAK);
       supportedLanguages.add(Languages.SLOVENIAN);
       supportedLanguages.add(Languages.SWEDISH);
@@ -115,7 +115,7 @@ public class YoudaoTranslator extends AbstractTranslator {
       supportedLanguages.add(Languages.CEBUANO);
       supportedLanguages.add(Languages.CORSICAN);
       supportedLanguages.add(Languages.ESPERANTO);
-      supportedLanguages.add(Languages.FILIPINO.clone().setTranslationCode("tl"));
+      supportedLanguages.add(Languages.FILIPINO.setTranslationCode("tl"));
       supportedLanguages.add(Languages.FRISIAN);
       supportedLanguages.add(Languages.GUJARATI);
       supportedLanguages.add(Languages.HAUSA);

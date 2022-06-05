@@ -48,15 +48,15 @@ public abstract class AbsGoogleTranslator extends AbstractTranslator {
       for (int i = 1; i <= 104; i++) {
         Lang lang = languages.get(i);
         if (lang.equals(Languages.CHINESE_SIMPLIFIED)) {
-          lang = lang.clone().setTranslationCode("zh-CN");
+          lang = lang.setTranslationCode("zh-CN");
         } else if (lang.equals(Languages.CHINESE_TRADITIONAL)) {
-          lang = lang.clone().setTranslationCode("zh-TW");
+          lang = lang.setTranslationCode("zh-TW");
         } else if (lang.equals(Languages.FILIPINO)) {
-          lang = lang.clone().setTranslationCode("tl");
+          lang = lang.setTranslationCode("tl");
         } else if (lang.equals(Languages.INDONESIAN)) {
-          lang = lang.clone().setTranslationCode("id");
+          lang = lang.setTranslationCode("id");
         } else if (lang.equals(Languages.JAVANESE)) {
-          lang = lang.clone().setTranslationCode("jw");
+          lang = lang.setTranslationCode("jw");
         }
         supportedLanguages.add(lang);
       }

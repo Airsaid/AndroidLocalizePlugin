@@ -63,14 +63,14 @@ public class BaiduTranslator extends AbstractTranslator {
   public @NotNull List<Lang> getSupportedLanguages() {
     if (supportedLanguages == null) {
       supportedLanguages = new ArrayList<>();
-      supportedLanguages.add(Languages.CHINESE_SIMPLIFIED.clone().setTranslationCode("zh"));
+      supportedLanguages.add(Languages.CHINESE_SIMPLIFIED.setTranslationCode("zh"));
       supportedLanguages.add(Languages.ENGLISH);
-      supportedLanguages.add(Languages.JAPANESE.clone().setTranslationCode("jp"));
-      supportedLanguages.add(Languages.KOREAN.clone().setTranslationCode("kor"));
-      supportedLanguages.add(Languages.FRENCH.clone().setTranslationCode("fra"));
-      supportedLanguages.add(Languages.SPANISH.clone().setTranslationCode("spa"));
+      supportedLanguages.add(Languages.JAPANESE.setTranslationCode("jp"));
+      supportedLanguages.add(Languages.KOREAN.setTranslationCode("kor"));
+      supportedLanguages.add(Languages.FRENCH.setTranslationCode("fra"));
+      supportedLanguages.add(Languages.SPANISH.setTranslationCode("spa"));
       supportedLanguages.add(Languages.THAI);
-      supportedLanguages.add(Languages.ARABIC.clone().setTranslationCode("ara"));
+      supportedLanguages.add(Languages.ARABIC.setTranslationCode("ara"));
       supportedLanguages.add(Languages.RUSSIAN);
       supportedLanguages.add(Languages.PORTUGUESE);
       supportedLanguages.add(Languages.GERMAN);
@@ -78,17 +78,17 @@ public class BaiduTranslator extends AbstractTranslator {
       supportedLanguages.add(Languages.GREEK);
       supportedLanguages.add(Languages.DUTCH);
       supportedLanguages.add(Languages.POLISH);
-      supportedLanguages.add(Languages.BULGARIAN.clone().setTranslationCode("bul"));
-      supportedLanguages.add(Languages.ESTONIAN.clone().setTranslationCode("est"));
-      supportedLanguages.add(Languages.DANISH.clone().setTranslationCode("dan"));
-      supportedLanguages.add(Languages.FINNISH.clone().setTranslationCode("fin"));
+      supportedLanguages.add(Languages.BULGARIAN.setTranslationCode("bul"));
+      supportedLanguages.add(Languages.ESTONIAN.setTranslationCode("est"));
+      supportedLanguages.add(Languages.DANISH.setTranslationCode("dan"));
+      supportedLanguages.add(Languages.FINNISH.setTranslationCode("fin"));
       supportedLanguages.add(Languages.CZECH);
-      supportedLanguages.add(Languages.ROMANIAN.clone().setTranslationCode("rom"));
-      supportedLanguages.add(Languages.SLOVENIAN.clone().setTranslationCode("slo"));
-      supportedLanguages.add(Languages.SWEDISH.clone().setTranslationCode("swe"));
+      supportedLanguages.add(Languages.ROMANIAN.setTranslationCode("rom"));
+      supportedLanguages.add(Languages.SLOVENIAN.setTranslationCode("slo"));
+      supportedLanguages.add(Languages.SWEDISH.setTranslationCode("swe"));
       supportedLanguages.add(Languages.HUNGARIAN);
-      supportedLanguages.add(Languages.CHINESE_TRADITIONAL.clone().setTranslationCode("cht"));
-      supportedLanguages.add(Languages.VIETNAMESE.clone().setTranslationCode("vie"));
+      supportedLanguages.add(Languages.CHINESE_TRADITIONAL.setTranslationCode("cht"));
+      supportedLanguages.add(Languages.VIETNAMESE.setTranslationCode("vie"));
     }
     return supportedLanguages;
   }
