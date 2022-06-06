@@ -4,15 +4,15 @@
 [![Plugin Version](https://img.shields.io/jetbrains/plugin/v/11174)](https://plugins.jetbrains.com/plugin/11174-androidlocalize)
 [![Plugin Rating](https://img.shields.io/jetbrains/plugin/r/rating/11174)](https://plugins.jetbrains.com/plugin/11174-androidlocalize)
 
-:earth_asia: Android/IDEA 本地化插件，支持多种语言和翻译器。
+:earth_asia: Android 本地化插件，支持多种语言和翻译器。
 
 # 功能
 - 多翻译器支持：
-  - Google 翻译
-  - 微软翻译
-  - 百度翻译
-  - 有道翻译
-  - 阿里翻译
+  - Google 翻译。
+  - 微软翻译。
+  - 百度翻译。
+  - 有道翻译。
+  - 阿里翻译。
 - 支持最多 100+ 语言。
 - 一键生成所有翻译文件。
 - 支持不翻译已经存在的 string。
@@ -28,7 +28,7 @@
 [![Install Plugin](preview/install.png)](https://plugins.jetbrains.com/plugin/11174-androidlocalize)
 
 # 使用
-- 第一步：选择 values/strings.xml 文件。
+- 第一步：选择 `values/strings.xml` 文件（或者 `plurals.xml/arrays.xml`）。
 - 第二步：右键选择：“Translate to Other Languages”。
 - 第三步：勾选上需要翻译的语言。
 - 第四步：点击 OK。

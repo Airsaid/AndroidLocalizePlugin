@@ -4,7 +4,7 @@
 [![Plugin Version](https://img.shields.io/jetbrains/plugin/v/11174)](https://plugins.jetbrains.com/plugin/11174-androidlocalize)
 [![Plugin Rating](https://img.shields.io/jetbrains/plugin/r/rating/11174)](https://plugins.jetbrains.com/plugin/11174-androidlocalize)
 
-:earth_asia: Android/IDEA localization plugin. supports multiple languages and multiple translators.
+:earth_asia: Android localization plugin. supports multiple languages and multiple translators.
 
 # Features
 - Multiple translator support:
@@ -28,7 +28,7 @@
 [![Install Plugin](preview/install.png)](https://plugins.jetbrains.com/plugin/11174-androidlocalize)
 
 # Usage
-- Step 1: Select the values/strings.xml.
+- Step 1: Select the `values/strings.xml`(or `plurals.xml/arrays.xml`).
 - Step 2: Right click and select "Translate to Other Languages".
 - Step 3: Select the languages to be translated.
 - Step 4: Click OK.
