@@ -44,6 +44,10 @@
     <string name="prod_name">Learn more at <xliff:g id="game_group">Muggle Game Studio</xliff:g></string>
     ```
   **注意：一行展示，中间不要有多余的换行和空格。**
+  
+- 问题：Translation failure: java.net.HttpRetryException: cannot retry due to redirection, in streaming mode
+
+  回答：如果你使用的是默认的翻译引擎（Google），那么你可以在设置页面尝试切换到其他引擎，并使用自己的账号进行翻译。因为默认的翻译引擎并不稳定。
 
 # 更新日志
 [更新日志](CHANGELOG.md)
