@@ -35,10 +35,7 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.xml.XmlTag;
-import com.intellij.psi.xml.XmlTagChild;
-import com.intellij.psi.xml.XmlTagValue;
-import com.intellij.psi.xml.XmlText;
+import com.intellij.psi.xml.*;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -192,12 +189,14 @@ public class TranslateTask extends Task.Backgroundable {
       if (child instanceof XmlText) {
         XmlText xmlText = (XmlText) child;
         String text = ApplicationManager.getApplication()
-            .runReadAction((Computable<String>) xmlText::getText);
+            .runReadAction((Computable<String>) xmlText::getValue);
         if (TextUtil.isEmptyOrSpacesLineBreak(text)) {
           continue;
         }
         String translatedText = mTranslatorService.doTranslate(Languages.AUTO, toLanguage, text);
         ApplicationManager.getApplication().runReadAction(() -> xmlText.setValue(translatedText));
+      } else if (child instanceof XmlTag) {
+        doTranslate(progressIndicator, toLanguage, (XmlTag) child);
       }
     }
   }
