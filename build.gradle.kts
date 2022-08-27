@@ -50,7 +50,7 @@ tasks {
   }
 
   publishPlugin {
-    token.set(System.getenv("INTELLIJ_PUBLISH_TOKEN"))
+    token.set(System.getenv("PUBLISH_TOKEN"))
   }
 }
 
