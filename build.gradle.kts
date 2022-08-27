@@ -77,6 +77,15 @@ tasks {
     useJUnitPlatform()
   }
 
+  // Configure UI tests plugin
+  // Read more: https://github.com/JetBrains/intellij-ui-test-robot
+  runIdeForUiTests {
+    systemProperty("robot-server.port", "8082")
+    systemProperty("ide.mac.message.dialogs.as.sheets", "false")
+    systemProperty("jb.privacy.policy.text", "<!--999.999-->")
+    systemProperty("jb.consents.confirmation.enabled", "false")
+  }
+
   signPlugin {
     certificateChain.set(System.getenv("CERTIFICATE_CHAIN"))
     privateKey.set(System.getenv("PRIVATE_KEY"))
