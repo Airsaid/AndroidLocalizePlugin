@@ -2,6 +2,16 @@
 
 # Android Localize Plugin Changelog
 
+## [Unreleased]
+### Added
+- Added rich text supported.
+- Added signature configuration.
+
+### Changed
+- Upgrade Gradle Wrapper to `7.5.1`.
+- Upgrade Intellij Gradle Plugin to `1.8.1`.
+- Plugin description changed to be taken from the `README.md` file.
+
 ## [2.6.0](https://github.com/Airsaid/AndroidLocalizePlugin/releases/tag/v2.6.0) (2022-06-05)
 ### Added
 - Support Ali translator.
