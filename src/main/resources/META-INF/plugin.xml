@@ -3,50 +3,6 @@
     <name>AndroidLocalize</name>
     <vendor email="airsaid1024@gmail.com" url="https://github.com/Airsaid/AndroidLocalizePlugin">Airsaid</vendor>
 
-    <description><![CDATA[
-        <h3>Android localization plugin, supports multiple languages and multiple translators.</h3>
-        <b>
-        <a href="https://github.com/Airsaid/AndroidLocalizePlugin">GitHub</a> |
-        <a href="https://github.com/Airsaid/AndroidLocalizePlugin/issues">Issues</a> |
-        <a href="https://plugins.jetbrains.com/plugin/11174-androidlocalize">Rate</a>
-        </b>
-        <h4>Features:</h4>
-        <ul>
-        <li>Multiple translator support:
-          <ul>
-            <li>Google translator.</li>
-            <li>Microsoft translator.</li>
-            <li>Baidu translator.</li>
-            <li>Youdao translator.</li>
-            <li>Ali translator.</li>
-          </ul>
-        </li>
-        <li>Supports up to 100+ languages.</li>
-        <li>One key generates all translation files.</li>
-        <li>Support no translation of existing string.</li>
-        <li>Support for specifying that text is not translated.</li>
-        <li>Support for caching translated strings.</li>
-        </ul>
-        <h4>Usage:</h4>
-        <ol>
-        <li>Select the values/strings.xml.</li>
-        <li>Right click and select "Translate to Other Languages".</li>
-        <li>Select the languages to be translated.</li>
-        <li>Click OK.</li>
-        </ol>
-    ]]></description>
-
-    <change-notes><![CDATA[
-      <ul>
-        <li>Support ali translator.</li>
-        <li>Support new version of ide.</li>
-        <li>Fix bugs.</li>
-      </ul>
-      <a href="https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/CHANGELOG.md"><b>Full Changelog History</b></a>
-    ]]></change-notes>
-
-    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-         on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">

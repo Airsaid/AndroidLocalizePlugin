@@ -4,6 +4,7 @@
 [![Plugin Version](https://img.shields.io/jetbrains/plugin/v/11174)](https://plugins.jetbrains.com/plugin/11174-androidlocalize)
 [![Plugin Rating](https://img.shields.io/jetbrains/plugin/r/rating/11174)](https://plugins.jetbrains.com/plugin/11174-androidlocalize)
 
+<!-- Plugin description -->
 :earth_asia: Android localization plugin. supports multiple languages and multiple translators.
 
 # Features
@@ -19,6 +20,8 @@
 - Support for specifying that text is not translated.
 - Support for caching translated strings. 
 - Support to set the translation interval time.
+
+<!-- Plugin description end -->
 
 # Preview
 ![image](preview/preview.gif)
