@@ -61,11 +61,11 @@ Android localization plugin. supports multiple languages and multiple translator
 
 You can contribute and support this project by doing any of the following:
 
-- Star the project on GitHub
-- Give feedback
-- Commit PR
-- Contribute your ideas/suggestions
-- Share the plugin with your friends/colleagues
+- Star the project on GitHub.
+- Give feedback.
+- Commit PR.
+- Contribute your ideas/suggestions.
+- Share the plugin with your friends/colleagues.
 - If you like the plugin, please consider making a donation to keep the plugin active:
 
   <table>
