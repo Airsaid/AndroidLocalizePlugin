@@ -5,7 +5,9 @@
 [![Plugin Rating](https://img.shields.io/jetbrains/plugin/r/rating/11174)](https://plugins.jetbrains.com/plugin/11174-androidlocalize)
 [![Build](https://github.com/Airsaid/AndroidLocalizePlugin/workflows/Build/badge.svg)](https://github.com/Airsaid/AndroidLocalizePlugin/actions/workflows/build.yml)
 
-:earth_asia: Android 本地化插件，支持多种语言和翻译器。
+[WebSite](https://plugins.jetbrains.com/plugin/11174-androidlocalize) | [GitHub](https://github.com/Airsaid/AndroidLocalizePlugin) | [Issues](https://github.com/Airsaid/AndroidLocalizePlugin/issues) | [Reviews](https://plugins.jetbrains.com/plugin/11174-androidlocalize/reviews)<br/><br/>
+
+Android 本地化插件，支持多种语言和翻译器。
 
 # 功能
 - 多翻译器支持：
@@ -21,18 +23,18 @@
 - 支持缓存已翻译的 strings。
 - 支持设置翻译间隔时间。
 
+# 使用
+- 第一步：选择 `values/strings.xml` 文件（或者 `plurals.xml/arrays.xml`）。
+- 第二步：右键选择：“Translate to Other Languages”。
+- 第三步：勾选上需要翻译的语言。
+- 第四步：点击 OK。
+
 # 预览
 ![image](preview/preview.gif)
 ![image](preview/settings.png)
 
 # 安装
 [![Install Plugin](preview/install.png)](https://plugins.jetbrains.com/plugin/11174-androidlocalize)
-
-# 使用
-- 第一步：选择 `values/strings.xml` 文件（或者 `plurals.xml/arrays.xml`）。
-- 第二步：右键选择：“Translate to Other Languages”。
-- 第三步：勾选上需要翻译的语言。
-- 第四步：点击 OK。
 
 # 常见问题
 - 问题：如何忽略不让其翻译？

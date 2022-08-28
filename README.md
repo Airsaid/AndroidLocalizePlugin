@@ -6,7 +6,9 @@
 [![Build](https://github.com/Airsaid/AndroidLocalizePlugin/workflows/Build/badge.svg)](https://github.com/Airsaid/AndroidLocalizePlugin/actions/workflows/build.yml)
 
 <!-- Plugin description -->
-:earth_asia: Android localization plugin. supports multiple languages and multiple translators.
+[WebSite](https://plugins.jetbrains.com/plugin/11174-androidlocalize) | [GitHub](https://github.com/Airsaid/AndroidLocalizePlugin) | [Issues](https://github.com/Airsaid/AndroidLocalizePlugin/issues) | [Reviews](https://plugins.jetbrains.com/plugin/11174-androidlocalize/reviews)<br/><br/>
+
+Android localization plugin. supports multiple languages and multiple translators.
 
 # Features
 - Multiple translator support:
@@ -22,6 +24,12 @@
 - Support for caching translated strings. 
 - Support to set the translation interval time.
 
+# Usage
+- Step 1: Select the `values/strings.xml`(or `plurals.xml/arrays.xml`).
+- Step 2: Right click and select "Translate to Other Languages".
+- Step 3: Select the languages to be translated.
+- Step 4: Click OK.
+
 <!-- Plugin description end -->
 
 # Preview
@@ -30,12 +38,6 @@
 
 # Install
 [![Install Plugin](preview/install.png)](https://plugins.jetbrains.com/plugin/11174-androidlocalize)
-
-# Usage
-- Step 1: Select the `values/strings.xml`(or `plurals.xml/arrays.xml`).
-- Step 2: Right click and select "Translate to Other Languages".
-- Step 3: Select the languages to be translated.
-- Step 4: Click OK.
 
 # FAQ
 - Q: How to ignore translation?
