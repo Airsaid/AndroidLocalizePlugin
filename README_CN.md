@@ -55,6 +55,46 @@ Android 本地化插件，支持多种语言和翻译器。
 # 更新日志
 [更新日志](CHANGELOG.md)
 
+# 支持和捐赠
+
+您可以通过执行以下任意操作来贡献和支持此项目：
+
+- 在 GitHub 上 Star 该项目
+- 反馈问题
+- 提交 PR
+- 提出您的想法或建议
+- 将插件分享给您的朋友和同事
+- 如果您喜欢这个插件，请考虑捐赠以维持该插件和后续的更新：
+
+  <table>
+    <thead align="center">
+      <tr>
+        <th><a href="https://opencollective.com/androidlocalizeplugin" target="_blank">Open Collective</a></th>
+        <th><a href="https://pay.weixin.qq.com/index.php/public/wechatpay_en" target="_blank">微信支付</a></th>
+        <th><a href="https://global.alipay.com" target="_blank">支付宝</a></th>
+      </tr>
+    </thead>
+    <tr align="center">
+      <td>
+        <a href="https://opencollective.com/androidlocalizeplugin/donate" target="_blank">
+          <img src="https://raw.githubusercontent.com/Airsaid/Resources/master/Images/opencollective-logo.png" width=298 alt="Donate To Our Collective">
+        </a>
+      </td>
+      <td>
+        <a href="https://pay.weixin.qq.com/index.php/public/wechatpay_en" target="_blank">
+          <img src="https://raw.githubusercontent.com/Airsaid/Resources/master/Images/AndroidLocalizePlugin_WeChatPay.jpg" alt="WeChat Play">
+        </a>
+      </td>
+      <td>
+        <a href="https://global.alipay.com" target="_blank">
+          <img src="https://raw.githubusercontent.com/Airsaid/Resources/master/Images/AndroidLocalizePlugin_Alipay.jpg" alt="Alipay">
+        </a>
+      </td>
+    </tr>
+  </table>
+
+**感谢您的支持！**
+
 # 赞助商
 [![Development powered by JetBrains](https://pic.stackoverflow.wiki/uploadImages/111/201/226/60/2021/06/20/18/45/3aba65f5-1231-4c9a-817f-83cd5a29fd0c.svg)](https://jb.gg/OpenSourc)
 
