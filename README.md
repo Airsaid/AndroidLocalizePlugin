@@ -25,7 +25,7 @@ Android localization plugin. supports multiple languages and multiple translator
 - Support to set the translation interval time.
 
 # Usage
-- Step 1: Select the `values/strings.xml`(or `plurals.xml/arrays.xml`).
+- Step 1: Select the `values/strings.xml`(or any string resource in `values` directory).
 - Step 2: Right click and select "Translate to Other Languages".
 - Step 3: Select the languages to be translated.
 - Step 4: Click OK.

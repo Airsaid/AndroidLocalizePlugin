@@ -24,7 +24,7 @@ Android 本地化插件，支持多种语言和翻译器。
 - 支持设置翻译间隔时间。
 
 # 使用
-- 第一步：选择 `values/strings.xml` 文件（或者 `plurals.xml/arrays.xml`）。
+- 第一步：选择 `values/strings.xml` 文件（或者是 values 目录下的任何资源文件）。
 - 第二步：右键选择：“Translate to Other Languages”。
 - 第三步：勾选上需要翻译的语言。
 - 第四步：点击 OK。

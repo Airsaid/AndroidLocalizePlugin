@@ -5,6 +5,7 @@
 ## [Unreleased]
 ### Changed
 - Improve plugin description information.
+- Relax translation file name boundaries.
 
 ## [2.6.1](https://github.com/Airsaid/AndroidLocalizePlugin/releases/tag/v2.6.1) (2022-08-27)
 ### Added

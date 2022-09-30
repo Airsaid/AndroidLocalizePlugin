@@ -83,7 +83,7 @@ public class TranslateAction extends AnAction implements SelectLanguagesDialog.O
 
   @Override
   public void update(@NotNull AnActionEvent e) {
-    // The translation option is only show when strings.xml/plurals.xml/arrays.xml is selected
+    // The translation option is only show when xml file from values is selected
     Project project = e.getData(CommonDataKeys.PROJECT);
     boolean isSelectValueFile = mValueService.isValueFile(e.getData(CommonDataKeys.PSI_FILE));
     e.getPresentation().setEnabledAndVisible(project != null && isSelectValueFile);
