@@ -3,6 +3,8 @@
 # Android Localize Plugin Changelog
 
 ## [Unreleased]
+
+## [2.7.0]
 ### Changed
 - Improve plugin description information.
 - Relax translation file name boundaries.
@@ -85,7 +87,7 @@
 ### Added
 - Added proxy support.
 
-### Fixed 
+### Fixed
 - Fixed bugs.
 
 ## [1.3.0]
