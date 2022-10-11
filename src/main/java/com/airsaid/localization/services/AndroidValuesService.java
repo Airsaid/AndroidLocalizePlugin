@@ -138,10 +138,10 @@ public final class AndroidValuesService {
   }
 
   /**
-   * Verify that the file is a values/string.xml or plurals.xml or arrays.xml file.
+   * Verify that the specified file is a string resource file in the values directory.
    *
    * @param file the verify file.
-   * @return true: the file is values/string.xml or plurals.xml or arrays.xml file.
+   * @return true: the file is a string resource file in the values directory.
    */
   public boolean isValueFile(@Nullable PsiFile file) {
     if (file == null) return false;
