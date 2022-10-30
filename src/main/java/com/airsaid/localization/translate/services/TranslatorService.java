@@ -83,7 +83,7 @@ public final class TranslatorService {
     translators.put(aliTranslator.getKey(), aliTranslator);
 
     DeepLTranslator deepLTranslator = new DeepLTranslator();
-    translators.put(deepLTranslator.getKey(), microsoftTranslator);
+    translators.put(deepLTranslator.getKey(), deepLTranslator);
 
     cacheService = TranslationCacheService.getInstance();
 
