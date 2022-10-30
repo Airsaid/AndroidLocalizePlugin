@@ -83,7 +83,7 @@ public class DeepLTranslator extends AbstractTranslator {
             supportedLanguages.add(Languages.FINNISH);
             supportedLanguages.add(Languages.FRENCH);
             supportedLanguages.add(Languages.HUNGARIAN);
-            supportedLanguages.add(Languages.INDONESIAN);
+            supportedLanguages.add(new Lang(98, "id", "Indonesia", "Indonesian"));
             supportedLanguages.add(Languages.ITALIAN);
             supportedLanguages.add(Languages.JAPANESE);
             supportedLanguages.add(Languages.LITHUANIAN);
@@ -99,7 +99,7 @@ public class DeepLTranslator extends AbstractTranslator {
             supportedLanguages.add(Languages.SWEDISH);
             supportedLanguages.add(Languages.TURKISH);
             supportedLanguages.add(Languages.UKRAINIAN);
-            supportedLanguages.add(Languages.CHINESE_SIMPLIFIED);
+            supportedLanguages.add(new Lang(104, "zh", "简体中文", "Chinese Simplified"));
 
         }
         return supportedLanguages;
