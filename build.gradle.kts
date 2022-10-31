@@ -103,7 +103,7 @@ tasks {
 }
 
 dependencies {
-  implementation("com.google.code.gson:gson:2.9.1")
+  implementation("com.google.code.gson:gson:2.10")
   implementation("com.aliyun:alimt20181012:1.0.3")
 
   testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.1")
