@@ -17,6 +17,7 @@ Android localization plugin. supports multiple languages and multiple translator
   - Baidu translator.
   - Youdao translator.
   - Ali translator.
+  - DeepL translator.
 - Supports up to 100+ languages.
 - One key generates all translation files.
 - Support no translation of existing string.
