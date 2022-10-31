@@ -3,6 +3,8 @@
 # Android Localize Plugin Changelog
 
 ## [Unreleased]
+### Added
+- Supported DeepL translator.
 
 ## [2.7.0]
 ### Changed
