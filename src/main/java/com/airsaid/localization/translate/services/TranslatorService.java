@@ -20,6 +20,7 @@ package com.airsaid.localization.translate.services;
 import com.airsaid.localization.translate.AbstractTranslator;
 import com.airsaid.localization.translate.impl.ali.AliTranslator;
 import com.airsaid.localization.translate.impl.baidu.BaiduTranslator;
+import com.airsaid.localization.translate.impl.deepl.DeepLProTranslator;
 import com.airsaid.localization.translate.impl.deepl.DeepLTranslator;
 import com.airsaid.localization.translate.impl.google.GoogleTranslator;
 import com.airsaid.localization.translate.impl.googleapi.GoogleApiTranslator;
@@ -84,6 +85,9 @@ public final class TranslatorService {
 
     DeepLTranslator deepLTranslator = new DeepLTranslator();
     translators.put(deepLTranslator.getKey(), deepLTranslator);
+
+    DeepLProTranslator deepLProTranslator = new DeepLProTranslator();
+    translators.put(deepLProTranslator.getKey(), deepLProTranslator);
 
     cacheService = TranslationCacheService.getInstance();
 
