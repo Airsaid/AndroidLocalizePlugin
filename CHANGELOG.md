@@ -6,6 +6,9 @@
 ### Added
 - Supported DeepLPro translator.
 
+### Fixed
+- Fix `xliff:g` attribute does not work. [#91](https://github.com/Airsaid/AndroidLocalizePlugin/issues/91)
+
 ## [2.8.0]
 ### Added
 - Supported DeepL translator.
