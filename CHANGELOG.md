@@ -2,7 +2,7 @@
 
 # Android Localize Plugin Changelog
 
-## Unreleased
+## [Unreleased]
 
 ## [2.9.0] (2022-11-29)
 
@@ -115,21 +115,41 @@
 ### Fixed
 - Fixed bugs.
 
-## 1.3.0
+## [1.3.0] (2018-10-14)
 
 ### Added
 - Added "Overwrite Existing String" option.
 - Optimize the experience of choice.
 
-## 1.2.0
+## [1.2.0] (2018-09-28)
 
 ### Fixed
 - Fixed garbled bug.
 
-## 1.1.0
+## [1.1.0] (2018-09-25)
 
 ### Added
 - Supported for automatic detection of source file language.
 
-## 1.0.0
+## [1.0.0] (2018-09-24)
 - Initial release of the plugin.
+
+[Unreleased]: https://github.com/Airsaid/AndroidLocalizePlugin/compare/v2.9.0...HEAD
+[2.9.0]: https://github.com/Airsaid/AndroidLocalizePlugin/compare/v2.8.0...v2.9.0
+[2.8.0]: https://github.com/Airsaid/AndroidLocalizePlugin/compare/v2.7.0...v2.8.0
+[2.7.0]: https://github.com/Airsaid/AndroidLocalizePlugin/compare/v2.6.1...v2.7.0
+[2.6.1]: https://github.com/Airsaid/AndroidLocalizePlugin/compare/v2.6.0...v2.6.1
+[2.6.0]: https://github.com/Airsaid/AndroidLocalizePlugin/compare/v2.5.0...v2.6.0
+[2.5.0]: https://github.com/Airsaid/AndroidLocalizePlugin/compare/v2.4.0...v2.5.0
+[2.4.0]: https://github.com/Airsaid/AndroidLocalizePlugin/compare/v2.3.0...v2.4.0
+[2.3.0]: https://github.com/Airsaid/AndroidLocalizePlugin/compare/v2.2.1...v2.3.0
+[2.2.1]: https://github.com/Airsaid/AndroidLocalizePlugin/compare/v2.2.0...v2.2.1
+[2.2.0]: https://github.com/Airsaid/AndroidLocalizePlugin/compare/v2.1.0...v2.2.0
+[2.1.0]: https://github.com/Airsaid/AndroidLocalizePlugin/compare/v2.0.0...v2.1.0
+[2.0.0]: https://github.com/Airsaid/AndroidLocalizePlugin/compare/v1.5...v2.0.0
+[1.5.0]: https://github.com/Airsaid/AndroidLocalizePlugin/compare/v1.4...v1.5
+[1.4.0]: https://github.com/Airsaid/AndroidLocalizePlugin/compare/v1.3...v1.4
+[1.3.0]: https://github.com/Airsaid/AndroidLocalizePlugin/compare/v1.2...v1.3
+[1.2.0]: https://github.com/Airsaid/AndroidLocalizePlugin/compare/v1.1...v1.2
+[1.1.0]: https://github.com/Airsaid/AndroidLocalizePlugin/compare/v1.0...v1.1
+[1.0.0]: https://github.com/Airsaid/AndroidLocalizePlugin/commits/v1.0
