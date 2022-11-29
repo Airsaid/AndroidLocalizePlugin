@@ -1,3 +1,7 @@
+import org.jetbrains.changelog.Changelog
+import org.jetbrains.changelog.date
+import org.jetbrains.changelog.markdownToHTML
+
 fun properties(key: String) = project.findProperty(key).toString()
 
 plugins {
@@ -29,8 +33,9 @@ intellij {
 
 // Configure Gradle Changelog Plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
 changelog {
-  version.set(properties("pluginVersion"))
   groups.set(emptyList())
+  version.set(properties("pluginVersion"))
+  header.set("[${version.get()}] (${date()})")
 }
 
 tasks {
@@ -62,14 +67,17 @@ tasks {
           throw GradleException("Plugin description section not found in README.md:\n$start ... $end")
         }
         subList(indexOf(start) + 1, indexOf(end))
-      }.joinToString("\n").run { org.jetbrains.changelog.markdownToHTML(this) }
+      }.joinToString("\n").run { markdownToHTML(this) }
     )
 
     // Get the latest available change notes from the changelog file
     changeNotes.set(provider {
-      changelog.run {
-        getOrNull(properties("pluginVersion")) ?: getLatest()
-      }.toHTML()
+      with(changelog) {
+        renderItem(
+          getOrNull(properties("pluginVersion")) ?: getLatest(),
+          Changelog.OutputType.HTML,
+        )
+      }
     })
   }
 
