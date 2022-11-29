@@ -17,12 +17,15 @@
 
 package com.airsaid.localization.translate.impl.deepl;
 
+import com.airsaid.localization.translate.AbstractTranslator;
 import com.airsaid.localization.translate.lang.Lang;
+import com.google.auto.service.AutoService;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * @author airsaid
  */
+@AutoService(AbstractTranslator.class)
 public class DeepLProTranslator extends DeepLTranslator {
 
   private static final String KEY = "DeepLPro";

@@ -1,9 +1,11 @@
 package com.airsaid.localization.translate.impl.googleapi;
 
+import com.airsaid.localization.translate.AbstractTranslator;
 import com.airsaid.localization.translate.TranslationException;
 import com.airsaid.localization.translate.impl.google.AbsGoogleTranslator;
 import com.airsaid.localization.translate.lang.Lang;
 import com.airsaid.localization.translate.util.GsonUtil;
+import com.google.auto.service.AutoService;
 import com.intellij.openapi.util.Pair;
 import com.intellij.util.io.RequestBuilder;
 import org.jetbrains.annotations.NotNull;
@@ -15,6 +17,7 @@ import java.util.List;
 /**
  * @author airsaid
  */
+@AutoService(AbstractTranslator.class)
 public class GoogleApiTranslator extends AbsGoogleTranslator {
   private static final String KEY = "GoogleApi";
   private static final String HOST_URL = "https://translation.googleapis.com";

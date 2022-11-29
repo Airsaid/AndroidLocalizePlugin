@@ -27,6 +27,7 @@ import com.aliyun.alimt20181012.models.TranslateGeneralResponse;
 import com.aliyun.alimt20181012.models.TranslateGeneralResponseBody;
 import com.aliyun.teaopenapi.models.Config;
 import com.aliyun.teautil.models.RuntimeOptions;
+import com.google.auto.service.AutoService;
 import icons.PluginIcons;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,6 +39,7 @@ import java.util.List;
 /**
  * @author airsaid
  */
+@AutoService(AbstractTranslator.class)
 public class AliTranslator extends AbstractTranslator {
   private static final String KEY = "Ali";
   private static final String ENDPOINT = "mt.aliyuncs.com";

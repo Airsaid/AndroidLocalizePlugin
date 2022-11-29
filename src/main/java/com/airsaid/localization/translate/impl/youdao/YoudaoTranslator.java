@@ -22,6 +22,7 @@ import com.airsaid.localization.translate.TranslationException;
 import com.airsaid.localization.translate.lang.Lang;
 import com.airsaid.localization.translate.lang.Languages;
 import com.airsaid.localization.translate.util.GsonUtil;
+import com.google.auto.service.AutoService;
 import com.intellij.openapi.util.Pair;
 import com.intellij.util.io.RequestBuilder;
 import icons.PluginIcons;
@@ -39,6 +40,7 @@ import java.util.List;
  * @author airsaid
  */
 @SuppressWarnings(value = {"SpellCheckingInspection", "unused"})
+@AutoService(AbstractTranslator.class)
 public class YoudaoTranslator extends AbstractTranslator {
 
   private static final String KEY = "Youdao";

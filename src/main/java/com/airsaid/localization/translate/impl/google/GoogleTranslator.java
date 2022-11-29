@@ -17,10 +17,12 @@
 
 package com.airsaid.localization.translate.impl.google;
 
+import com.airsaid.localization.translate.AbstractTranslator;
 import com.airsaid.localization.translate.lang.Lang;
 import com.airsaid.localization.translate.util.AgentUtil;
 import com.airsaid.localization.translate.util.GsonUtil;
 import com.airsaid.localization.translate.util.UrlBuilder;
+import com.google.auto.service.AutoService;
 import com.intellij.openapi.util.Pair;
 import com.intellij.util.io.RequestBuilder;
 import org.jetbrains.annotations.NotNull;
@@ -31,8 +33,9 @@ import java.util.List;
 /**
  * @author airsaid
  */
+@AutoService(AbstractTranslator.class)
 public class GoogleTranslator extends AbsGoogleTranslator {
-  private static final String KEY = "Google";
+  public static final String KEY = "Google";
 
   public static final String HOST_URL = "https://translate.googleapis.com";
   private static final String BASE_URL = HOST_URL.concat("/translate_a/single");

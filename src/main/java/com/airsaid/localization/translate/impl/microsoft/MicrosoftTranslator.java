@@ -22,6 +22,7 @@ import com.airsaid.localization.translate.lang.Lang;
 import com.airsaid.localization.translate.lang.Languages;
 import com.airsaid.localization.translate.util.GsonUtil;
 import com.airsaid.localization.translate.util.UrlBuilder;
+import com.google.auto.service.AutoService;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.Pair;
 import com.intellij.util.io.RequestBuilder;
@@ -37,6 +38,7 @@ import java.util.List;
 /**
  * @author airsaid
  */
+@AutoService(AbstractTranslator.class)
 public class MicrosoftTranslator extends AbstractTranslator {
 
   private static final Logger LOG = Logger.getInstance(MicrosoftTranslator.class);
