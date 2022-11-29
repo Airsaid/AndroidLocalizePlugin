@@ -25,6 +25,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -109,6 +110,11 @@ public final class TranslatorService {
         LOG.info(String.format("doTranslate cache result: %s", cacheResult));
         return cacheResult;
       }
+    }
+
+    // Arabic numbers skip translation
+    if (StringUtils.isNumeric(text)) {
+      return text;
     }
 
     String result = selectedTranslator.doTranslate(fromLang, toLang, text);
