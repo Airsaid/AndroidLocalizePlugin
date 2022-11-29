@@ -180,7 +180,7 @@ public class TranslateTask extends Task.Backgroundable {
   private void doTranslate(@NotNull ProgressIndicator progressIndicator,
                            @NotNull Lang toLanguage,
                            @NotNull XmlTag xmlTag) {
-    if (progressIndicator.isCanceled()) return;
+    if (progressIndicator.isCanceled() || isXliffTag(xmlTag)) return;
 
     XmlTagValue xmlTagValue = ApplicationManager.getApplication()
         .runReadAction((Computable<XmlTagValue>) xmlTag::getValue);
@@ -222,6 +222,10 @@ public class TranslateTask extends Task.Backgroundable {
       ApplicationManager.getApplication().invokeLater(() ->
           FileEditorManager.getInstance(myProject).openFile(virtualFile, true));
     }
+  }
+
+  private boolean isXliffTag(XmlTag xmlTag) {
+    return xmlTag != null && "xliff:g".equals(xmlTag.getName());
   }
 
   @Override
