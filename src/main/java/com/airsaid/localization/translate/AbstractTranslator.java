@@ -28,7 +28,6 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -56,11 +55,7 @@ public abstract class AbstractTranslator implements Translator, TranslatorConfig
         String requestParams = getRequestParams(fromLang, toLang, text)
             .stream()
             .map(pair -> {
-              try {
-                return pair.first.concat("=").concat(URLEncoder.encode(pair.second, StandardCharsets.UTF_8.name()));
-              } catch (UnsupportedEncodingException e) {
-                throw new TranslationException(fromLang, toLang, text, e);
-              }
+              return pair.first.concat("=").concat(URLEncoder.encode(pair.second, StandardCharsets.UTF_8));
             })
             .collect(Collectors.joining("&"));
         if (!requestParams.isEmpty()) {
@@ -68,7 +63,7 @@ public abstract class AbstractTranslator implements Translator, TranslatorConfig
         }
         String requestBody = getRequestBody(fromLang, toLang, text);
         if (!requestBody.isEmpty()) {
-          request.write(URLEncoder.encode(requestBody, StandardCharsets.UTF_8.name()));
+          request.write(URLEncoder.encode(requestBody, StandardCharsets.UTF_8));
         }
         String resultText = request.readString();
         return parsingResult(fromLang, toLang, text, resultText);
