@@ -18,107 +18,86 @@
 package com.airsaid.localization.translate.openai_chatgpt;
 
 import com.airsaid.localization.translate.AbstractTranslator;
-import com.airsaid.localization.translate.impl.deepl.DeepLTranslationResult;
 import com.airsaid.localization.translate.lang.Lang;
 import com.airsaid.localization.translate.lang.Languages;
 import com.airsaid.localization.translate.util.GsonUtil;
-import com.airsaid.localization.translate.util.UrlBuilder;
 import com.google.auto.service.AutoService;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.util.Pair;
 import com.intellij.util.io.RequestBuilder;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Icon;
 
 import icons.PluginIcons;
 
-/**
- * @author musagil
- */
+
 @AutoService(AbstractTranslator.class)
 public class ChatGPTTranslator extends AbstractTranslator {
 
-  private static final Logger LOG = Logger.getInstance(ChatGPTTranslator.class);
+    private static final Logger LOG = Logger.getInstance(ChatGPTTranslator.class);
+    private static final String KEY = "ChatGPT";
 
-  private static final String KEY = "ChatGPT";
-  private static final String HOST_URL = "https://api.openai.com/v1/chat/";
-  private static final String TRANSLATE_URL = HOST_URL.concat("/completions");
-  private static final String APPLY_APP_ID_URL = "https://www.deepl.com/pro-api?cta=header-pro-api/";
+    @Override
+    public @NotNull String getKey() {
+        return KEY;
+    }
 
-  private List<Lang> supportedLanguages;
+    @Override
+    public @NotNull String getName() {
+        return "ChatGPT";
+    }
 
-  @Override
-  public @NotNull String getKey() {
-    return KEY;
-  }
+    @Override
+    public @Nullable Icon getIcon() {
+        return PluginIcons.OPENAI_CHATGPT;
+    }
 
-  @Override
-  public @NotNull String getName() {
-    return "DeepL";
-  }
+    @Override
+    public boolean isNeedAppId() {
+        return false;
+    }
 
-  @Override
-  public @Nullable Icon getIcon() {
-    return PluginIcons.DEEP_L_ICON;
-  }
+    @Override
+    public @NotNull List<Lang> getSupportedLanguages() {
+        return Languages.getLanguages();
+    }
 
-  @Override
-  public boolean isNeedAppId() {
-    return false;
-  }
+    @Override
+    public String getAppKeyDisplay() {
+        return "KEY";
+    }
 
-  @Override
-  public @NotNull List<Lang> getSupportedLanguages() {
-    return Languages.getLanguages();
-  }
 
-  @Override
-  public String getAppKeyDisplay() {
-    return "KEY";
-  }
+    @Override
+    public @NotNull String getRequestUrl(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
+        return "https://api.openai.com/v1/chat/completions";
+    }
 
-  @Override
-  public @Nullable String getApplyAppIdUrl() {
-    return APPLY_APP_ID_URL;
-  }
+    @Override
+    @NotNull
+    public String getRequestBody(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
+        ChatGPTMessage msg = new ChatGPTMessage("user", String.format("Translate this %s text into %s", fromLang.getEnglishName(), toLang.getEnglishName()));
+        OpenAIRequest body = new OpenAIRequest("gpt-3.5-turbo", List.of(msg));
 
-  @Override
-  public @NotNull String getRequestUrl(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
-    return new UrlBuilder(TRANSLATE_URL).build();
-  }
+        return GsonUtil.getInstance().getGson().toJson(body);
+    }
 
-  @Override
-  public @NotNull List<Pair<String, String>> getRequestParams(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
-    List<Pair<String, String>> params = new ArrayList<>();
-    params.add(Pair.create("text", text));
-    params.add(Pair.create("target_lang", toLang.getCode()));
-    return params;
-  }
+    @Override
+    public void configureRequestBuilder(@NotNull RequestBuilder requestBuilder) {
+        requestBuilder.tuner(connection -> {
+            connection.setRequestProperty("Authorization", "Bearer " + getAppKey());
+            connection.setRequestProperty("Content-Type", "application/json");
+        });
+    }
 
-  @Override
-  @NotNull
-  public String getRequestBody(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
-    return "";
-  }
-
-  @Override
-  public void configureRequestBuilder(@NotNull RequestBuilder requestBuilder) {
-    requestBuilder.tuner(connection -> {
-      connection.setRequestProperty("Authorization", "Bearer " + getAppKey());
-      connection.setRequestProperty("Content-Type", "application/json");
-    });
-  }
-
-  @Override
-  public @NotNull String parsingResult(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text, @NotNull String resultText) {
-    LOG.info("parsingResult: " + resultText);
-    return GsonUtil.getInstance().getGson().fromJson(resultText, DeepLTranslationResult.class).getTranslationResult();
-  }
+    @Override
+    public @NotNull String parsingResult(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text, @NotNull String resultText) {
+        LOG.info("parsingResult: " + resultText);
+        return GsonUtil.getInstance().getGson().fromJson(resultText, OpenAIResponse.class).getTranslation();
+    }
 
 }
