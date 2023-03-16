@@ -121,7 +121,7 @@ public abstract class AbstractTranslator implements Translator, TranslatorConfig
 
   @NotNull
   public List<Pair<String, String>> getRequestParams(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
-    throw new UnsupportedOperationException();
+    return List.of();
   }
 
   @NotNull
