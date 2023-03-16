@@ -31,7 +31,7 @@ public interface PluginIcons {
   Icon MICROSOFT_ICON = load("/icons/icon_microsoft.svg");
   Icon ALI_ICON = load("/icons/icon_ali.svg");
   Icon DEEP_L_ICON = load("/icons/icon_deepl.svg");
-  Icon OPENAI_CHATGPT = load("/icons/icon_chatgpt.svg");
+  Icon OPENAI_ICON = load("/icons/icon_openai.svg");
 
   private static Icon load(String path) {
     return IconLoader.getIcon(path, PluginIcons.class);
