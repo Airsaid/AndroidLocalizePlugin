@@ -29,16 +29,16 @@ public class TranslationException extends RuntimeException {
   private final String text;
 
   public TranslationException(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text, @NotNull Throwable cause) {
-    super("Failed to translate \"" + text + "\" text from " + fromLang.getEnglishName() + " language " +
-        "to " + toLang.getEnglishName() + " language: " + cause, cause);
+    super("Failed to translate \"" + text + "\" from " + fromLang.getEnglishName() +
+            "to " + toLang.getEnglishName() + "with error:" + cause.getMessage(), cause);
     this.fromLang = fromLang;
     this.toLang = toLang;
     this.text = text;
   }
 
   public TranslationException(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text, String message) {
-    super("Failed to translate \"" + text + "\" text from " + fromLang.getEnglishName() + " language " +
-        "to " + toLang.getEnglishName() + " language: " + message);
+    super("Failed to translate \"" + text + "\" from " + fromLang.getEnglishName() +
+        "to " + toLang.getEnglishName() + "with error:" + message);
     this.fromLang = fromLang;
     this.toLang = toLang;
     this.text = text;
