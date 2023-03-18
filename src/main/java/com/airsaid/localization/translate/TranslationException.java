@@ -20,6 +20,7 @@ package com.airsaid.localization.translate;
 import com.airsaid.localization.translate.lang.Lang;
 import com.intellij.openapi.diagnostic.Logger;
 
+import org.apache.http.HttpException;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -35,7 +36,7 @@ public class TranslationException extends RuntimeException {
 
   public TranslationException(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text, @NotNull Throwable cause) {
     super("Failed to translate \"" + text + "\" from " + fromLang.getEnglishName() +
-            " to " + toLang.getEnglishName() + " with error:" + cause.getMessage(), cause);
+            " to " + toLang.getEnglishName() + " with error: " + cause.getMessage(), cause);
     this.fromLang = fromLang;
     this.toLang = toLang;
     this.text = text;
@@ -45,7 +46,7 @@ public class TranslationException extends RuntimeException {
 
   public TranslationException(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text, String message) {
     super("Failed to translate \"" + text + "\" from " + fromLang.getEnglishName() +
-        " to " + toLang.getEnglishName() + " with error:" + message);
+        " to " + toLang.getEnglishName() + " with error: " + message);
     this.fromLang = fromLang;
     this.toLang = toLang;
     this.text = text;

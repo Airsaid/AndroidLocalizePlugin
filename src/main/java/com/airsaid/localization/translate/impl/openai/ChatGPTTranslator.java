@@ -82,7 +82,7 @@ public class ChatGPTTranslator extends AbstractTranslator {
     @Override
     @NotNull
     public String getRequestBody(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
-        ChatGPTMessage msg = new ChatGPTMessage("user", String.format("Translate this %s text into %s", fromLang.getEnglishName(), toLang.getEnglishName()));
+        ChatGPTMessage msg = new ChatGPTMessage("user", String.format("Translate the text below into %s\n\n\ntext: %s", toLang.getEnglishName(), text));
         OpenAIRequest body = new OpenAIRequest("gpt-3.5-turbo", List.of(msg));
 
         return GsonUtil.getInstance().getGson().toJson(body);
@@ -98,7 +98,7 @@ public class ChatGPTTranslator extends AbstractTranslator {
 
     @Override
     public @NotNull String parsingResult(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text, @NotNull String resultText) {
-        LOG.info("parsingResult: " + resultText);
+        LOG.error("parsingResult ChatGPT: " + resultText);
         return GsonUtil.getInstance().getGson().fromJson(resultText, OpenAIResponse.class).getTranslation();
     }
 

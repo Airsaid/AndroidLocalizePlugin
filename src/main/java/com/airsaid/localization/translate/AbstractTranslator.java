@@ -24,6 +24,8 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.Pair;
 import com.intellij.util.io.HttpRequests;
 import com.intellij.util.io.RequestBuilder;
+
+import org.apache.http.HttpException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,12 +66,13 @@ public abstract class AbstractTranslator implements Translator, TranslatorConfig
         }
         String requestBody = getRequestBody(fromLang, toLang, text);
         if (!requestBody.isEmpty()) {
-          request.write(URLEncoder.encode(requestBody, StandardCharsets.UTF_8));
+          request.write(requestBody);
         }
+
         String resultText = request.readString();
         return parsingResult(fromLang, toLang, text, resultText);
       });
-    } catch (IOException e) {
+    } catch (Exception e) {
       e.printStackTrace();
       LOG.error(e.getMessage(), e);
       throw new TranslationException(fromLang, toLang, text, e);
