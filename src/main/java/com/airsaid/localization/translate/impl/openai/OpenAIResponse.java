@@ -75,11 +75,13 @@ public class OpenAIResponse {
     }
 
     public String getTranslation() {
-        return choices != null && !choices.isEmpty()
-                ? choices.get(0).getMessage().getContent() != null
-                ? choices.get(0).getMessage().getContent().trim()
-                : ""
-                : "";
+        if (choices != null && !choices.isEmpty()) {
+            String result = choices.get(0).getMessage().getContent();
+            return result.trim();
+
+        } else {
+            return "";
+        }
     }
 
     public static class Choice {
