@@ -82,10 +82,12 @@ public class ChatGPTTranslator extends AbstractTranslator {
     @Override
     @NotNull
     public String getRequestBody(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
-        String roleSystem =  String.format("Become a professional translator. You're translating text for an Android app. Your audience are native %s speakers. Keep the exact formatting and style of the original text. Don't add white space. " +
-                "Try to keep the translated text around the same length or shorter than the original. Just repeat the same text when the translation is not different (e.g a word like 'OK' is written the same in multiple languages). Now translate the text from the user into %s", toLang.getEnglishName(), toLang.getEnglishName());
+        String roleSystem =  String.format("Become a professional translator. You're translating text for the user interface of an Android app. Your audience are native %s speakers so try to keep cultural connotations. Use the exact formatting and style of the original text. " +
+                "Try to keep the translated text around the same length or shorter than the original. Just repeat the original text when the translation is not different (e.g a word like 'OK'). Now translate the text from the user into %s", toLang.getEnglishName(), toLang.getEnglishName());
+
         ChatGPTMessage role = new ChatGPTMessage("system", roleSystem);
-        ChatGPTMessage msg = new ChatGPTMessage("user", String.format("Text to translate: %s", toLang.getEnglishName(), text));
+        ChatGPTMessage msg = new ChatGPTMessage("user", String.format("Text to translate: %s", text));
+
         OpenAIRequest body = new OpenAIRequest("gpt-3.5-turbo", List.of(role, msg));
 
         return GsonUtil.getInstance().getGson().toJson(body);
