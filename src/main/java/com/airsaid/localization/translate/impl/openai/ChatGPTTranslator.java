@@ -98,6 +98,7 @@ public class ChatGPTTranslator extends AbstractTranslator {
         requestBuilder.tuner(connection -> {
             connection.setRequestProperty("Authorization", "Bearer " + getAppKey());
             connection.setRequestProperty("Content-Type", "application/json");
+            connection.setConnectTimeout(0);
         });
     }
 
