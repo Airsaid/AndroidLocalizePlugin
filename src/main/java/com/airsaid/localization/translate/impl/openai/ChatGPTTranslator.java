@@ -86,7 +86,7 @@ public class ChatGPTTranslator extends AbstractTranslator {
     @NotNull
     public String getRequestBody(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
         String lang = toLang.getEnglishName();
-        String roleSystem = String.format("Translate the user provided text into %s. Apply these translation rules; 1.Keep the exact original formatting and style. 2.Keep translations concise and repeat the original text for unchanged translations (e.g. 'OK'). 3.Audience: native %s speakers. 4.Text is used in: Android app User interface", lang, lang);
+        String roleSystem = String.format("Translate the user provided text into %s. Apply these translation rules; 1.Keep the exact original formatting and style. 2.Keep translations concise and just repeat the original text for unchanged translations (e.g. 'OK'). 3.Audience: native %s speakers. 4.Text is used in: Android app UI.", lang, lang);
 
         ChatGPTMessage role = new ChatGPTMessage("system", roleSystem);
         ChatGPTMessage msg = new ChatGPTMessage("user", String.format("Text to translate: %s", text));
