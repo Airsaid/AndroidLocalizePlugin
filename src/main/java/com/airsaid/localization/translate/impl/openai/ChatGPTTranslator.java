@@ -24,12 +24,15 @@ import com.airsaid.localization.translate.util.GsonUtil;
 import com.google.auto.service.AutoService;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.io.RequestBuilder;
-import icons.PluginIcons;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
 import java.util.List;
+
+import javax.swing.Icon;
+
+import icons.PluginIcons;
 
 
 @AutoService(AbstractTranslator.class)
@@ -82,16 +85,13 @@ public class ChatGPTTranslator extends AbstractTranslator {
     @Override
     @NotNull
     public String getRequestBody(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
-        String roleSystem =  String.format("Become a professional translator. You're translating text for the user interface of an Android app. Your audience are native %s speakers so try to keep cultural connotations. Use the exact formatting and style of the original text. " +
-                "Try to keep the translated text around the same length or shorter than the original. Just repeat the original text when the translation is not different (e.g a word like 'OK'). Now translate the text from the user into %s", toLang.getEnglishName(), toLang.getEnglishName());
+        String lang = toLang.getEnglishName();
+        String roleSystem = String.format("Translate the user provided text into %s. Apply these translation rules; 1.Keep the exact original formatting and style. 2.Keep translations concise and repeat the original text for unchanged translations (e.g. 'OK'). 3.Audience: native %s speakers. 4.Text is used in: Android app User interface", lang, lang);
 
-        ChatGPTMessage role = new ChatGPTMessage("system", roleSystem); // todo find out why gives SocketTimeOUt exception
+        ChatGPTMessage role = new ChatGPTMessage("system", roleSystem);
+        ChatGPTMessage msg = new ChatGPTMessage("user", String.format("Text to translate: %s", text));
 
-        String instruction = String.format("Translate the text below into %s while maintaining the original formatting and style. Keep translations concise and repeat the original text for unchanged translations (e.g. 'OK'). Text to translate: %s", toLang.getEnglishName(), text);
-
-        ChatGPTMessage msg = new ChatGPTMessage("user", instruction);
-
-        OpenAIRequest body = new OpenAIRequest("gpt-3.5-turbo", List.of(msg));
+        OpenAIRequest body = new OpenAIRequest("gpt-3.5-turbo", List.of(role, msg));
 
         return GsonUtil.getInstance().getGson().toJson(body);
     }
