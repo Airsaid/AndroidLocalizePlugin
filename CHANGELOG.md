@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [3.0.0] (2023-03-24)
+
 ### Added
 - Supported OpenAI ChatGPT translator. [#118](https://github.com/Airsaid/AndroidLocalizePlugin/pull/118)
 
@@ -140,7 +142,8 @@
 ## [1.0.0] (2018-09-24)
 - Initial release of the plugin.
 
-[Unreleased]: https://github.com/Airsaid/AndroidLocalizePlugin/compare/v2.9.0...HEAD
+[Unreleased]: https://github.com/Airsaid/AndroidLocalizePlugin/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/Airsaid/AndroidLocalizePlugin/compare/v2.9.0...v3.0.0
 [2.9.0]: https://github.com/Airsaid/AndroidLocalizePlugin/compare/v2.8.0...v2.9.0
 [2.8.0]: https://github.com/Airsaid/AndroidLocalizePlugin/compare/v2.7.0...v2.8.0
 [2.7.0]: https://github.com/Airsaid/AndroidLocalizePlugin/compare/v2.6.1...v2.7.0
