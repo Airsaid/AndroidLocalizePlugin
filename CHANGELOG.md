@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+### Added
+- Supported OpenAI ChatGPT translator. [#118](https://github.com/Airsaid/AndroidLocalizePlugin/pull/118)
+
+### Other
+- Delayed error throwing to avoid losing successfully translated text.
+
 ## [2.9.0] (2022-11-29)
 
 ### Added
