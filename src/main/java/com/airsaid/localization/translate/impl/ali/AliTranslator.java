@@ -119,7 +119,12 @@ public class AliTranslator extends AbstractTranslator {
       }
     }
 
-    TranslateGeneralRequest request = new TranslateGeneralRequest().setFormatType("text").setSourceLanguage(fromLang.getTranslationCode()).setTargetLanguage(toLang.getTranslationCode()).setSourceText(text).setScene("general");
+    TranslateGeneralRequest request = new TranslateGeneralRequest()
+        .setFormatType("text")
+        .setSourceLanguage(fromLang.getTranslationCode())
+        .setTargetLanguage(toLang.getTranslationCode())
+        .setSourceText(text)
+        .setScene("general");
     RuntimeOptions runtime = new RuntimeOptions();
     TranslateGeneralResponse response;
     try {

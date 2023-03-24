@@ -103,7 +103,7 @@ public class ChatGPTTranslator extends AbstractTranslator {
 
     @Override
     public @NotNull String parsingResult(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text, @NotNull String resultText) {
-        LOG.error("parsingResult ChatGPT: " + resultText);
+        LOG.info("parsingResult ChatGPT: " + resultText);
         return GsonUtil.getInstance().getGson().fromJson(resultText, OpenAIResponse.class).getTranslation();
     }
 

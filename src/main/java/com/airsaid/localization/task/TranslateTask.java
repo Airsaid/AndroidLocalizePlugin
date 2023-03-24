@@ -103,7 +103,7 @@ public class TranslateTask extends Task.Backgroundable {
     for (Lang toLanguage : mToLanguages) {
       if (progressIndicator.isCanceled()) break;
 
-      progressIndicator.setText("Translating in the " + toLanguage.getEnglishName() + " language...");
+      progressIndicator.setText("Translation to " + toLanguage.getEnglishName() + "...");
 
       VirtualFile resourceDir = mValueFile.getParent().getParent();
       String valueFileName = mValueFile.getName();

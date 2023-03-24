@@ -130,12 +130,6 @@ public class DeepLTranslator extends AbstractTranslator {
   }
 
   @Override
-  @NotNull
-  public String getRequestBody(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
-    return "";
-  }
-
-  @Override
   public void configureRequestBuilder(@NotNull RequestBuilder requestBuilder) {
     requestBuilder.tuner(connection -> {
       connection.setRequestProperty("Authorization", "DeepL-Auth-Key " + getAppKey());
