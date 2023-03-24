@@ -19,6 +19,7 @@ package com.airsaid.localization.task;
 
 import com.airsaid.localization.constant.Constants;
 import com.airsaid.localization.services.AndroidValuesService;
+import com.airsaid.localization.translate.TranslationException;
 import com.airsaid.localization.translate.lang.Lang;
 import com.airsaid.localization.translate.lang.Languages;
 import com.airsaid.localization.translate.services.TranslatorService;
@@ -66,6 +67,7 @@ public class TranslateTask extends Task.Backgroundable {
   private final AndroidValuesService mValueService;
 
   private OnTranslateListener mOnTranslateListener;
+  private TranslationException mTranslationError;
 
   public interface OnTranslateListener {
     void onTranslateSuccess();
@@ -124,6 +126,12 @@ public class TranslateTask extends Task.Backgroundable {
         List<PsiElement> translatedValues = doTranslate(progressIndicator, toLanguage, null, isOverwriteExistingString);
         File valueFile = mValueService.getValueFile(resourceDir, toLanguage, valueFileName);
         writeTranslatedValues(progressIndicator, valueFile, translatedValues);
+      }
+      // If an exception occurs during the translation of the language,
+      // the translation of the subsequent languages is terminated.
+      // This prevents the loss of successfully translated strings in that language.
+      if (mTranslationError != null) {
+        throw mTranslationError;
       }
     }
   }
@@ -193,8 +201,14 @@ public class TranslateTask extends Task.Backgroundable {
         if (TextUtil.isEmptyOrSpacesLineBreak(text)) {
           continue;
         }
-        String translatedText = mTranslatorService.doTranslate(Languages.AUTO, toLanguage, text);
-        ApplicationManager.getApplication().runReadAction(() -> xmlText.setValue(translatedText));
+        try {
+          String translatedText = mTranslatorService.doTranslate(Languages.AUTO, toLanguage, text);
+          ApplicationManager.getApplication().runReadAction(() -> xmlText.setValue(translatedText));
+        } catch (TranslationException e) {
+          LOG.warn(e);
+          // Just catch the error and wait for that file to be translated and released.
+          mTranslationError = e;
+        }
       } else if (child instanceof XmlTag) {
         doTranslate(progressIndicator, toLanguage, (XmlTag) child);
       }
