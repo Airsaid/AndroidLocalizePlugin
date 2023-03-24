@@ -24,15 +24,12 @@ import com.airsaid.localization.translate.util.GsonUtil;
 import com.google.auto.service.AutoService;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.io.RequestBuilder;
-
+import icons.PluginIcons;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import java.util.List;
-
-import javax.swing.Icon;
-
-import icons.PluginIcons;
 
 
 @AutoService(AbstractTranslator.class)
@@ -101,7 +98,6 @@ public class ChatGPTTranslator extends AbstractTranslator {
         requestBuilder.tuner(connection -> {
             connection.setRequestProperty("Authorization", "Bearer " + getAppKey());
             connection.setRequestProperty("Content-Type", "application/json");
-            connection.setConnectTimeout(0);
         });
     }
 

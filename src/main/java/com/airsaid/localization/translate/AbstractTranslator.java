@@ -19,18 +19,14 @@ package com.airsaid.localization.translate;
 
 import com.airsaid.localization.config.SettingsState;
 import com.airsaid.localization.translate.lang.Lang;
-import com.esotericsoftware.minlog.Log;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.Pair;
 import com.intellij.util.io.HttpRequests;
 import com.intellij.util.io.RequestBuilder;
-
-import org.apache.http.HttpException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -51,6 +47,8 @@ public abstract class AbstractTranslator implements Translator, TranslatorConfig
 
     String requestUrl = getRequestUrl(fromLang, toLang, text);
     RequestBuilder requestBuilder = HttpRequests.post(requestUrl, CONTENT_TYPE);
+    // Set the timeout time to 60 seconds.
+    requestBuilder.connectTimeout(60 * 1000);
     configureRequestBuilder(requestBuilder);
 
     try {
