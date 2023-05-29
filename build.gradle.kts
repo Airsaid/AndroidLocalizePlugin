@@ -112,8 +112,8 @@ tasks {
 
 dependencies {
   // https://github.com/google/auto/tree/master/service
-  compileOnly("com.google.auto.service:auto-service-annotations:1.0.1")
-  annotationProcessor("com.google.auto.service:auto-service:1.0.1")
+  compileOnly("com.google.auto.service:auto-service-annotations:1.1.0")
+  annotationProcessor("com.google.auto.service:auto-service:1.1.0")
 
   implementation("com.google.code.gson:gson:2.10.1")
   implementation("com.aliyun:alimt20181012:1.0.3")
