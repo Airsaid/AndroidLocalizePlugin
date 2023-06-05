@@ -88,8 +88,10 @@ public class DeepLTranslator extends AbstractTranslator {
       supportedLanguages.add(new Lang(98, "id", "Indonesia", "Indonesian"));
       supportedLanguages.add(Languages.ITALIAN);
       supportedLanguages.add(Languages.JAPANESE);
+      supportedLanguages.add(Languages.KOREAN.setTranslationCode("KO"));
       supportedLanguages.add(Languages.LITHUANIAN);
       supportedLanguages.add(Languages.LATVIAN);
+      supportedLanguages.add(Languages.NORWEGIAN.setTranslationCode("NB"));
       supportedLanguages.add(Languages.DUTCH);
       supportedLanguages.add(Languages.POLISH);
       supportedLanguages.add(new Lang(120, "pt-br", "Portuguese (Brazilian)", "Portuguese (Brazilian)"));
