@@ -193,7 +193,12 @@ public final class AndroidValuesService {
   }
 
   private String getValuesDirectoryName(@NotNull Lang lang) {
-    return "values-".concat(lang.getCode());
+    String[] parts = lang.getCode().split("-");
+    if (parts.length > 1) {
+      return "values-".concat(parts[0] + "-" + "r" + parts[1].toUpperCase());
+    } else {
+      return "values-".concat(lang.getCode());
+    }
   }
 
   /**
