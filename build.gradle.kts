@@ -116,7 +116,7 @@ dependencies {
   annotationProcessor("com.google.auto.service:auto-service:1.1.1")
 
   implementation("com.google.code.gson:gson:2.10.1")
-  implementation("com.aliyun:alimt20181012:1.0.3")
+  implementation("com.aliyun:alimt20181012:1.3.0")
 
   testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.3")
