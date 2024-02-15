@@ -58,6 +58,7 @@ public class SettingsComponent {
   private JBCheckBox enableCacheCheckBox;
   private ComboBox<String> maxCacheSizeComboBox;
   private ComboBox<String> translationIntervalComboBox;
+  private JCheckBox skipNonTranslatableCheckBox;
 
   public SettingsComponent() {
     initTranslatorComponents();
@@ -205,5 +206,13 @@ public class SettingsComponent {
 
   public void setTranslationInterval(int intervalTime) {
     translationIntervalComboBox.setSelectedItem(String.valueOf(intervalTime));
+  }
+
+  public boolean isSkipNonTranslatable() {
+    return skipNonTranslatableCheckBox.isSelected();
+  }
+
+  public void setSkipNonTranslatable(boolean isSkipNonTranslatable) {
+    skipNonTranslatableCheckBox.setSelected(isSkipNonTranslatable);
   }
 }

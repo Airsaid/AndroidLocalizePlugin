@@ -18,6 +18,7 @@
 package com.airsaid.localization.config;
 
 import com.airsaid.localization.constant.Constants;
+import com.airsaid.localization.services.AndroidValuesService;
 import com.airsaid.localization.translate.AbstractTranslator;
 import com.airsaid.localization.translate.services.TranslatorService;
 import com.intellij.openapi.diagnostic.Logger;
@@ -63,6 +64,7 @@ public class SettingsConfigurable implements Configurable {
     settingsComponent.setEnableCache(settingsState.isEnableCache());
     settingsComponent.setMaxCacheSize(settingsState.getMaxCacheSize());
     settingsComponent.setTranslationInterval(settingsState.getTranslationInterval());
+    settingsComponent.setSkipNonTranslatable(settingsState.isSkipNonTranslatable());
   }
 
   @Override
@@ -75,6 +77,7 @@ public class SettingsConfigurable implements Configurable {
     isChanged |= settingsState.isEnableCache() == settingsComponent.isEnableCache();
     isChanged |= settingsState.getMaxCacheSize() == settingsComponent.getMaxCacheSize();
     isChanged |= settingsState.getTranslationInterval() == settingsComponent.getTranslationInterval();
+    isChanged |= settingsState.isSkipNonTranslatable() == settingsComponent.isSkipNonTranslatable();
     LOG.info("isModified: " + isChanged);
     return isChanged;
   }
@@ -103,12 +106,15 @@ public class SettingsConfigurable implements Configurable {
     settingsState.setEnableCache(settingsComponent.isEnableCache());
     settingsState.setMaxCacheSize(settingsComponent.getMaxCacheSize());
     settingsState.setTranslationInterval(settingsComponent.getTranslationInterval());
+    settingsState.setSkipNonTranslatable(settingsComponent.isSkipNonTranslatable());
 
     TranslatorService translatorService = TranslatorService.getInstance();
     translatorService.setSelectedTranslator(selectedTranslator);
     translatorService.setEnableCache(settingsComponent.isEnableCache());
     translatorService.setMaxCacheSize(settingsComponent.getMaxCacheSize());
     translatorService.setTranslationInterval(settingsComponent.getTranslationInterval());
+
+    AndroidValuesService.getInstance().setSkipNonTranslatable(settingsComponent.isSkipNonTranslatable());
   }
 
   @Override
@@ -122,6 +128,7 @@ public class SettingsConfigurable implements Configurable {
     settingsComponent.setEnableCache(settingsState.isEnableCache());
     settingsComponent.setMaxCacheSize(settingsState.getMaxCacheSize());
     settingsComponent.setTranslationInterval(settingsState.getTranslationInterval());
+    settingsComponent.setSkipNonTranslatable(settingsState.isSkipNonTranslatable());
   }
 
   @Override
