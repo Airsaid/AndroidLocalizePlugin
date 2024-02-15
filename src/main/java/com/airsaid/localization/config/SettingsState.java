@@ -17,6 +17,7 @@
 
 package com.airsaid.localization.config;
 
+import com.airsaid.localization.services.AndroidValuesService;
 import com.airsaid.localization.translate.AbstractTranslator;
 import com.airsaid.localization.translate.services.TranslatorService;
 import com.airsaid.localization.utils.SecureStorage;
@@ -71,6 +72,8 @@ public final class SettingsState implements PersistentStateComponent<SettingsSta
       translatorService.setMaxCacheSize(getMaxCacheSize());
       translatorService.setTranslationInterval(getTranslationInterval());
     }
+
+    AndroidValuesService.getInstance().setSkipNonTranslatable(isSkipNonTranslatable());
   }
 
   public AbstractTranslator getSelectedTranslator() {
@@ -129,6 +132,14 @@ public final class SettingsState implements PersistentStateComponent<SettingsSta
     state.translationInterval = intervalTime;
   }
 
+  public boolean isSkipNonTranslatable() {
+    return state.isSkipNonTranslatable;
+  }
+
+  public void setSkipNonTranslatable(boolean isSkipNonTranslatable) {
+    state.isSkipNonTranslatable = isSkipNonTranslatable;
+  }
+
   @Override
   public @Nullable SettingsState.State getState() {
     return state;
@@ -145,5 +156,6 @@ public final class SettingsState implements PersistentStateComponent<SettingsSta
     public boolean isEnableCache = true;
     public int maxCacheSize = 500;
     public int translationInterval = 2; // 2 second
+    public boolean isSkipNonTranslatable;
   }
 }
