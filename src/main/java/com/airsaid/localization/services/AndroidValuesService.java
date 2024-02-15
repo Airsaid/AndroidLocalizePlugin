@@ -42,6 +42,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -56,6 +57,8 @@ public final class AndroidValuesService {
   private static final Logger LOG = Logger.getInstance(AndroidValuesService.class);
 
   private static final Pattern STRINGS_FILE_NAME_PATTERN = Pattern.compile(".+\\.xml");
+
+  private boolean isSkipNonTranslatable;
 
   /**
    * Returns the {@link AndroidValuesService} object instance.
@@ -96,18 +99,45 @@ public final class AndroidValuesService {
     });
   }
 
+  public boolean isSkipNonTranslatable() {
+    return isSkipNonTranslatable;
+  }
+
+  public void setSkipNonTranslatable(boolean isSkipNonTranslatable) {
+    this.isSkipNonTranslatable = isSkipNonTranslatable;
+  }
+
   private List<PsiElement> parseValuesXml(@NotNull PsiFile valueFile) {
-    final List<PsiElement> values = new ArrayList<>();
     final XmlFile xmlFile = (XmlFile) valueFile;
 
     final XmlDocument document = xmlFile.getDocument();
-    if (document == null) return values;
+    if (document == null) return Collections.emptyList();
 
     final XmlTag rootTag = document.getRootTag();
-    if (rootTag == null) return values;
+    if (rootTag == null) return Collections.emptyList();
 
     PsiElement[] subTags = rootTag.getChildren();
-    values.addAll(Arrays.asList(subTags));
+
+    if (!isSkipNonTranslatable()) {
+      return Arrays.asList(subTags);
+    }
+
+    List<PsiElement> values = new ArrayList<>(subTags.length);
+    boolean skipNext = false;
+
+    for (PsiElement e : subTags) {
+      if (skipNext) {
+        skipNext = false;
+        if (!(e instanceof XmlTag)) {
+          continue;
+        }
+      }
+      if ((e instanceof XmlTag) && !isTranslatable((XmlTag) e)) {
+        skipNext = true;
+      } else {
+        values.add(e);
+      }
+    }
 
     return values;
   }
