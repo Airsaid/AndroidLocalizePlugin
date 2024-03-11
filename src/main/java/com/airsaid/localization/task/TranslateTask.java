@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.Semaphore;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -103,6 +104,8 @@ public class TranslateTask extends Task.Backgroundable {
     for (Lang toLanguage : mToLanguages) {
       if (progressIndicator.isCanceled()) break;
 
+      Semaphore semaphore = new Semaphore(0);
+
       progressIndicator.setText("Translation to " + toLanguage.getEnglishName() + "...");
 
       VirtualFile resourceDir = mValueFile.getParent().getParent();
@@ -120,11 +123,13 @@ public class TranslateTask extends Task.Backgroundable {
             },
             Function.identity()
         ));
-        List<PsiElement> translatedValues = doTranslate(progressIndicator, toLanguage, toValuesMap, isOverwriteExistingString);
+        List<PsiElement> translatedValues = doTranslate(progressIndicator, toLanguage, toValuesMap, isOverwriteExistingString, semaphore);
+        wait(semaphore);
         writeTranslatedValues(progressIndicator, new File(toValuePsiFile.getVirtualFile().getPath()), translatedValues);
       } else {
-        List<PsiElement> translatedValues = doTranslate(progressIndicator, toLanguage, null, isOverwriteExistingString);
+        List<PsiElement> translatedValues = doTranslate(progressIndicator, toLanguage, null, isOverwriteExistingString, semaphore);
         File valueFile = mValueService.getValueFile(resourceDir, toLanguage, valueFileName);
+        wait(semaphore);
         writeTranslatedValues(progressIndicator, valueFile, translatedValues);
       }
       // If an exception occurs during the translation of the language,
@@ -139,7 +144,8 @@ public class TranslateTask extends Task.Backgroundable {
   private List<PsiElement> doTranslate(@NotNull ProgressIndicator progressIndicator,
                                        @NotNull Lang toLanguage,
                                        @Nullable Map<String, PsiElement> toValues,
-                                       boolean isOverwrite) {
+                                       boolean isOverwrite,
+                                       Semaphore semaphore) {
     LOG.info("doTranslate toLanguage: " + toLanguage.getEnglishName() + ", toValues: " + toValues + ", isOverwrite: " + isOverwrite);
 
     List<PsiElement> translatedValues = new ArrayList<>();
@@ -167,14 +173,14 @@ public class TranslateTask extends Task.Backgroundable {
         translatedValues.add(translateValue);
         switch (translateValue.getName()) {
           case NAME_TAG_STRING:
-            doTranslate(progressIndicator, toLanguage, translateValue);
+            doTranslate(progressIndicator, toLanguage, translateValue, semaphore);
             break;
           case NAME_TAG_STRING_ARRAY:
           case NAME_TAG_PLURALS:
             XmlTag[] subTags = ApplicationManager.getApplication()
                 .runReadAction((Computable<XmlTag[]>) translateValue::getSubTags);
             for (XmlTag subTag : subTags) {
-              doTranslate(progressIndicator, toLanguage, subTag);
+              doTranslate(progressIndicator, toLanguage, subTag, semaphore);
             }
             break;
         }
@@ -187,7 +193,8 @@ public class TranslateTask extends Task.Backgroundable {
 
   private void doTranslate(@NotNull ProgressIndicator progressIndicator,
                            @NotNull Lang toLanguage,
-                           @NotNull XmlTag xmlTag) {
+                           @NotNull XmlTag xmlTag,
+                           Semaphore semaphore) {
     if (progressIndicator.isCanceled() || isXliffTag(xmlTag)) return;
 
     XmlTagValue xmlTagValue = ApplicationManager.getApplication()
@@ -201,17 +208,40 @@ public class TranslateTask extends Task.Backgroundable {
         if (TextUtil.isEmptyOrSpacesLineBreak(text)) {
           continue;
         }
-        try {
-          String translatedText = mTranslatorService.doTranslate(Languages.AUTO, toLanguage, text);
-          ApplicationManager.getApplication().runReadAction(() -> xmlText.setValue(translatedText));
-        } catch (TranslationException e) {
-          LOG.warn(e);
-          // Just catch the error and wait for that file to be translated and released.
-          mTranslationError = e;
-        }
+        ApplicationManager.getApplication().executeOnPooledThread(() -> {
+          countUp(semaphore);
+          try {
+            String translatedText = mTranslatorService.doTranslate(Languages.AUTO, toLanguage, text);
+            ApplicationManager.getApplication().runReadAction(() -> xmlText.setValue(translatedText));
+          } catch (TranslationException e) {
+            ApplicationManager.getApplication().invokeLater(() -> {
+              LOG.warn(e);
+              // Just catch the error and wait for that file to be translated and released.
+              mTranslationError = e;
+            });
+          } finally {
+            countDown(semaphore);
+          }
+        });
       } else if (child instanceof XmlTag) {
-        doTranslate(progressIndicator, toLanguage, (XmlTag) child);
+        doTranslate(progressIndicator, toLanguage, (XmlTag) child, semaphore);
       }
+    }
+  }
+
+  private void wait(Semaphore semaphore) {
+    while (semaphore.availablePermits() > 0) {
+    }
+  }
+
+  private void countUp(Semaphore semaphore) {
+    semaphore.release();
+  }
+
+  private void countDown(Semaphore semaphore) {
+    try {
+      semaphore.acquire();
+    } catch (InterruptedException ignored) {
     }
   }
 
