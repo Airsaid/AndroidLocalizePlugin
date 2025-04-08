@@ -33,7 +33,7 @@ public class DeepLTranslationResult implements TranslationResult {
   @Override
   public @NotNull String getTranslationResult() {
     if (translations != null && !translations.isEmpty()) {
-      String result = translations.get(0).getText();
+      String result = translations.getFirst().getText();
       return result != null ? result : "";
     }
     return "";

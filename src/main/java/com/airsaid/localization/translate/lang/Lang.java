@@ -17,6 +17,7 @@
 
 package com.airsaid.localization.translate.lang;
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.text.StringUtil;
 
 import java.util.Objects;
@@ -33,6 +34,7 @@ public final class Lang implements Cloneable {
   private final String name;
   private final String englishName;
   private String translationCode;
+  private static final Logger LOG = Logger.getInstance(Lang.class);
 
   public Lang(int id, String code, String name, String englishName) {
     this.id = id;
@@ -88,7 +90,7 @@ public final class Lang implements Cloneable {
     try {
       return (Lang) super.clone();
     } catch (CloneNotSupportedException e) {
-      e.printStackTrace();
+      LOG.error("Lang clone", e);
     }
     return null;
   }

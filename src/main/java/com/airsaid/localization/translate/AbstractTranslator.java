@@ -55,9 +55,8 @@ public abstract class AbstractTranslator implements Translator, TranslatorConfig
       return requestBuilder.connect(request -> {
         String requestParams = getRequestParams(fromLang, toLang, text)
             .stream()
-            .map(pair -> {
-              return pair.first.concat("=").concat(URLEncoder.encode(pair.second, StandardCharsets.UTF_8));
-            })
+            .map(pair -> pair.first.concat("=")
+                    .concat(URLEncoder.encode(pair.second, StandardCharsets.UTF_8)))
             .collect(Collectors.joining("&"));
         if (!requestParams.isEmpty()) {
           request.write(requestParams);
@@ -71,8 +70,7 @@ public abstract class AbstractTranslator implements Translator, TranslatorConfig
         return parsingResult(fromLang, toLang, text, resultText);
       });
     } catch (Exception e) {
-      e.printStackTrace();
-      LOG.error(e.getMessage(), e);
+      LOG.error("do translate failed", e);
       throw new TranslationException(fromLang, toLang, text, e);
     }
   }

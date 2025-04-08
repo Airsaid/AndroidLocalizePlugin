@@ -134,7 +134,6 @@ public class GoogleToken {
         return Pair.create(value1, value1);
       }
     } catch (Exception e) {
-      e.printStackTrace();
       LOG.warn("TKK get failed.", e);
     }
     return null;

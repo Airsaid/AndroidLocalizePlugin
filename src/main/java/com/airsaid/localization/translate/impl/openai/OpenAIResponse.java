@@ -76,7 +76,7 @@ public class OpenAIResponse {
 
     public String getTranslation() {
         if (choices != null && !choices.isEmpty()) {
-            String result = choices.get(0).getMessage().getContent();
+            String result = choices.getFirst().getMessage().getContent();
             return result.trim();
 
         } else {

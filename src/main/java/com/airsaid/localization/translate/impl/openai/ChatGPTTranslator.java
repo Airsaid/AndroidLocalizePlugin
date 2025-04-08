@@ -60,7 +60,7 @@ public class ChatGPTTranslator extends AbstractTranslator {
 
     @Override
     public boolean isNeedAppKey() {
-        return true;
+        return super.isNeedAppKey();
     }
 
     @Override

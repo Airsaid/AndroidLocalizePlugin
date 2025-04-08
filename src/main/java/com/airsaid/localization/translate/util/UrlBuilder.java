@@ -22,7 +22,6 @@ import com.intellij.openapi.util.Pair;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author airsaid
@@ -43,7 +42,7 @@ public class UrlBuilder {
   }
 
   public UrlBuilder addQueryParameters(String key, String... values) {
-    queryParameters.addAll(Arrays.stream(values).map(value -> Pair.create(key, value)).collect(Collectors.toList()));
+    queryParameters.addAll(Arrays.stream(values).map(value -> Pair.create(key, value)).toList());
     return this;
   }
 

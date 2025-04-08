@@ -21,6 +21,7 @@ import com.airsaid.localization.translate.util.GsonUtil;
 import com.airsaid.localization.translate.util.LRUCache;
 import com.google.gson.reflect.TypeToken;
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.*;
 import com.intellij.util.xmlb.Converter;
 import com.intellij.util.xmlb.XmlSerializerUtil;
@@ -55,7 +56,7 @@ public final class TranslationCacheService implements PersistentStateComponent<T
   private final LRUCache<String, String> lruCache = new LRUCache<>(CACHE_MAX_SIZE);
 
   public static TranslationCacheService getInstance() {
-    return ServiceManager.getService(TranslationCacheService.class);
+    return ApplicationManager.getApplication().getService(TranslationCacheService.class);
   }
 
   public void put(@NotNull String key, @NotNull String value) {

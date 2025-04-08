@@ -20,7 +20,6 @@ package com.airsaid.localization.translate;
 import com.airsaid.localization.translate.lang.Lang;
 import com.intellij.openapi.diagnostic.Logger;
 
-import org.apache.http.HttpException;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -40,7 +39,6 @@ public class TranslationException extends RuntimeException {
     this.fromLang = fromLang;
     this.toLang = toLang;
     this.text = text;
-    cause.printStackTrace();
     LOG.error("TranslationException: " + cause.getMessage(), cause);
   }
 

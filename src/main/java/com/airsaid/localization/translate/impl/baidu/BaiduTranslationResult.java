@@ -103,7 +103,7 @@ public class BaiduTranslationResult implements TranslationResult {
     if (contents == null || contents.isEmpty()) {
       return "";
     }
-    String dst = contents.get(0).getDst();
+    String dst = contents.getFirst().getDst();
     return dst != null ? dst : "";
   }
 

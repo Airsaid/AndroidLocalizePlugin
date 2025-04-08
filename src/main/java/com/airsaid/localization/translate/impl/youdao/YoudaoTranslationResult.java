@@ -78,7 +78,7 @@ public class YoudaoTranslationResult implements TranslationResult {
   public @NotNull String getTranslationResult() {
     List<String> translation = getTranslation();
     if (translation != null) {
-      String result = translation.get(0);
+      String result = translation.getFirst();
       return result != null ? result : "";
     }
     return "";
