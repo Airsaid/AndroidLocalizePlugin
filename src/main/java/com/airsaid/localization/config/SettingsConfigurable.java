@@ -86,7 +86,6 @@ public class SettingsConfigurable implements Configurable {
   public void apply() throws ConfigurationException {
     SettingsState settingsState = SettingsState.getInstance();
     AbstractTranslator selectedTranslator = settingsComponent.getSelectedTranslator();
-    LOG.info("apply selectedTranslator: " + selectedTranslator.getName());
 
     // Verify that the required parameters are not configured
     if (selectedTranslator.isNeedAppId() && StringUtil.isEmpty(settingsComponent.getAppId())) {

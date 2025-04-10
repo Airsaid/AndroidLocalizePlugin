@@ -57,4 +57,6 @@ public interface TranslatorConfigurable {
 
   @Nullable
   String getApplyAppIdUrl();
+
+  boolean isHttpsRequired();
 }

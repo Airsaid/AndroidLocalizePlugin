@@ -37,112 +37,120 @@ import java.util.stream.Collectors;
  */
 public abstract class AbstractTranslator implements Translator, TranslatorConfigurable {
 
-  protected static final Logger LOG = Logger.getInstance(AbstractTranslator.class);
+    protected static final Logger LOG = Logger.getInstance(AbstractTranslator.class);
 
-  private static final String CONTENT_TYPE = "application/x-www-form-urlencoded";
+    private static final String CONTENT_TYPE = "application/x-www-form-urlencoded";
 
-  @Override
-  public String doTranslate(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) throws TranslationException {
-    checkSupportedLanguages(fromLang, toLang, text);
+    @Override
+    public String doTranslate(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) throws TranslationException {
+        checkSupportedLanguages(fromLang, toLang, text);
 
-    String requestUrl = getRequestUrl(fromLang, toLang, text);
-    RequestBuilder requestBuilder = HttpRequests.post(requestUrl, CONTENT_TYPE);
-    // Set the timeout time to 60 seconds.
-    requestBuilder.connectTimeout(60 * 1000);
-    configureRequestBuilder(requestBuilder);
-
-    try {
-      return requestBuilder.connect(request -> {
-        String requestParams = getRequestParams(fromLang, toLang, text)
-            .stream()
-            .map(pair -> pair.first.concat("=")
-                    .concat(URLEncoder.encode(pair.second, StandardCharsets.UTF_8)))
-            .collect(Collectors.joining("&"));
-        if (!requestParams.isEmpty()) {
-          request.write(requestParams);
+        String requestUrl = getRequestUrl(fromLang, toLang, text);
+        RequestBuilder requestBuilder = HttpRequests.post(requestUrl, CONTENT_TYPE);
+        // Set the timeout time to 60 seconds.
+        requestBuilder.connectTimeout(60 * 1000);
+        if(!isHttpsRequired()){
+            requestBuilder.forceHttps(false);
         }
-        String requestBody = getRequestBody(fromLang, toLang, text);
-        if (!requestBody.isEmpty()) {
-          request.write(requestBody);
+        configureRequestBuilder(requestBuilder);
+
+        try {
+            return requestBuilder.connect(request -> {
+                String requestParams = getRequestParams(fromLang, toLang, text)
+                        .stream()
+                        .map(pair -> pair.first.concat("=")
+                                .concat(URLEncoder.encode(pair.second, StandardCharsets.UTF_8)))
+                        .collect(Collectors.joining("&"));
+                if (!requestParams.isEmpty()) {
+                    request.write(requestParams);
+                }
+                String requestBody = getRequestBody(fromLang, toLang, text);
+                if (!requestBody.isEmpty()) {
+                    request.write(requestBody);
+                }
+
+                String resultText = request.readString();
+                return parsingResult(fromLang, toLang, text, resultText);
+            });
+        } catch (Exception e) {
+            LOG.error("do translate failed", e);
+            throw new TranslationException(fromLang, toLang, text, e);
         }
-
-        String resultText = request.readString();
-        return parsingResult(fromLang, toLang, text, resultText);
-      });
-    } catch (Exception e) {
-      LOG.error("do translate failed", e);
-      throw new TranslationException(fromLang, toLang, text, e);
     }
-  }
 
-  @Override
-  public @Nullable Icon getIcon() {
-    return null;
-  }
-
-  @Override
-  public boolean isNeedAppId() {
-    return true;
-  }
-
-  @Override
-  public @Nullable String getAppId() {
-    return SettingsState.getInstance().getAppId(getKey());
-  }
-
-  @Override
-  public String getAppIdDisplay() {
-    return "APP ID";
-  }
-
-  @Override
-  public boolean isNeedAppKey() {
-    return true;
-  }
-
-  @Override
-  public @Nullable String getAppKey() {
-    return SettingsState.getInstance().getAppKey(getKey());
-  }
-
-  @Override
-  public String getAppKeyDisplay() {
-    return "APP KEY";
-  }
-
-  @Override
-  public @Nullable String getApplyAppIdUrl() {
-    return null;
-  }
-
-  @NotNull
-  public String getRequestUrl(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
-    throw new UnsupportedOperationException();
-  }
-
-  @NotNull
-  public List<Pair<String, String>> getRequestParams(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
-    return List.of();
-  }
-
-  @NotNull
-  public String getRequestBody(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
-    return "";
-  }
-
-  public void configureRequestBuilder(@NotNull RequestBuilder requestBuilder) {
-
-  }
-
-  @NotNull
-  public String parsingResult(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text, @NotNull String resultText) {
-    throw new UnsupportedOperationException();
-  }
-
-  protected void checkSupportedLanguages(Lang fromLang, Lang toLang, String text) {
-    List<Lang> supportedLanguages = getSupportedLanguages();
-    if (!supportedLanguages.contains(toLang)) {
-      throw new TranslationException(fromLang, toLang, text, toLang.getEnglishName() + " is not supported.");
+    @Override
+    public @Nullable Icon getIcon() {
+        return null;
     }
-  }
+
+    @Override
+    public boolean isNeedAppId() {
+        return true;
+    }
+
+    @Override
+    public @Nullable String getAppId() {
+        return SettingsState.getInstance().getAppId(getKey());
+    }
+
+    @Override
+    public String getAppIdDisplay() {
+        return "APP ID";
+    }
+
+    @Override
+    public boolean isNeedAppKey() {
+        return true;
+    }
+
+    @Override
+    public @Nullable String getAppKey() {
+        return SettingsState.getInstance().getAppKey(getKey());
+    }
+
+    @Override
+    public String getAppKeyDisplay() {
+        return "APP KEY";
+    }
+
+    @Override
+    public @Nullable String getApplyAppIdUrl() {
+        return null;
+    }
+
+    @NotNull
+    public String getRequestUrl(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
+        throw new UnsupportedOperationException();
+    }
+
+    @NotNull
+    public List<Pair<String, String>> getRequestParams(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
+        return List.of();
+    }
+
+    @NotNull
+    public String getRequestBody(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
+        return "";
+    }
+
+    public void configureRequestBuilder(@NotNull RequestBuilder requestBuilder) {
+
+    }
+
+    @NotNull
+    public String parsingResult(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text, @NotNull String resultText) {
+        throw new UnsupportedOperationException();
+    }
+
+    protected void checkSupportedLanguages(Lang fromLang, Lang toLang, String text) {
+        List<Lang> supportedLanguages = getSupportedLanguages();
+        if (!supportedLanguages.contains(toLang)) {
+            throw new TranslationException(fromLang, toLang, text, toLang.getEnglishName() + " is not supported.");
+        }
+    }
+
+    @Override
+    public boolean isHttpsRequired() {
+        return true;
+    }
 }

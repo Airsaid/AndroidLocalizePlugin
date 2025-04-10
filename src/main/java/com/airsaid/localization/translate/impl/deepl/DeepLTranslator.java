@@ -24,7 +24,6 @@ import com.airsaid.localization.translate.util.GsonUtil;
 import com.airsaid.localization.translate.util.UrlBuilder;
 import com.google.auto.service.AutoService;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.util.Pair;
 import com.intellij.util.io.RequestBuilder;
 import icons.PluginIcons;
 import org.jetbrains.annotations.NotNull;
@@ -73,6 +72,7 @@ public class DeepLTranslator extends AbstractTranslator {
   public @NotNull List<Lang> getSupportedLanguages() {
     if (supportedLanguages == null) {
       supportedLanguages = new ArrayList<>();
+      supportedLanguages.add(Languages.ARABIC);
       supportedLanguages.add(Languages.BULGARIAN);
       supportedLanguages.add(Languages.CZECH);
       supportedLanguages.add(Languages.DANISH);
@@ -103,7 +103,8 @@ public class DeepLTranslator extends AbstractTranslator {
       supportedLanguages.add(Languages.SWEDISH);
       supportedLanguages.add(Languages.TURKISH);
       supportedLanguages.add(Languages.UKRAINIAN);
-      supportedLanguages.add(new Lang(104, "zh", "简体中文", "Chinese Simplified"));
+      supportedLanguages.add(new Lang(103, "ZH-HANT", "正體中文", "Chinese Traditional"));
+      supportedLanguages.add(new Lang(104, "ZH-HANS", "简体中文", "Chinese Simplified"));
     }
     return supportedLanguages;
   }
@@ -123,19 +124,29 @@ public class DeepLTranslator extends AbstractTranslator {
     return new UrlBuilder(TRANSLATE_URL).build();
   }
 
-  @Override
+  /*@Override
   public @NotNull List<Pair<String, String>> getRequestParams(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
     List<Pair<String, String>> params = new ArrayList<>();
     params.add(Pair.create("text", text));
     params.add(Pair.create("target_lang", toLang.getCode()));
     return params;
+  }*/
+
+  @Override
+  @NotNull
+  public String getRequestBody(@NotNull Lang fromLang, @NotNull Lang toLang, @NotNull String text) {
+    return "{" +
+            "\"text\": \"" + text + "\"," +
+            "\"source_lang\": \"" + fromLang.getCode() + "\"," +
+            "\"target_lang\": \"" + toLang.getCode() + "\"" +
+            "}";
   }
 
   @Override
   public void configureRequestBuilder(@NotNull RequestBuilder requestBuilder) {
     requestBuilder.tuner(connection -> {
       connection.setRequestProperty("Authorization", "DeepL-Auth-Key " + getAppKey());
-      connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+      connection.setRequestProperty("Content-Type", "application/json");
     });
   }
 
@@ -144,5 +155,6 @@ public class DeepLTranslator extends AbstractTranslator {
     LOG.info("parsingResult: " + resultText);
     return GsonUtil.getInstance().getGson().fromJson(resultText, DeepLTranslationResult.class).getTranslationResult();
   }
+
 
 }
