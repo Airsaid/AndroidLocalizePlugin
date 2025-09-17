@@ -17,6 +17,7 @@
 
 package com.airsaid.localization.config
 
+import com.airsaid.localization.services.AndroidValuesService
 import com.airsaid.localization.translate.AbstractTranslator
 import com.airsaid.localization.translate.services.TranslatorService
 import com.airsaid.localization.utils.SecureStorage
@@ -66,6 +67,8 @@ class SettingsState : PersistentStateComponent<SettingsState.State> {
             translatorService.maxCacheSize = maxCacheSize
             translatorService.translationInterval = translationInterval
         }
+
+        AndroidValuesService.getInstance().isSkipNonTranslatable = isSkipNonTranslatable
     }
 
     var selectedTranslator: AbstractTranslator
@@ -115,6 +118,12 @@ class SettingsState : PersistentStateComponent<SettingsState.State> {
             state.translationInterval = intervalTime
         }
 
+    var isSkipNonTranslatable: Boolean
+        get() = state.isSkipNonTranslatable
+        set(isSkipNonTranslatable) {
+            state.isSkipNonTranslatable = isSkipNonTranslatable
+        }
+
     override fun getState(): State {
         return state
     }
@@ -128,6 +137,7 @@ class SettingsState : PersistentStateComponent<SettingsState.State> {
         var appIds: MutableMap<String, String> = mutableMapOf(),
         var isEnableCache: Boolean = true,
         var maxCacheSize: Int = 500,
-        var translationInterval: Int = 2 // 2 second
+        var translationInterval: Int = 2, // 2 second
+        var isSkipNonTranslatable: Boolean = false
     )
 }

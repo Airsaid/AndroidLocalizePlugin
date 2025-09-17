@@ -45,6 +45,8 @@ import java.util.regex.Pattern
  */
 @Service
 class AndroidValuesService {
+
+    var isSkipNonTranslatable: Boolean = false
     companion object {
         private val LOG = Logger.getInstance(AndroidValuesService::class.java)
         private val STRINGS_FILE_NAME_PATTERN = Pattern.compile(".+\\.xml")
@@ -90,14 +92,33 @@ class AndroidValuesService {
     }
 
     private fun parseValuesXml(valueFile: PsiFile): List<PsiElement> {
-        val values = mutableListOf<PsiElement>()
         val xmlFile = valueFile as XmlFile
 
-        val document = xmlFile.document ?: return values
-        val rootTag = document.rootTag ?: return values
+        val document = xmlFile.document ?: return emptyList()
+        val rootTag = document.rootTag ?: return emptyList()
 
         val subTags = rootTag.children
-        values.addAll(subTags)
+
+        if (!isSkipNonTranslatable) {
+            return subTags.toList()
+        }
+
+        val values = mutableListOf<PsiElement>()
+        var skipNext = false
+
+        for (element in subTags) {
+            if (skipNext) {
+                skipNext = false
+                if (element !is XmlTag) {
+                    continue
+                }
+            }
+            if (element is XmlTag && !isTranslatable(element)) {
+                skipNext = true
+            } else {
+                values.add(element)
+            }
+        }
 
         return values
     }
@@ -184,7 +205,12 @@ class AndroidValuesService {
     }
 
     private fun getValuesDirectoryName(lang: Lang): String {
-        return "values-${lang.code}"
+        val parts = lang.code.split("-")
+        return if (parts.size > 1) {
+            "values-${parts[0]}-r${parts[1].uppercase()}"
+        } else {
+            "values-${lang.code}"
+        }
     }
 
     /**
