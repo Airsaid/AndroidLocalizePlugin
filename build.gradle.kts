@@ -5,6 +5,8 @@ import org.jetbrains.changelog.markdownToHTML
 fun properties(key: String) = project.findProperty(key).toString()
 
 plugins {
+  // Kotlin support
+  kotlin("jvm") version "1.8.0"
   // Java support
   id("java")
   // Gradle IntelliJ Plugin
@@ -45,6 +47,12 @@ tasks {
       sourceCompatibility = it
       targetCompatibility = it
       options.encoding = "UTF-8"
+    }
+    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+      kotlinOptions {
+        jvmTarget = it
+        freeCompilerArgs = listOf("-Xjvm-default=all")
+      }
     }
   }
 
