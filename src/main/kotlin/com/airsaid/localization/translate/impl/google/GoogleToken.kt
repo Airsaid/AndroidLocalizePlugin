@@ -18,9 +18,9 @@
 package com.airsaid.localization.translate.impl.google
 
 import com.airsaid.localization.translate.util.AgentUtil
+import com.airsaid.localization.translate.util.HttpRequestFactory
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.Pair
-import com.intellij.util.io.HttpRequests
 import java.util.*
 import java.util.regex.Pattern
 import kotlin.math.abs
@@ -126,7 +126,7 @@ object GoogleToken {
         return try {
             val url = String.format(ELEMENT_URL, GoogleTranslator.HOST_URL)
             LOG.info("getTKKFromGoogle url: $url")
-            val elementJs = HttpRequests.request(url)
+            val elementJs = HttpRequestFactory.get(url)
                 .userAgent(AgentUtil.getUserAgent())
                 .tuner { connection -> connection.setRequestProperty("Referer", GoogleTranslator.HOST_URL) }
                 .readString()

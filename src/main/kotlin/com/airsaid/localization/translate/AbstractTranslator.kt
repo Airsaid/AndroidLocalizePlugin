@@ -19,9 +19,9 @@ package com.airsaid.localization.translate
 
 import com.airsaid.localization.config.SettingsState
 import com.airsaid.localization.translate.lang.Lang
+import com.airsaid.localization.translate.util.HttpRequestFactory
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.Pair
-import com.intellij.util.io.HttpRequests
 import com.intellij.util.io.RequestBuilder
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -37,7 +37,8 @@ abstract class AbstractTranslator : Translator, TranslatorConfigurable {
 
   companion object {
     protected val LOG = Logger.getInstance(AbstractTranslator::class.java)
-    private const val CONTENT_TYPE = "application/x-www-form-urlencoded"
+    private const val DEFAULT_CONTENT_TYPE = "application/x-www-form-urlencoded"
+    private const val DEFAULT_TIMEOUT_MS = 60 * 1000
   }
 
   @Throws(TranslationException::class)
@@ -45,25 +46,19 @@ abstract class AbstractTranslator : Translator, TranslatorConfigurable {
     checkSupportedLanguages(fromLang, toLang, text)
 
     val requestUrl = getRequestUrl(fromLang, toLang, text)
-    val requestBuilder = HttpRequests.post(requestUrl, CONTENT_TYPE)
-    // Set the timeout time to 60 seconds.
-    requestBuilder.connectTimeout(60 * 1000)
+    val requestBuilder = createRequestBuilder(requestUrl)
     configureRequestBuilder(requestBuilder)
 
     return try {
+      val payload = buildRequestPayload(fromLang, toLang, text)
       requestBuilder.connect { request ->
-        val requestParams = getRequestParams(fromLang, toLang, text)
-          .joinToString("&") { pair ->
-            "${pair.first}=${URLEncoder.encode(pair.second, StandardCharsets.UTF_8)}"
+        payload.form?.let { request.write(it) }
+        payload.body?.let { body ->
+          if (payload.form != null && body.isNotEmpty()) {
+            request.write("&")
           }
-        if (requestParams.isNotEmpty()) {
-          request.write(requestParams)
+          request.write(body)
         }
-        val requestBody = getRequestBody(fromLang, toLang, text)
-        if (requestBody.isNotEmpty()) {
-          request.write(requestBody)
-        }
-
         val resultText = request.readString()
         parsingResult(fromLang, toLang, text, resultText)
       }
@@ -72,6 +67,10 @@ abstract class AbstractTranslator : Translator, TranslatorConfigurable {
       LOG.error(e.message, e)
       throw TranslationException(fromLang, toLang, text, e)
     }
+  }
+
+  protected open fun createRequestBuilder(requestUrl: String): RequestBuilder {
+    return HttpRequestFactory.post(requestUrl, requestContentType, requestTimeoutMs)
   }
 
   override val icon: Icon? = null
@@ -108,6 +107,12 @@ abstract class AbstractTranslator : Translator, TranslatorConfigurable {
     // Default implementation does nothing
   }
 
+  protected open val requestContentType: String
+    get() = DEFAULT_CONTENT_TYPE
+
+  protected open val requestTimeoutMs: Int
+    get() = DEFAULT_TIMEOUT_MS
+
   protected open fun parsingResult(fromLang: Lang, toLang: Lang, text: String, resultText: String): String {
     throw UnsupportedOperationException()
   }
@@ -117,4 +122,23 @@ abstract class AbstractTranslator : Translator, TranslatorConfigurable {
       throw TranslationException(fromLang, toLang, text, "${toLang.englishName} is not supported.")
     }
   }
+
+  private fun buildRequestPayload(
+    fromLang: Lang,
+    toLang: Lang,
+    text: String,
+  ): RequestPayload {
+    val requestParams = getRequestParams(fromLang, toLang, text)
+      .takeIf { it.isNotEmpty() }
+      ?.joinToString("&") { pair ->
+        "${pair.first}=${URLEncoder.encode(pair.second, StandardCharsets.UTF_8)}"
+      }
+
+    val requestBody = getRequestBody(fromLang, toLang, text)
+      .takeIf { it.isNotEmpty() }
+
+    return RequestPayload(requestParams, requestBody)
+  }
 }
+
+private data class RequestPayload(val form: String?, val body: String?)

@@ -149,6 +149,9 @@ class MicrosoftTranslator : AbstractTranslator() {
 
     override val applyAppIdUrl: String? = APPLY_APP_ID_URL
 
+    override val requestContentType: String
+        get() = "application/json"
+
     override fun getRequestUrl(fromLang: Lang, toLang: Lang, text: String): String {
         return UrlBuilder(TRANSLATE_URL)
             .addQueryParameter("api-version", "3.0")

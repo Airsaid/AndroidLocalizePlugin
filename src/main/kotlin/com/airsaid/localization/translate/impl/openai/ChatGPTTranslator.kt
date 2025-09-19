@@ -55,6 +55,9 @@ class ChatGPTTranslator : AbstractTranslator() {
     override val appKeyDisplay: String
         get() = "KEY"
 
+    override val requestContentType: String
+        get() = "application/json"
+
     override fun getRequestUrl(fromLang: Lang, toLang: Lang, text: String): String {
         return "https://api.openai.com/v1/chat/completions"
     }
