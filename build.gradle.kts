@@ -37,6 +37,8 @@ dependencies {
 
     testImplementation(libs.junitJupiterApi)
     testRuntimeOnly(libs.junitJupiterEngine)
+    testRuntimeOnly(libs.junitPlatformLauncher)
+    testRuntimeOnly(libs.junit4)
 
     intellijPlatform {
         create(
@@ -48,7 +50,7 @@ dependencies {
         bundledModules(providers.gradleProperty("platformBundledModules").map { it.split(',').filter(String::isNotBlank) })
         plugins(providers.gradleProperty("platformPlugins").map { it.split(',').filter(String::isNotBlank) })
 
-        testFramework(TestFrameworkType.Platform)
+        testFramework(TestFrameworkType.JUnit5)
     }
 }
 

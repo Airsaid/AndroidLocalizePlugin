@@ -19,7 +19,6 @@ package com.airsaid.localization.ui
 
 import com.airsaid.localization.config.SettingsState
 import com.airsaid.localization.constant.Constants
-import com.airsaid.localization.translate.AbstractTranslator
 import com.airsaid.localization.translate.lang.Lang
 import com.airsaid.localization.translate.services.TranslatorService
 import com.airsaid.localization.utils.LanguageUtil
@@ -27,6 +26,9 @@ import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.components.JBCheckBox
+import com.intellij.ui.components.JBLabel
+import com.intellij.ui.components.JBScrollPane
+import com.intellij.util.ui.JBUI
 import java.awt.Component
 import java.awt.GridLayout
 import java.awt.event.ItemEvent
@@ -34,6 +36,7 @@ import javax.swing.JCheckBox
 import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
+import javax.swing.BoxLayout
 
 /**
  * Select the language dialog you want to Translate.
@@ -46,17 +49,18 @@ class SelectLanguagesDialog(private val project: Project?) : DialogWrapper(proje
         fun onClickListener(selectedLanguage: List<Lang>)
     }
 
-    private lateinit var contentPanel: JPanel
-    private lateinit var overwriteExistingStringCheckBox: JCheckBox
-    private lateinit var selectAllCheckBox: JCheckBox
-    private lateinit var languagesPanel: JPanel
-    private lateinit var openTranslatedFileCheckBox: JCheckBox
-    private lateinit var powerTranslatorLabel: JLabel
+    private val contentPanel = JPanel()
+    private val overwriteExistingStringCheckBox = JBCheckBox("Overwrite existing strings")
+    private val selectAllCheckBox = JBCheckBox("Select all")
+    private val languagesPanel = JPanel()
+    private val openTranslatedFileCheckBox = JBCheckBox("Open translated file after completion")
+    private val powerTranslatorLabel = JBLabel()
 
     private var onClickListener: OnClickListener? = null
     private val selectedLanguages = mutableListOf<Lang>()
 
     init {
+        setupUi()
         doCreateCenterPanel()
         title = "Select Translated Languages"
         init()
@@ -70,12 +74,35 @@ class SelectLanguagesDialog(private val project: Project?) : DialogWrapper(proje
         return contentPanel
     }
 
+    private fun setupUi() {
+        contentPanel.layout = java.awt.BorderLayout(0, 12)
+        contentPanel.border = JBUI.Borders.empty(12)
+
+        languagesPanel.layout = GridLayout(0, 4, 12, 4)
+
+        val scrollPane = JBScrollPane(languagesPanel)
+        scrollPane.border = JBUI.Borders.empty()
+        contentPanel.add(scrollPane, java.awt.BorderLayout.CENTER)
+
+        val optionsPanel = JPanel()
+        optionsPanel.layout = BoxLayout(optionsPanel, BoxLayout.Y_AXIS)
+        optionsPanel.border = JBUI.Borders.emptyTop(8)
+
+        listOf<JComponent>(selectAllCheckBox, overwriteExistingStringCheckBox, openTranslatedFileCheckBox, powerTranslatorLabel).forEach {
+            it.alignmentX = Component.LEFT_ALIGNMENT
+            optionsPanel.add(it)
+        }
+
+        contentPanel.add(optionsPanel, java.awt.BorderLayout.SOUTH)
+    }
+
     private fun doCreateCenterPanel() {
         // add languages
         selectedLanguages.clear()
         val supportedLanguages = TranslatorService.getInstance().getSelectedTranslator()!!.supportedLanguages
         val sortedLanguages = supportedLanguages.toMutableList()
         sortedLanguages.sortWith(EnglishNameComparator()) // sort by english name, easy to find
+        languagesPanel.removeAll()
         addLanguageList(sortedLanguages)
 
         // add options
@@ -91,7 +118,6 @@ class SelectLanguagesDialog(private val project: Project?) : DialogWrapper(proje
 
     private fun addLanguageList(supportedLanguages: List<Lang>) {
         val selectedLanguageIds = LanguageUtil.getSelectedLanguageIds(project)
-        languagesPanel.layout = GridLayout(supportedLanguages.size / 4, 4)
         for (language in supportedLanguages) {
             val code = language.code
             val checkBoxLanguage = JBCheckBox()
@@ -100,7 +126,9 @@ class SelectLanguagesDialog(private val project: Project?) : DialogWrapper(proje
             checkBoxLanguage.addItemListener { e ->
                 val state = e.stateChange
                 if (state == ItemEvent.SELECTED) {
-                    selectedLanguages.add(language)
+                    if (!selectedLanguages.contains(language)) {
+                        selectedLanguages.add(language)
+                    }
                 } else {
                     selectedLanguages.remove(language)
                 }
@@ -111,6 +139,9 @@ class SelectLanguagesDialog(private val project: Project?) : DialogWrapper(proje
                 checkBoxLanguage.isSelected = true
             }
         }
+        languagesPanel.revalidate()
+        languagesPanel.repaint()
+        okAction.isEnabled = selectedLanguages.isNotEmpty()
     }
 
     private fun initOverwriteExistingStringOption() {

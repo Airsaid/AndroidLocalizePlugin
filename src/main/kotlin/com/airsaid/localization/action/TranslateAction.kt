@@ -26,75 +26,98 @@ import com.airsaid.localization.utils.NotificationUtil
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.actionSystem.LangDataKeys
+import com.intellij.openapi.actionSystem.ActionUpdateThread
+import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.xml.XmlTag
+import com.intellij.psi.PsiManager
 
 /**
  * Translate android string value to other languages that can be used to localize your Android APP.
  *
  * @author airsaid
  */
-class TranslateAction : AnAction(), SelectLanguagesDialog.OnClickListener {
-
-    private lateinit var project: Project
-    private lateinit var valueFile: PsiFile
-    private lateinit var values: List<PsiElement>
-    private val valueService = AndroidValuesService.getInstance()
+class TranslateAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
-        project = e.getRequiredData(CommonDataKeys.PROJECT)
-        valueFile = e.getRequiredData(CommonDataKeys.PSI_FILE)
+        val project = e.getRequiredData(CommonDataKeys.PROJECT)
+        val valueFile = e.getRequiredData(CommonDataKeys.PSI_FILE)
+        val valueService = AndroidValuesService.getInstance()
 
         SettingsState.getInstance().initSetting()
 
         valueService.loadValuesByAsync(valueFile) { loadedValues ->
-            if (!isTranslatable(loadedValues)) {
+            if (!isTranslatable(loadedValues, valueService)) {
                 NotificationUtil.notifyInfo(project, "The ${valueFile.name} has no text to translate.")
                 return@loadValuesByAsync
             }
-            values = loadedValues
-            showSelectLanguageDialog()
+            showSelectLanguageDialog(project, loadedValues, valueFile)
         }
-    }
-
-    // Verify that there is a text in the value file that needs to be translated.
-    private fun isTranslatable(values: List<PsiElement>): Boolean {
-        for (psiElement in values) {
-            if (psiElement is XmlTag) {
-                if (valueService.isTranslatable(psiElement)) {
-                    return true
-                }
-            }
-        }
-        return false
-    }
-
-    private fun showSelectLanguageDialog() {
-        val dialog = SelectLanguagesDialog(project)
-        dialog.setOnClickListener(this)
-        dialog.show()
     }
 
     override fun update(e: AnActionEvent) {
-        // The translation option is only show when xml file from values is selected
-        val project = e.getData(CommonDataKeys.PROJECT)
-        val isSelectValueFile = valueService.isValueFile(e.getData(CommonDataKeys.PSI_FILE))
-        e.presentation.setEnabledAndVisible(project != null && isSelectValueFile)
+        val project = e.project
+        if (project == null) {
+            e.presentation.isEnabledAndVisible = false
+            return
+        }
+
+        val psiFile = resolvePsiFile(e)
+        val isValueFile = AndroidValuesService.getInstance().isValueFile(psiFile)
+
+        e.presentation.isEnabledAndVisible = isValueFile
     }
 
-    override fun onClickListener(selectedLanguage: List<Lang>) {
-        val translationTask = TranslateTask(project, "Translating...", selectedLanguage, values, valueFile)
-        translationTask.setOnTranslateListener(object : TranslateTask.OnTranslateListener {
-            override fun onTranslateSuccess() {
-                NotificationUtil.notifyInfo(project, "Translation completed!")
-            }
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 
-            override fun onTranslateError(e: Throwable) {
-                NotificationUtil.notifyError(project, "Translation failure: ${e.localizedMessage}")
-            }
-        })
-        translationTask.queue()
+    private fun resolvePsiFile(event: AnActionEvent): PsiFile? {
+        event.getData(CommonDataKeys.PSI_FILE)?.let { return it }
+
+        val element = event.getData(LangDataKeys.PSI_ELEMENT)
+        if (element != null) {
+            element.containingFile?.let { return it }
+        }
+
+        val project = event.project ?: return null
+        val virtualFile = event.getData(CommonDataKeys.VIRTUAL_FILE) ?: return null
+        if (virtualFile.isDirectory) {
+            return null
+        }
+
+        return ReadAction.compute<PsiFile?, RuntimeException> {
+            PsiManager.getInstance(project).findFile(virtualFile)
+        }
     }
+}
+
+private fun isTranslatable(values: List<PsiElement>, valueService: AndroidValuesService): Boolean {
+    for (psiElement in values) {
+        if (psiElement is XmlTag && valueService.isTranslatable(psiElement)) {
+            return true
+        }
+    }
+    return false
+}
+
+private fun showSelectLanguageDialog(project: Project, values: List<PsiElement>, valueFile: PsiFile) {
+    val dialog = SelectLanguagesDialog(project)
+    dialog.setOnClickListener(object : SelectLanguagesDialog.OnClickListener {
+        override fun onClickListener(selectedLanguage: List<Lang>) {
+            val translationTask = TranslateTask(project, "Translating...", selectedLanguage, values, valueFile)
+            translationTask.setOnTranslateListener(object : TranslateTask.OnTranslateListener {
+                override fun onTranslateSuccess() {
+                    NotificationUtil.notifyInfo(project, "Translation completed!")
+                }
+
+                override fun onTranslateError(e: Throwable) {
+                    NotificationUtil.notifyError(project, "Translation failure: ${e.localizedMessage}")
+                }
+            })
+            translationTask.queue()
+        }
+    })
+    dialog.show()
 }

@@ -1,6 +1,8 @@
 [versions]
 # libraries
 junitJupiter = "5.10.2"
+junitPlatform = "1.10.2"
+junittest4 = "4.13.2"
 opentest4j = "1.3.0"
 autoService = "1.1.1"
 autoServiceAnnotations = "1.1.1"
@@ -22,6 +24,8 @@ autoService = { group = "com.google.auto.service", name = "auto-service", versio
 autoServiceAnnotations = { group = "com.google.auto.service", name = "auto-service-annotations", version.ref = "autoServiceAnnotations" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 alimt = { group = "com.aliyun", name = "alimt20181012", version.ref = "alimt" }
+junitPlatformLauncher = { group = "org.junit.platform", name = "junit-platform-launcher", version.ref = "junitPlatform" }
+junit4 = { group = "junit", name = "junit", version.ref = "junittest4" }
 
 [plugins]
 changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
