@@ -4,6 +4,14 @@
 
 ## [Unreleased]
 
+### Changed
+- Align build scripts and workflows with IntelliJ Platform Plugin Template 2025 updates.
+- Upgrade Gradle wrapper to 9.0 and Kotlin toolchain to 2.2.0.
+- Raise minimum supported IntelliJ Platform build to 251 (2025.1).
+
+### Added
+- Provide Qodana and Codecov configuration files.
+
 ## [3.0.0] (2023-03-24)
 
 ### Added
