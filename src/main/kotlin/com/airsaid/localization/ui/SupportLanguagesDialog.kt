@@ -18,11 +18,13 @@ package com.airsaid.localization.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.Alignment
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -32,6 +34,7 @@ import androidx.compose.ui.awt.ComposePanel
 import androidx.compose.ui.unit.dp
 import com.airsaid.localization.translate.AbstractTranslator
 import com.airsaid.localization.translate.lang.Lang
+import com.airsaid.localization.translate.lang.flagEmoji
 import com.intellij.openapi.ui.DialogWrapper
 import javax.swing.Action
 import javax.swing.JComponent
@@ -86,9 +89,18 @@ private fun SupportLanguagesContent(languages: List<Lang>) {
         ) {
             items(languages, key = { it.id }) { language ->
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    Text(text = language.englishName, style = MaterialTheme.typography.bodyMedium)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        val flag = language.flagEmoji
+                        if (flag != null) {
+                            Text(text = flag, style = MaterialTheme.typography.bodyMedium)
+                        }
+                        Text(text = language.englishName, style = MaterialTheme.typography.bodyMedium)
+                    }
                     Text(
-                        text = language.code,
+                        text = language.code.uppercase(),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

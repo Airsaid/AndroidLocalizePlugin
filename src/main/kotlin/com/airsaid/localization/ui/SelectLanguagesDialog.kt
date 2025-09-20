@@ -22,7 +22,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import com.airsaid.localization.constant.Constants
 import com.airsaid.localization.translate.AbstractTranslator
 import com.airsaid.localization.translate.lang.Lang
+import com.airsaid.localization.translate.lang.flagEmoji
 import com.airsaid.localization.translate.services.TranslatorService
 import com.airsaid.localization.utils.LanguageUtil
 import com.intellij.ide.util.PropertiesComponent
@@ -358,7 +359,13 @@ private fun LanguagesGrid(
                     ),
                     label = {
                         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                            Text(text = language.englishName, style = MaterialTheme.typography.bodyMedium)
+                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                                val flag = language.flagEmoji
+                                if (flag != null) {
+                                    Text(text = flag, style = MaterialTheme.typography.bodyMedium)
+                                }
+                                Text(text = language.englishName, style = MaterialTheme.typography.bodyMedium)
+                            }
                             Text(
                                 text = language.code.uppercase(),
                                 style = MaterialTheme.typography.labelSmall,
