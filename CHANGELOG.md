@@ -6,10 +6,13 @@
 
 ### Changed
 - Align build scripts and workflows with IntelliJ Platform Plugin Template 2025 updates.
-- Upgrade Gradle wrapper to 9.0 and Kotlin toolchain to 2.2.0.
+- Upgrade Gradle wrapper to 9.0 and align Kotlin toolchain with Compose-compatible 2.0.21.
 - Raise minimum supported IntelliJ Platform build to 251 (2025.1).
 - Refactor TranslateAction to follow IntelliJ action system best practices.
 - Configure tests to run on the JUnit 5 framework while retaining required runtime compatibility.
+- Rebuild plugin UI (settings and dialogs) using Compose.
+- Load secure credentials asynchronously to avoid password safe access on the EDT.
+- Align Compose typography/colours with IDE themes, add language filtering chips, and polish dialog layouts.
 
 ### Added
 - Provide Qodana and Codecov configuration files.

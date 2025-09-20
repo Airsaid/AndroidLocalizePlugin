@@ -12,36 +12,57 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package com.airsaid.localization.ui
 
-import com.airsaid.localization.config.SettingsState
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.awt.ComposePanel
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import com.airsaid.localization.constant.Constants
+import com.airsaid.localization.translate.AbstractTranslator
 import com.airsaid.localization.translate.lang.Lang
 import com.airsaid.localization.translate.services.TranslatorService
 import com.airsaid.localization.utils.LanguageUtil
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
-import com.intellij.ui.components.JBCheckBox
-import com.intellij.ui.components.JBLabel
-import com.intellij.ui.components.JBScrollPane
-import com.intellij.util.ui.JBUI
-import java.awt.Component
-import java.awt.GridLayout
-import java.awt.event.ItemEvent
-import javax.swing.JCheckBox
 import javax.swing.JComponent
-import javax.swing.JLabel
-import javax.swing.JPanel
-import javax.swing.BoxLayout
 
 /**
- * Select the language dialog you want to Translate.
- *
- * @author airsaid
+ * Compose-driven dialog used to pick the languages that should be generated.
  */
 class SelectLanguagesDialog(private val project: Project?) : DialogWrapper(project, false) {
 
@@ -49,19 +70,19 @@ class SelectLanguagesDialog(private val project: Project?) : DialogWrapper(proje
         fun onClickListener(selectedLanguage: List<Lang>)
     }
 
-    private val contentPanel = JPanel()
-    private val overwriteExistingStringCheckBox = JBCheckBox("Overwrite existing strings")
-    private val selectAllCheckBox = JBCheckBox("Select all")
-    private val languagesPanel = JPanel()
-    private val openTranslatedFileCheckBox = JBCheckBox("Open translated file after completion")
-    private val powerTranslatorLabel = JBLabel()
+    private val translatorService = TranslatorService.getInstance()
+    private val selectedLanguages = mutableStateListOf<Lang>()
+    private val selectAllState = mutableStateOf(false)
+    private val overwriteExistingState = mutableStateOf(false)
+    private val openTranslatedFileState = mutableStateOf(false)
 
     private var onClickListener: OnClickListener? = null
-    private val selectedLanguages = mutableListOf<Lang>()
+
+    private lateinit var translator: AbstractTranslator
+    private lateinit var supportedLanguages: List<Lang>
 
     init {
-        setupUi()
-        doCreateCenterPanel()
+        initState()
         title = "Select Translated Languages"
         init()
     }
@@ -70,136 +91,283 @@ class SelectLanguagesDialog(private val project: Project?) : DialogWrapper(proje
         onClickListener = listener
     }
 
-    override fun createCenterPanel(): JComponent? {
-        return contentPanel
-    }
+    override fun createCenterPanel(): JComponent {
+        val panel = ComposePanel()
+        panel.preferredSize = java.awt.Dimension(680, 560)
+        panel.setContent {
+            IdeTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background,
+                ) {
+                    SelectLanguagesContent(
+                        translator = translator,
+                        supportedLanguages = supportedLanguages,
+                        selectedLanguages = selectedLanguages,
+                        selectAllStateChecked = selectAllState.value,
+                        overwriteExistingChecked = overwriteExistingState.value,
+                        openTranslatedFileChecked = openTranslatedFileState.value,
+                        onSelectAllChanged = { handleSelectAll(it) },
+                        onOverwriteChanged = { checked ->
+                            overwriteExistingState.value = checked
+                            properties().setValue(Constants.KEY_IS_OVERWRITE_EXISTING_STRING, checked)
+                        },
+                        onOpenTranslatedFileChanged = { checked ->
+                            openTranslatedFileState.value = checked
+                            properties().setValue(Constants.KEY_IS_OPEN_TRANSLATED_FILE, checked)
+                        },
+                        onLanguageToggled = { lang, checked ->
+                            if (checked) {
+                                if (!selectedLanguages.contains(lang)) {
+                                    selectedLanguages.add(lang)
+                                }
+                            } else {
+                                selectedLanguages.remove(lang)
+                            }
 
-    private fun setupUi() {
-        contentPanel.layout = java.awt.BorderLayout(0, 12)
-        contentPanel.border = JBUI.Borders.empty(12)
+                            val allSelected = selectedLanguages.size == supportedLanguages.size && supportedLanguages.isNotEmpty()
+                            if (selectAllState.value != allSelected) {
+                                selectAllState.value = allSelected
+                                properties().setValue(Constants.KEY_IS_SELECT_ALL, allSelected)
+                            }
 
-        languagesPanel.layout = GridLayout(0, 4, 12, 4)
-
-        val scrollPane = JBScrollPane(languagesPanel)
-        scrollPane.border = JBUI.Borders.empty()
-        contentPanel.add(scrollPane, java.awt.BorderLayout.CENTER)
-
-        val optionsPanel = JPanel()
-        optionsPanel.layout = BoxLayout(optionsPanel, BoxLayout.Y_AXIS)
-        optionsPanel.border = JBUI.Borders.emptyTop(8)
-
-        listOf<JComponent>(selectAllCheckBox, overwriteExistingStringCheckBox, openTranslatedFileCheckBox, powerTranslatorLabel).forEach {
-            it.alignmentX = Component.LEFT_ALIGNMENT
-            optionsPanel.add(it)
-        }
-
-        contentPanel.add(optionsPanel, java.awt.BorderLayout.SOUTH)
-    }
-
-    private fun doCreateCenterPanel() {
-        // add languages
-        selectedLanguages.clear()
-        val supportedLanguages = TranslatorService.getInstance().getSelectedTranslator()!!.supportedLanguages
-        val sortedLanguages = supportedLanguages.toMutableList()
-        sortedLanguages.sortWith(EnglishNameComparator()) // sort by english name, easy to find
-        languagesPanel.removeAll()
-        addLanguageList(sortedLanguages)
-
-        // add options
-        initOverwriteExistingStringOption()
-        initOpenTranslatedFileCheckBox()
-        initSelectAllOption()
-
-        // set power ui
-        val translator = TranslatorService.getInstance().getSelectedTranslator()!!
-        powerTranslatorLabel.text = "Powered by ${translator.name}"
-        powerTranslatorLabel.icon = translator.icon
-    }
-
-    private fun addLanguageList(supportedLanguages: List<Lang>) {
-        val selectedLanguageIds = LanguageUtil.getSelectedLanguageIds(project)
-        for (language in supportedLanguages) {
-            val code = language.code
-            val checkBoxLanguage = JBCheckBox()
-            checkBoxLanguage.text = "${language.englishName}($code)"
-            languagesPanel.add(checkBoxLanguage)
-            checkBoxLanguage.addItemListener { e ->
-                val state = e.stateChange
-                if (state == ItemEvent.SELECTED) {
-                    if (!selectedLanguages.contains(language)) {
-                        selectedLanguages.add(language)
-                    }
-                } else {
-                    selectedLanguages.remove(language)
+                            okAction.isEnabled = selectedLanguages.isNotEmpty()
+                        },
+                    )
                 }
-                // Update the OK button UI
-                okAction.isEnabled = selectedLanguages.size > 0
-            }
-            if (selectedLanguageIds?.contains(language.id.toString()) == true) {
-                checkBoxLanguage.isSelected = true
             }
         }
-        languagesPanel.revalidate()
-        languagesPanel.repaint()
-        okAction.isEnabled = selectedLanguages.isNotEmpty()
-    }
-
-    private fun initOverwriteExistingStringOption() {
-        val isOverwriteExistingString = PropertiesComponent.getInstance(project!!)
-            .getBoolean(Constants.KEY_IS_OVERWRITE_EXISTING_STRING)
-        overwriteExistingStringCheckBox.isSelected = isOverwriteExistingString
-        overwriteExistingStringCheckBox.addItemListener { e ->
-            val state = e.stateChange
-            PropertiesComponent.getInstance(project!!)
-                .setValue(Constants.KEY_IS_OVERWRITE_EXISTING_STRING, state == ItemEvent.SELECTED)
-        }
-    }
-
-    private fun initOpenTranslatedFileCheckBox() {
-        val isOpenTranslatedFile = PropertiesComponent.getInstance(project!!)
-            .getBoolean(Constants.KEY_IS_OPEN_TRANSLATED_FILE)
-        openTranslatedFileCheckBox.isSelected = isOpenTranslatedFile
-        openTranslatedFileCheckBox.addItemListener { e ->
-            val state = e.stateChange
-            PropertiesComponent.getInstance(project!!)
-                .setValue(Constants.KEY_IS_OPEN_TRANSLATED_FILE, state == ItemEvent.SELECTED)
-        }
-    }
-
-    private fun initSelectAllOption() {
-        val isSelectAll = PropertiesComponent.getInstance(project!!)
-            .getBoolean(Constants.KEY_IS_SELECT_ALL)
-        selectAllCheckBox.isSelected = isSelectAll
-        selectAllCheckBox.addItemListener { e ->
-            val state = e.stateChange
-            selectAll(state == ItemEvent.SELECTED)
-            PropertiesComponent.getInstance(project!!)
-                .setValue(Constants.KEY_IS_SELECT_ALL, state == ItemEvent.SELECTED)
-        }
-    }
-
-    private fun selectAll(selectAll: Boolean) {
-        for (component in languagesPanel.components) {
-            if (component is JBCheckBox) {
-                component.isSelected = selectAll
-            }
-        }
-    }
-
-    override fun getDimensionServiceKey(): String? {
-        val key = SettingsState.getInstance().selectedTranslator.key
-        return "#com.airsaid.localization.ui.SelectLanguagesDialog#$key"
+        return panel
     }
 
     override fun doOKAction() {
-        LanguageUtil.saveSelectedLanguage(project!!, selectedLanguages)
-        onClickListener?.onClickListener(selectedLanguages)
+        project?.let { LanguageUtil.saveSelectedLanguage(it, selectedLanguages) }
+        onClickListener?.onClickListener(selectedLanguages.toList())
         super.doOKAction()
     }
 
-    class EnglishNameComparator : Comparator<Lang> {
-        override fun compare(o1: Lang, o2: Lang): Int {
-            return o1.englishName.compareTo(o2.englishName)
+    override fun getDimensionServiceKey(): String? {
+        val key = translator.key
+        return "#com.airsaid.localization.ui.SelectLanguagesDialog#$key"
+    }
+
+    private fun initState() {
+        val properties = properties()
+        translator = translatorService.getSelectedTranslator() ?: error("Translator is not available")
+        supportedLanguages = translator.supportedLanguages.sortedBy { it.englishName }
+
+        val savedLanguageIds = LanguageUtil.getSelectedLanguageIds(project)
+        selectedLanguages.clear()
+        if (!savedLanguageIds.isNullOrEmpty()) {
+            selectedLanguages.addAll(supportedLanguages.filter { savedLanguageIds.contains(it.id.toString()) })
+        }
+
+        selectAllState.value = properties.getBoolean(Constants.KEY_IS_SELECT_ALL)
+        if (selectAllState.value) {
+            selectedLanguages.clear()
+            selectedLanguages.addAll(supportedLanguages)
+        }
+
+        overwriteExistingState.value = properties.getBoolean(Constants.KEY_IS_OVERWRITE_EXISTING_STRING)
+        openTranslatedFileState.value = properties.getBoolean(Constants.KEY_IS_OPEN_TRANSLATED_FILE)
+
+        okAction.isEnabled = selectedLanguages.isNotEmpty()
+    }
+
+    private fun handleSelectAll(checked: Boolean) {
+        selectAllState.value = checked
+        properties().setValue(Constants.KEY_IS_SELECT_ALL, checked)
+        if (checked) {
+            selectedLanguages.clear()
+            selectedLanguages.addAll(supportedLanguages)
+        } else {
+            selectedLanguages.clear()
+        }
+        okAction.isEnabled = selectedLanguages.isNotEmpty()
+    }
+
+private fun properties(): PropertiesComponent {
+        return if (project != null) PropertiesComponent.getInstance(project) else PropertiesComponent.getInstance()
+    }
+}
+
+@Composable
+private fun SelectLanguagesContent(
+    translator: AbstractTranslator,
+    supportedLanguages: List<Lang>,
+    selectedLanguages: SnapshotStateList<Lang>,
+    selectAllStateChecked: Boolean,
+    overwriteExistingChecked: Boolean,
+    openTranslatedFileChecked: Boolean,
+    onSelectAllChanged: (Boolean) -> Unit,
+    onOverwriteChanged: (Boolean) -> Unit,
+    onOpenTranslatedFileChanged: (Boolean) -> Unit,
+    onLanguageToggled: (Lang, Boolean) -> Unit,
+) {
+    var filterText by rememberSaveable { mutableStateOf("") }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(20.dp),
+        verticalArrangement = Arrangement.spacedBy(18.dp)
+    ) {
+        Text(
+            text = "${translator.name} Translator",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onBackground,
+        )
+
+        LanguagesCard(
+            filterText = filterText,
+            onFilterChange = { filterText = it },
+            allLanguages = supportedLanguages,
+            selectedLanguages = selectedLanguages,
+            selectAll = selectAllStateChecked,
+            overwriteExisting = overwriteExistingChecked,
+            openTranslatedFile = openTranslatedFileChecked,
+            onSelectAllChanged = onSelectAllChanged,
+            onOverwriteChanged = onOverwriteChanged,
+            onOpenTranslatedFileChanged = onOpenTranslatedFileChanged,
+            onLanguageToggled = onLanguageToggled,
+        )
+    }
+}
+
+@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+@Composable
+private fun LanguagesCard(
+    filterText: String,
+    onFilterChange: (String) -> Unit,
+    allLanguages: List<Lang>,
+    selectedLanguages: SnapshotStateList<Lang>,
+    selectAll: Boolean,
+    overwriteExisting: Boolean,
+    openTranslatedFile: Boolean,
+    onSelectAllChanged: (Boolean) -> Unit,
+    onOverwriteChanged: (Boolean) -> Unit,
+    onOpenTranslatedFileChanged: (Boolean) -> Unit,
+    onLanguageToggled: (Lang, Boolean) -> Unit,
+) {
+    val filteredLanguages = remember(filterText, allLanguages) {
+        if (filterText.isBlank()) allLanguages
+        else allLanguages.filter {
+            it.englishName.contains(filterText, ignoreCase = true) ||
+                it.code.contains(filterText, ignoreCase = true)
+        }
+    }
+
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(max = 420.dp),
+        shape = RoundedCornerShape(12.dp),
+        tonalElevation = 0.dp,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.12f)),
+        color = MaterialTheme.colorScheme.surface,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(18.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            OutlinedTextField(
+                value = filterText,
+                onValueChange = onFilterChange,
+                label = { Text("Filter languages") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                FilterChip(
+                    selected = selectAll,
+                    onClick = { onSelectAllChanged(!selectAll) },
+                    label = { Text("Select all") },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                        selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    )
+                )
+                FilterChip(
+                    selected = overwriteExisting,
+                    onClick = { onOverwriteChanged(!overwriteExisting) },
+                    label = { Text("Overwrite existing") },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                        selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    )
+                )
+                FilterChip(
+                    selected = openTranslatedFile,
+                    onClick = { onOpenTranslatedFileChanged(!openTranslatedFile) },
+                    label = { Text("Open translated file") },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                        selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    )
+                )
+            }
+
+            Text(
+                text = "Languages (${filteredLanguages.size}/${allLanguages.size})",
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+
+            LanguagesGrid(
+                languages = filteredLanguages,
+                selectedLanguages = selectedLanguages,
+                onLanguageToggled = onLanguageToggled,
+            )
+        }
+    }
+}
+
+@Composable
+private fun LanguagesGrid(
+    languages: List<Lang>,
+    selectedLanguages: SnapshotStateList<Lang>,
+    onLanguageToggled: (Lang, Boolean) -> Unit,
+) {
+    if (languages.isEmpty()) {
+        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            Text(text = "No languages match your filter", style = MaterialTheme.typography.bodyMedium)
+        }
+    } else {
+        val columns = if (languages.size < 10) GridCells.Fixed(2) else GridCells.Adaptive(180.dp)
+        LazyVerticalGrid(
+            columns = columns,
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            items(languages, key = { it.id }) { language ->
+                val isSelected = language in selectedLanguages
+                FilterChip(
+                    selected = isSelected,
+                    onClick = { onLanguageToggled(language, !isSelected) },
+                    shape = RoundedCornerShape(12.dp),
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                        selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    ),
+                    label = {
+                        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                            Text(text = language.englishName, style = MaterialTheme.typography.bodyMedium)
+                            Text(
+                                text = language.code.uppercase(),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    },
+                )
+            }
         }
     }
 }

@@ -8,13 +8,15 @@ autoService = "1.1.1"
 autoServiceAnnotations = "1.1.1"
 gson = "2.10.1"
 alimt = "1.0.3"
+compose = "1.7.0-beta02"
 
 # plugins
 changelog = "2.4.0"
 intelliJPlatform = "2.7.2"
-kotlin = "2.2.0"
+kotlin = "2.0.21"
 kover = "0.9.1"
 qodana = "2025.1.1"
+composePlugin = "1.7.0-beta02"
 
 [libraries]
 junitJupiterApi = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junitJupiter" }
@@ -32,5 +34,7 @@ changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
 intelliJPlatform = { id = "org.jetbrains.intellij.platform", version.ref = "intelliJPlatform" }
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinKapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 qodana = { id = "org.jetbrains.qodana", version.ref = "qodana" }
+compose = { id = "org.jetbrains.compose", version.ref = "composePlugin" }

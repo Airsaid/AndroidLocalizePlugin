@@ -12,38 +12,53 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package com.airsaid.localization.ui
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.awt.ComposePanel
+import androidx.compose.ui.unit.dp
 import com.airsaid.localization.translate.AbstractTranslator
 import com.airsaid.localization.translate.lang.Lang
 import com.intellij.openapi.ui.DialogWrapper
-import com.intellij.ui.components.JBLabel
-import java.awt.GridLayout
 import javax.swing.Action
 import javax.swing.JComponent
-import javax.swing.JPanel
 
-/**
- * @author airsaid
- */
 class SupportLanguagesDialog(private val translator: AbstractTranslator) : DialogWrapper(true) {
+
+    private val supportedLanguages: List<Lang> = translator.supportedLanguages.sortedBy { it.englishName }
 
     init {
         title = "${translator.name} Translator Supported Languages"
         init()
     }
 
-    override fun createCenterPanel(): JComponent? {
-        val supportedLanguages = translator.supportedLanguages.toMutableList()
-        supportedLanguages.sortWith(EnglishNameComparator())
-        val contentPanel = JPanel(GridLayout(supportedLanguages.size / 4, 4, 10, 20))
-        for (supportedLanguage in supportedLanguages) {
-            contentPanel.add(JBLabel(supportedLanguage.englishName))
+    override fun createCenterPanel(): JComponent {
+        val panel = ComposePanel()
+        panel.preferredSize = java.awt.Dimension(520, 420)
+        panel.setContent {
+            IdeTheme {
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.background,
+                ) {
+                    SupportLanguagesContent(languages = supportedLanguages)
+                }
+            }
         }
-        return contentPanel
+        return panel
     }
 
     override fun getDimensionServiceKey(): String? {
@@ -51,13 +66,34 @@ class SupportLanguagesDialog(private val translator: AbstractTranslator) : Dialo
         return "#com.airsaid.localization.ui.SupportLanguagesDialog#$key"
     }
 
-    override fun createActions(): Array<Action> {
-        return emptyArray()
-    }
+    override fun createActions(): Array<Action> = emptyArray()
+}
 
-    class EnglishNameComparator : Comparator<Lang> {
-        override fun compare(o1: Lang, o2: Lang): Int {
-            return o1.englishName.compareTo(o2.englishName)
+@Composable
+private fun SupportLanguagesContent(languages: List<Lang>) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(20.dp),
+        shape = RoundedCornerShape(12.dp),
+        tonalElevation = 1.dp,
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            items(languages, key = { it.id }) { language ->
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(text = language.englishName, style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        text = language.code,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
         }
     }
 }

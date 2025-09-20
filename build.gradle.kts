@@ -7,10 +7,12 @@ plugins {
     id("java")
     alias(libs.plugins.kotlin)
     alias(libs.plugins.kotlinKapt)
+    alias(libs.plugins.composeCompiler)
     alias(libs.plugins.intelliJPlatform)
     alias(libs.plugins.changelog)
     alias(libs.plugins.qodana)
     alias(libs.plugins.kover)
+    alias(libs.plugins.compose)
 }
 
 group = providers.gradleProperty("pluginGroup").get()
@@ -22,6 +24,8 @@ kotlin {
 
 repositories {
     mavenCentral()
+    google()
+    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
 
     intellijPlatform {
         defaultRepositories()
@@ -31,6 +35,9 @@ repositories {
 dependencies {
     implementation(libs.gson)
     implementation(libs.alimt)
+    implementation(compose.desktop.currentOs)
+    implementation(compose.material3)
+    implementation(compose.foundation)
 
     compileOnly(libs.autoServiceAnnotations)
     kapt(libs.autoService)
