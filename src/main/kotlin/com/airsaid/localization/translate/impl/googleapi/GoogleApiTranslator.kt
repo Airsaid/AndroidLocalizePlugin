@@ -2,6 +2,7 @@ package com.airsaid.localization.translate.impl.googleapi
 
 import com.airsaid.localization.translate.AbstractTranslator
 import com.airsaid.localization.translate.TranslationException
+import com.airsaid.localization.translate.TranslatorCredentialDescriptor
 import com.airsaid.localization.translate.impl.google.AbsGoogleTranslator
 import com.airsaid.localization.translate.lang.Lang
 import com.airsaid.localization.translate.util.GsonUtil
@@ -30,17 +31,17 @@ class GoogleApiTranslator : AbsGoogleTranslator() {
 
     override fun getRequestUrl(fromLang: Lang, toLang: Lang, text: String): String = TRANSLATE_URL
 
-    override val appKeyDisplay: String = "API Key"
+    override val credentialDefinitions = listOf(
+        TranslatorCredentialDescriptor(id = "appKey", label = "API Key", isSecret = true)
+    )
 
-    override val applyAppIdUrl: String? = APPLY_APP_ID_URL
-
-    override val isNeedAppId: Boolean = false
+    override val credentialHelpUrl: String? = APPLY_APP_ID_URL
 
     override fun getRequestParams(fromLang: Lang, toLang: Lang, text: String): List<Pair<String, String>> {
         return listOf(
             Pair.create("q", text),
             Pair.create("target", toLang.translationCode),
-            Pair.create("key", appKey),
+            Pair.create("key", credentialValue("appKey")),
             Pair.create("format", "text")
         )
     }

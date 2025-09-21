@@ -28,6 +28,7 @@ import com.intellij.openapi.diagnostic.Logger
 import org.apache.commons.lang.StringUtils
 import java.util.*
 import java.util.function.Consumer
+import kotlin.jvm.Volatile
 
 /**
  * @author airsaid
@@ -39,13 +40,14 @@ class TranslatorService {
         fun process(text: String?): String?
     }
 
-    private var selectedTranslator: AbstractTranslator? = null
     private val defaultTranslator: AbstractTranslator
     private val cacheService: TranslationCacheService
     private val translators: Map<String, AbstractTranslator>
     private val translationInterceptors: MutableList<TranslationInterceptor>
     private var isEnableCache = true
     private var intervalTime = 0
+    @Volatile
+    private var selectedTranslator: AbstractTranslator
     var maxCacheSize: Int = 1000
         set(value) {
             field = value
@@ -65,8 +67,14 @@ class TranslatorService {
         for (translator in serviceLoader) {
             translatorsMap[translator.key] = translator
         }
+        if (translatorsMap.isEmpty()) {
+            LOG.error("No translators were registered. Translation functionality will be unavailable.")
+            throw IllegalStateException("No translators registered")
+        }
         translators = translatorsMap
-        defaultTranslator = translators[GoogleTranslator.KEY]!!
+
+        defaultTranslator = selectDefaultTranslator(translatorsMap)
+        selectedTranslator = defaultTranslator
 
         cacheService = TranslationCacheService.getInstance()
 
@@ -85,7 +93,7 @@ class TranslatorService {
         }
     }
 
-    fun getSelectedTranslator(): AbstractTranslator? = selectedTranslator
+    fun getSelectedTranslator(): AbstractTranslator = selectedTranslator
 
     fun doTranslateByAsync(fromLang: Lang, toLang: Lang, text: String, consumer: Consumer<String>) {
         ApplicationManager.getApplication().executeOnPooledThread {
@@ -112,7 +120,8 @@ class TranslatorService {
             return text
         }
 
-        var result = selectedTranslator!!.doTranslate(fromLang, toLang, text)
+        val translator = selectedTranslator
+        var result = translator.doTranslate(fromLang, toLang, text)
         LOG.info("doTranslate result: $result")
         for (interceptor in translationInterceptors) {
             result = interceptor.process(result) ?: result
@@ -148,5 +157,15 @@ class TranslatorService {
         private val LOG = Logger.getInstance(TranslatorService::class.java)
 
         fun getInstance(): TranslatorService = service()
+
+        internal fun selectDefaultTranslator(translators: Map<String, AbstractTranslator>): AbstractTranslator {
+            val googleTranslator = translators[GoogleTranslator.KEY]
+            if (googleTranslator != null) {
+                return googleTranslator
+            }
+            val fallback = translators.values.first()
+            LOG.warn("Google translator is not available. Falling back to ${fallback.key} as default.")
+            return fallback
+        }
     }
 }

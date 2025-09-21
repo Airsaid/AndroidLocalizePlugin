@@ -4,7 +4,7 @@ import com.airsaid.localization.translate.AbstractTranslator
 import com.intellij.openapi.application.ApplicationManager
 
 fun interface TranslatorCredentialsLoader {
-    fun load(translator: AbstractTranslator, onLoaded: (appId: String, appKey: String) -> Unit)
+    fun load(translator: AbstractTranslator, onLoaded: (credentials: Map<String, String>) -> Unit)
 
     companion object {
         fun default(): TranslatorCredentialsLoader = DefaultTranslatorCredentialsLoader
@@ -14,13 +14,12 @@ fun interface TranslatorCredentialsLoader {
 private object DefaultTranslatorCredentialsLoader : TranslatorCredentialsLoader {
     private val application = ApplicationManager.getApplication()
 
-    override fun load(translator: AbstractTranslator, onLoaded: (String, String) -> Unit) {
+    override fun load(translator: AbstractTranslator, onLoaded: (Map<String, String>) -> Unit) {
         application.executeOnPooledThread {
             val settingsState = SettingsState.getInstance()
-            val appId = settingsState.getAppId(translator.key)
-            val appKey = settingsState.getAppKey(translator.key)
+            val credentials = settingsState.getCredentials(translator.key, translator.credentialDefinitions)
             application.invokeLater {
-                onLoaded(appId, appKey)
+                onLoaded(credentials)
             }
         }
     }

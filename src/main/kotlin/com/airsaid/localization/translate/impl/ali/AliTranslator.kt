@@ -19,6 +19,7 @@ package com.airsaid.localization.translate.impl.ali
 
 import com.airsaid.localization.translate.AbstractTranslator
 import com.airsaid.localization.translate.TranslationException
+import com.airsaid.localization.translate.TranslatorCredentialDescriptor
 import com.airsaid.localization.translate.lang.Lang
 import com.airsaid.localization.translate.lang.Languages
 import com.aliyun.alimt20181012.Client
@@ -42,15 +43,20 @@ class AliTranslator : AbstractTranslator() {
         private const val APPLY_APP_ID_URL = "https://www.aliyun.com/product/ai/base_alimt"
     }
 
-    private val config = Config()
     private var _supportedLanguages: MutableList<Lang>? = null
-    private var client: Client? = null
 
     override val key: String = KEY
 
     override val name: String = "Ali"
 
     override val icon: Icon? = PluginIcons.ALI_ICON
+
+    override val credentialDefinitions = listOf(
+        TranslatorCredentialDescriptor(id = "appId", label = "AccessKey ID", isSecret = false),
+        TranslatorCredentialDescriptor(id = "appKey", label = "AccessKey Secret", isSecret = true)
+    )
+
+    override val credentialHelpUrl: String? = APPLY_APP_ID_URL
 
     override val supportedLanguages: List<Lang>
         get() {
@@ -78,24 +84,20 @@ class AliTranslator : AbstractTranslator() {
         return _supportedLanguages!!
     }
 
-    override val appIdDisplay: String = "AccessKey ID"
-
-    override val appKeyDisplay: String = "AccessKey Secret"
-
-    override val applyAppIdUrl: String? = APPLY_APP_ID_URL
-
     @Throws(TranslationException::class)
     override fun doTranslate(fromLang: Lang, toLang: Lang, text: String): String {
         checkSupportedLanguages(fromLang, toLang, text)
 
-        config.setAccessKeyId(appId).setAccessKeySecret(appKey).setEndpoint(ENDPOINT)
+        val credentials = resolveCredentials(fromLang, toLang, text)
 
-        if (client == null) {
-            try {
-                client = Client(config)
-            } catch (e: Exception) {
-                throw TranslationException(fromLang, toLang, text, e)
-            }
+        val config = Config()
+            .setAccessKeyId(credentials.first)
+            .setAccessKeySecret(credentials.second)
+            .setEndpoint(ENDPOINT)
+        val client = try {
+            Client(config)
+        } catch (e: Exception) {
+            throw TranslationException(fromLang, toLang, text, e)
         }
 
         val request = TranslateGeneralRequest()
@@ -109,7 +111,7 @@ class AliTranslator : AbstractTranslator() {
         val response: TranslateGeneralResponse
 
         try {
-            response = client!!.translateGeneralWithOptions(request, runtime)
+            response = client.translateGeneralWithOptions(request, runtime)
         } catch (e: Exception) {
             throw TranslationException(fromLang, toLang, text, e)
         }
@@ -120,5 +122,17 @@ class AliTranslator : AbstractTranslator() {
         } else {
             throw TranslationException(fromLang, toLang, text, "${body.message}(${body.code})")
         }
+    }
+    private fun resolveCredentials(
+        fromLang: Lang,
+        toLang: Lang,
+        text: String
+    ): Pair<String, String> {
+        val accessKeyId = credentialValue("appId").takeIf { it.isNotBlank() }
+        val accessKeySecret = credentialValue("appKey").takeIf { it.isNotBlank() }
+        if (accessKeyId == null || accessKeySecret == null) {
+            throw TranslationException(fromLang, toLang, text, "AccessKey credentials are not configured")
+        }
+        return Pair(accessKeyId, accessKeySecret)
     }
 }

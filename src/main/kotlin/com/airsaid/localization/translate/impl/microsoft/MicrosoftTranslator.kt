@@ -18,6 +18,7 @@
 package com.airsaid.localization.translate.impl.microsoft
 
 import com.airsaid.localization.translate.AbstractTranslator
+import com.airsaid.localization.translate.TranslatorCredentialDescriptor
 import com.airsaid.localization.translate.lang.Lang
 import com.airsaid.localization.translate.lang.Languages
 import com.airsaid.localization.translate.util.GsonUtil
@@ -50,7 +51,11 @@ class MicrosoftTranslator : AbstractTranslator() {
 
     override val icon: Icon? = PluginIcons.MICROSOFT_ICON
 
-    override val isNeedAppId: Boolean = false
+    override val credentialDefinitions = listOf(
+        TranslatorCredentialDescriptor(id = "appKey", label = "KEY", isSecret = true)
+    )
+
+    override val credentialHelpUrl: String? = APPLY_APP_ID_URL
 
     override val supportedLanguages: List<Lang>
         get() {
@@ -145,10 +150,6 @@ class MicrosoftTranslator : AbstractTranslator() {
         return _supportedLanguages!!
     }
 
-    override val appKeyDisplay: String = "KEY"
-
-    override val applyAppIdUrl: String? = APPLY_APP_ID_URL
-
     override val requestContentType: String
         get() = "application/json"
 
@@ -165,7 +166,7 @@ class MicrosoftTranslator : AbstractTranslator() {
 
     override fun configureRequestBuilder(requestBuilder: RequestBuilder) {
         requestBuilder.tuner { connection ->
-            connection.setRequestProperty("Ocp-Apim-Subscription-Key", appKey)
+            connection.setRequestProperty("Ocp-Apim-Subscription-Key", credentialValue("appKey"))
             connection.setRequestProperty("Content-type", "application/json")
         }
     }

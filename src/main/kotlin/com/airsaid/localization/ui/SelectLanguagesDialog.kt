@@ -176,7 +176,7 @@ class SelectLanguagesDialog(private val project: Project?) : DialogWrapper(proje
 
     private fun initState() {
         val properties = properties()
-        translator = translatorService.getSelectedTranslator() ?: error("Translator is not available")
+        translator = translatorService.getSelectedTranslator()
         supportedLanguages = translator.supportedLanguages.sortedBy { it.englishName }
 
         val savedLanguageIds = LanguageUtil.getSelectedLanguageIds(project)

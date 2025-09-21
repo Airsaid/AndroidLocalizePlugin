@@ -19,6 +19,7 @@ package com.airsaid.localization.translate.impl.youdao
 
 import com.airsaid.localization.translate.AbstractTranslator
 import com.airsaid.localization.translate.TranslationException
+import com.airsaid.localization.translate.TranslatorCredentialDescriptor
 import com.airsaid.localization.translate.lang.Lang
 import com.airsaid.localization.translate.lang.Languages
 import com.airsaid.localization.translate.util.GsonUtil
@@ -154,14 +155,12 @@ class YoudaoTranslator : AbstractTranslator() {
             return _supportedLanguages!!
         }
 
-    override val appIdDisplay: String
-        get() = "应用 ID"
+    override val credentialDefinitions = listOf(
+        TranslatorCredentialDescriptor(id = "appId", label = "应用 ID", isSecret = false),
+        TranslatorCredentialDescriptor(id = "appKey", label = "应用秘钥", isSecret = true)
+    )
 
-    override val appKeyDisplay: String
-        get() = "应用秘钥"
-
-    override val applyAppIdUrl: String?
-        get() = APPLY_APP_ID_URL
+    override val credentialHelpUrl: String? = APPLY_APP_ID_URL
 
     override fun getRequestUrl(fromLang: Lang, toLang: Lang, text: String): String {
         return TRANSLATE_URL
@@ -195,8 +194,8 @@ class YoudaoTranslator : AbstractTranslator() {
     override fun getRequestParams(fromLang: Lang, toLang: Lang, text: String): List<Pair<String, String>> {
         val salt = System.currentTimeMillis().toString()
         val curTime = (System.currentTimeMillis() / 1000).toString()
-        val appId = this.appId
-        val appKey = this.appKey
+        val appId = credentialValue("appId")
+        val appKey = credentialValue("appKey")
         val sign = getDigest(appId + truncate(text) + salt + curTime + appKey)
         val params = mutableListOf<Pair<String, String>>()
         params.add(Pair.create("from", fromLang.translationCode))

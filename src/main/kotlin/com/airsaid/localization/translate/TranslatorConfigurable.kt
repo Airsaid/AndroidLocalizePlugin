@@ -33,17 +33,9 @@ interface TranslatorConfigurable {
 
   val supportedLanguages: List<Lang>
 
-  val isNeedAppId: Boolean
+  /** Describes credentials required to use this translator. */
+  val credentialDefinitions: List<TranslatorCredentialDescriptor>
 
-  val appId: String?
-
-  val appIdDisplay: String
-
-  val isNeedAppKey: Boolean
-
-  val appKey: String?
-
-  val appKeyDisplay: String
-
-  val applyAppIdUrl: String?
+  /** Optional URL for requesting credentials or reading setup instructions. */
+  val credentialHelpUrl: String?
 }

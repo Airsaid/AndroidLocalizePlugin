@@ -19,6 +19,7 @@ package com.airsaid.localization.translate.impl.baidu
 
 import com.airsaid.localization.translate.AbstractTranslator
 import com.airsaid.localization.translate.TranslationException
+import com.airsaid.localization.translate.TranslatorCredentialDescriptor
 import com.airsaid.localization.translate.lang.Lang
 import com.airsaid.localization.translate.lang.Languages
 import com.airsaid.localization.translate.util.GsonUtil
@@ -87,14 +88,19 @@ class BaiduTranslator : AbstractTranslator() {
             return _supportedLanguages!!
         }
 
-    override val applyAppIdUrl: String? = APPLY_APP_ID_URL
+    override val credentialDefinitions = listOf(
+        TranslatorCredentialDescriptor(id = "appId", label = "APP ID", isSecret = false),
+        TranslatorCredentialDescriptor(id = "appKey", label = "APP KEY", isSecret = true)
+    )
+
+    override val credentialHelpUrl: String? = APPLY_APP_ID_URL
 
     override fun getRequestUrl(fromLang: Lang, toLang: Lang, text: String): String = TRANSLATE_URL
 
     override fun getRequestParams(fromLang: Lang, toLang: Lang, text: String): List<Pair<String, String>> {
         val salt = System.currentTimeMillis().toString()
-        val appId = this.appId
-        val securityKey = this.appKey
+        val appId = credentialValue("appId")
+        val securityKey = credentialValue("appKey")
         val sign = MD5.md5("$appId$text$salt$securityKey")
 
         return listOf(

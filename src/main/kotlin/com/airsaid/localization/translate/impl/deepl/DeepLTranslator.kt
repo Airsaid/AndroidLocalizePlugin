@@ -18,6 +18,7 @@
 package com.airsaid.localization.translate.impl.deepl
 
 import com.airsaid.localization.translate.AbstractTranslator
+import com.airsaid.localization.translate.TranslatorCredentialDescriptor
 import com.airsaid.localization.translate.lang.Lang
 import com.airsaid.localization.translate.lang.Languages
 import com.airsaid.localization.translate.util.GsonUtil
@@ -51,7 +52,11 @@ open class DeepLTranslator : AbstractTranslator() {
 
     override val icon: Icon? = PluginIcons.DEEP_L_ICON
 
-    override val isNeedAppId: Boolean = false
+    override val credentialDefinitions = listOf(
+        TranslatorCredentialDescriptor(id = "appKey", label = "KEY", isSecret = true)
+    )
+
+    override val credentialHelpUrl: String? = APPLY_APP_ID_URL
 
     override val supportedLanguages: List<Lang>
         get() {
@@ -93,10 +98,6 @@ open class DeepLTranslator : AbstractTranslator() {
             return _supportedLanguages!!
         }
 
-    override val appKeyDisplay: String = "KEY"
-
-    override val applyAppIdUrl: String? = APPLY_APP_ID_URL
-
     override fun getRequestUrl(fromLang: Lang, toLang: Lang, text: String): String =
         UrlBuilder(TRANSLATE_URL).build()
 
@@ -109,7 +110,7 @@ open class DeepLTranslator : AbstractTranslator() {
 
     override fun configureRequestBuilder(requestBuilder: RequestBuilder) {
         requestBuilder.tuner { connection ->
-            connection.setRequestProperty("Authorization", "DeepL-Auth-Key ${appKey}")
+            connection.setRequestProperty("Authorization", "DeepL-Auth-Key ${credentialValue("appKey")}")
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
         }
     }

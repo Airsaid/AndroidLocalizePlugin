@@ -75,21 +75,12 @@ abstract class AbstractTranslator : Translator, TranslatorConfigurable {
 
   override val icon: Icon? = null
 
-  override val isNeedAppId: Boolean = true
+  override val credentialDefinitions: List<TranslatorCredentialDescriptor> = listOf(
+    TranslatorCredentialDescriptor(id = "appId", label = "APP ID", isSecret = false),
+    TranslatorCredentialDescriptor(id = "appKey", label = "APP KEY", isSecret = true),
+  )
 
-  override val appId: String?
-    get() = SettingsState.getInstance().getAppId(key)
-
-  override val appIdDisplay: String = "APP ID"
-
-  override val isNeedAppKey: Boolean = true
-
-  override val appKey: String?
-    get() = SettingsState.getInstance().getAppKey(key)
-
-  override val appKeyDisplay: String = "APP KEY"
-
-  override val applyAppIdUrl: String? = null
+  override val credentialHelpUrl: String? = null
 
   protected open fun getRequestUrl(fromLang: Lang, toLang: Lang, text: String): String {
     throw UnsupportedOperationException()
@@ -115,6 +106,12 @@ abstract class AbstractTranslator : Translator, TranslatorConfigurable {
 
   protected open fun parsingResult(fromLang: Lang, toLang: Lang, text: String, resultText: String): String {
     throw UnsupportedOperationException()
+  }
+
+  protected fun credentialValue(credentialId: String): String {
+    val descriptor = credentialDefinitions.firstOrNull { it.id == credentialId }
+      ?: error("Unknown credential $credentialId for translator $key")
+    return SettingsState.getInstance().getCredential(key, descriptor)
   }
 
   protected fun checkSupportedLanguages(fromLang: Lang, toLang: Lang, text: String) {

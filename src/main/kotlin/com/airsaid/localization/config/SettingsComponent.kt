@@ -51,9 +51,11 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -65,9 +67,11 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.airsaid.localization.translate.AbstractTranslator
+import com.airsaid.localization.translate.TranslatorCredentialDescriptor
 import com.airsaid.localization.translate.services.TranslatorService
 import com.airsaid.localization.ui.IdeTheme
 import com.airsaid.localization.ui.SupportLanguagesDialog
@@ -95,8 +99,8 @@ class SettingsComponent(
 
     private val translatorsState = mutableStateListOf<AbstractTranslator>()
     private val selectedTranslatorState = mutableStateOf<AbstractTranslator?>(null)
-    private val appIdState = mutableStateOf("")
-    private val appKeyState = mutableStateOf("")
+    private val credentialDefinitionsState = mutableStateListOf<TranslatorCredentialDescriptor>()
+    private val credentialValuesState = mutableStateMapOf<String, String>()
     private val enableCacheState = mutableStateOf(true)
     private val maxCacheSizeState = mutableStateOf("500")
     private val translationIntervalState = mutableStateOf("2")
@@ -111,13 +115,16 @@ class SettingsComponent(
                     translators = translatorsState,
                     selectedTranslator = selectedTranslatorState.value,
                     defaultTranslatorKey = TranslatorService.getInstance().getDefaultTranslator()?.key,
-                    appIdState = appIdState,
-                    appKeyState = appKeyState,
+                    credentialDefinitions = credentialDefinitionsState,
+                    credentialValues = credentialValuesState,
                     enableCacheState = enableCacheState,
                     maxCacheSizeState = maxCacheSizeState,
                     translationIntervalState = translationIntervalState,
                     onTranslatorSelected = { translator ->
                         applySelectedTranslator(translator)
+                    },
+                    onCredentialValueChanged = { id, value ->
+                        credentialValuesState[id] = value
                     },
                     onShowSupportedLanguages = { translator -> SupportLanguagesDialog(translator).show() },
                     onNavigateToApplyPage = { url -> BrowserUtil.browse(url) }
@@ -148,19 +155,21 @@ class SettingsComponent(
         applySelectedTranslator(selected)
     }
 
-    fun setAppId(appId: String) {
-        appIdState.value = appId
+    fun setCredentialValues(values: Map<String, String>) {
+        credentialValuesState.clear()
+        credentialDefinitionsState.forEach { descriptor ->
+            credentialValuesState[descriptor.id] = values[descriptor.id] ?: ""
+        }
     }
 
-    fun setAppKey(appKey: String) {
-        appKeyState.value = appKey
+    fun setCredentialValue(id: String, value: String) {
+        credentialValuesState[id] = value
     }
 
-    val appId: String
-        get() = appIdState.value
-
-    val appKey: String
-        get() = appKeyState.value
+    val credentialValues: Map<String, String>
+        get() = credentialDefinitionsState.associate { descriptor ->
+            descriptor.id to (credentialValuesState[descriptor.id] ?: "")
+        }
 
     fun setEnableCache(isEnable: Boolean) {
         enableCacheState.value = isEnable
@@ -192,13 +201,18 @@ class SettingsComponent(
 
     private fun applySelectedTranslator(translator: AbstractTranslator) {
         selectedTranslatorState.value = translator
-        appIdState.value = ""
-        appKeyState.value = ""
+        credentialDefinitionsState.clear()
+        credentialDefinitionsState.addAll(translator.credentialDefinitions)
+        credentialValuesState.clear()
+        translator.credentialDefinitions.forEach { descriptor ->
+            credentialValuesState[descriptor.id] = ""
+        }
 
-        credentialsLoader.load(translator) { appId, appKey ->
+        credentialsLoader.load(translator) { loaded ->
             if (selectedTranslatorState.value?.key == translator.key) {
-                appIdState.value = appId
-                appKeyState.value = appKey
+                translator.credentialDefinitions.forEach { descriptor ->
+                    credentialValuesState[descriptor.id] = loaded[descriptor.id] ?: ""
+                }
             }
         }
     }
@@ -214,12 +228,13 @@ private fun SettingsContent(
     translators: SnapshotStateList<AbstractTranslator>,
     selectedTranslator: AbstractTranslator?,
     defaultTranslatorKey: String?,
-    appIdState: androidx.compose.runtime.MutableState<String>,
-    appKeyState: androidx.compose.runtime.MutableState<String>,
+    credentialDefinitions: SnapshotStateList<TranslatorCredentialDescriptor>,
+    credentialValues: SnapshotStateMap<String, String>,
     enableCacheState: androidx.compose.runtime.MutableState<Boolean>,
     maxCacheSizeState: androidx.compose.runtime.MutableState<String>,
     translationIntervalState: androidx.compose.runtime.MutableState<String>,
     onTranslatorSelected: (AbstractTranslator) -> Unit,
+    onCredentialValueChanged: (String, String) -> Unit = { _, _ -> },
     onShowSupportedLanguages: (AbstractTranslator) -> Unit,
     onNavigateToApplyPage: (String) -> Unit
 ) {
@@ -254,33 +269,23 @@ private fun SettingsContent(
         }
 
         selectedTranslator?.let { provider ->
-            if (provider.isNeedAppId) {
-                SettingsFormRow(label = provider.appIdDisplay) {
+            credentialDefinitions.forEach { descriptor ->
+                SettingsFormRow(label = descriptor.label, helperText = descriptor.description) {
                     IdeTextField(
                         modifier = Modifier
                             .fillMaxWidth()
                             .widthIn(min = FieldMinWidth),
-                        value = appIdState.value,
-                        onValueChange = { appIdState.value = it.trimStart() },
-                        singleLine = true
+                        value = credentialValues[descriptor.id] ?: "",
+                        onValueChange = { newValue ->
+                            onCredentialValueChanged(descriptor.id, newValue.trimStart())
+                        },
+                        singleLine = true,
+                        secureInput = descriptor.isSecret
                     )
                 }
             }
 
-            if (provider.isNeedAppKey) {
-                SettingsFormRow(label = provider.appKeyDisplay) {
-                    IdeTextField(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .widthIn(min = FieldMinWidth),
-                        value = appKeyState.value,
-                        onValueChange = { appKeyState.value = it.trimStart() },
-                        singleLine = true
-                    )
-                }
-            }
-
-            provider.applyAppIdUrl?.takeUnless { it.isBlank() }?.let { url ->
+            provider.credentialHelpUrl?.takeUnless { it.isBlank() }?.let { url ->
                 SettingsFormRow(
                     label = "Need credentials?",
                     helperText = "Click to request keys from ${provider.name}."
@@ -412,6 +417,7 @@ private fun IdeTextField(
     leadingIcon: (@Composable (() -> Unit))? = null,
     trailingIcon: (@Composable (() -> Unit))? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    secureInput: Boolean = false,
     singleLine: Boolean = true,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -447,9 +453,14 @@ private fun IdeTextField(
         keyboardOptions = keyboardOptions,
         interactionSource = interactionSource,
     ) { innerTextField ->
+        val visualTransformation = if (secureInput) {
+            PasswordVisualTransformation()
+        } else {
+            VisualTransformation.None
+        }
         OutlinedTextFieldDefaults.DecorationBox(
             value = value,
-            visualTransformation = VisualTransformation.None,
+            visualTransformation = visualTransformation,
             innerTextField = innerTextField,
             placeholder = placeholder,
             label = null,

@@ -18,6 +18,7 @@
 package com.airsaid.localization.translate.impl.openai
 
 import com.airsaid.localization.translate.AbstractTranslator
+import com.airsaid.localization.translate.TranslatorCredentialDescriptor
 import com.airsaid.localization.translate.lang.Lang
 import com.airsaid.localization.translate.lang.Languages
 import com.airsaid.localization.translate.util.GsonUtil
@@ -43,17 +44,13 @@ class ChatGPTTranslator : AbstractTranslator() {
     override val icon: Icon?
         get() = PluginIcons.OPENAI_ICON
 
-    override val isNeedAppId: Boolean
-        get() = false
-
-    override val isNeedAppKey: Boolean
-        get() = true
+    override val credentialDefinitions: List<TranslatorCredentialDescriptor>
+        get() = listOf(
+            TranslatorCredentialDescriptor(id = "appKey", label = "API Key", isSecret = true)
+        )
 
     override val supportedLanguages: List<Lang>
         get() = Languages.getLanguages()
-
-    override val appKeyDisplay: String
-        get() = "KEY"
 
     override val requestContentType: String
         get() = "application/json"
@@ -79,7 +76,7 @@ class ChatGPTTranslator : AbstractTranslator() {
 
     override fun configureRequestBuilder(requestBuilder: RequestBuilder) {
         requestBuilder.tuner { connection ->
-            connection.setRequestProperty("Authorization", "Bearer ${appKey}")
+            connection.setRequestProperty("Authorization", "Bearer ${credentialValue("appKey")}")
             connection.setRequestProperty("Content-Type", "application/json")
         }
     }

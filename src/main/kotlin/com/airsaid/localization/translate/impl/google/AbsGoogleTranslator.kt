@@ -18,6 +18,7 @@
 package com.airsaid.localization.translate.impl.google
 
 import com.airsaid.localization.translate.AbstractTranslator
+import com.airsaid.localization.translate.TranslatorCredentialDescriptor
 import com.airsaid.localization.translate.lang.Lang
 import com.airsaid.localization.translate.lang.Languages
 import icons.PluginIcons
@@ -31,6 +32,8 @@ abstract class AbsGoogleTranslator : AbstractTranslator() {
     protected var _supportedLanguages: MutableList<Lang>? = null
 
     override val icon: Icon = PluginIcons.GOOGLE_ICON
+
+    override val credentialDefinitions: List<TranslatorCredentialDescriptor> = emptyList()
 
     override val supportedLanguages: List<Lang>
         get() {

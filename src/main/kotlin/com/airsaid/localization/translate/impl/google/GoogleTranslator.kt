@@ -44,10 +44,6 @@ class GoogleTranslator : AbsGoogleTranslator() {
 
     override val name: String = "Google"
 
-    override val isNeedAppId: Boolean = false
-
-    override val isNeedAppKey: Boolean = false
-
     override fun getRequestUrl(fromLang: Lang, toLang: Lang, text: String): String {
         return UrlBuilder(BASE_URL)
             .addQueryParameter("sl", fromLang.translationCode) // source language code (auto for auto detection)
