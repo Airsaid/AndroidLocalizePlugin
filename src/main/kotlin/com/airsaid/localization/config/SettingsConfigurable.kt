@@ -56,9 +56,6 @@ class SettingsConfigurable : Configurable {
         settingsComponent?.let { component ->
             component.setTranslators(translators)
             component.setSelectedTranslator(translators[selected.key]!!)
-            component.setCredentialValues(
-                settingsState.getCredentials(selected.key, selected.credentialDefinitions)
-            )
             component.setEnableCache(settingsState.isEnableCache)
             component.setMaxCacheSize(settingsState.maxCacheSize)
             component.setTranslationInterval(settingsState.translationInterval)
@@ -71,12 +68,6 @@ class SettingsConfigurable : Configurable {
 
         var isChanged = settingsState.selectedTranslator != selectedTranslator
 
-        val expectedCredentials = settingsState.getCredentials(
-            selectedTranslator.key,
-            selectedTranslator.credentialDefinitions
-        )
-        val currentCredentials = settingsComponent?.credentialValues ?: emptyMap()
-        isChanged = isChanged || expectedCredentials != currentCredentials
         isChanged = isChanged || settingsState.isEnableCache != (settingsComponent?.isEnableCache ?: false)
         isChanged = isChanged || settingsState.maxCacheSize != (settingsComponent?.maxCacheSize ?: 0)
         isChanged = isChanged || settingsState.translationInterval != (settingsComponent?.translationInterval ?: 0)
@@ -94,21 +85,15 @@ class SettingsConfigurable : Configurable {
         LOG.info("apply selectedTranslator: ${selectedTranslator.name}")
 
         // Verify credential requirements
-        val credentialValues = settingsComponent?.credentialValues ?: emptyMap()
-        val credentialDefinitions = selectedTranslator.credentialDefinitions.associateBy { it.id }
+        settingsState.selectedTranslator = selectedTranslator
+
         selectedTranslator.credentialDefinitions.forEach { descriptor ->
             if (descriptor.required) {
-                val value = credentialValues[descriptor.id]
-                if (value.isNullOrBlank()) {
+                val storedValue = settingsState.getCredential(selectedTranslator.key, descriptor)
+                if (storedValue.isBlank()) {
                     throw ConfigurationException("${descriptor.label} not configured")
                 }
             }
-        }
-
-        settingsState.selectedTranslator = selectedTranslator
-        credentialValues.forEach { (id, value) ->
-            val descriptor = credentialDefinitions[id] ?: return@forEach
-            settingsState.setCredential(selectedTranslator.key, descriptor, value)
         }
 
         settingsComponent?.let { component ->
@@ -130,9 +115,6 @@ class SettingsConfigurable : Configurable {
         val selectedTranslator = settingsState.selectedTranslator
         settingsComponent?.let { component ->
             component.setSelectedTranslator(selectedTranslator)
-            component.setCredentialValues(
-                settingsState.getCredentials(selectedTranslator.key, selectedTranslator.credentialDefinitions)
-            )
             component.setEnableCache(settingsState.isEnableCache)
             component.setMaxCacheSize(settingsState.maxCacheSize)
             component.setTranslationInterval(settingsState.translationInterval)

@@ -142,11 +142,11 @@ class TranslatorService {
         return "${fromLang.code}_${toLang.code}_$text"
     }
 
-    private fun delay(second: Int) {
-        if (second <= 0) return
+    private fun delay(milliseconds: Int) {
+        if (milliseconds <= 0) return
         try {
-            LOG.info("doTranslate delay time: $second second.")
-            Thread.sleep(second * 1000L)
+            LOG.info("doTranslate delay time: ${milliseconds} ms.")
+            Thread.sleep(milliseconds.toLong())
         } catch (e: InterruptedException) {
             e.printStackTrace()
         }
@@ -158,9 +158,9 @@ class TranslatorService {
         fun getInstance(): TranslatorService = service()
 
         internal fun selectDefaultTranslator(translators: Map<String, AbstractTranslator>): AbstractTranslator {
-            val default = translators.values.first()
-            LOG.info("Selected ${default.key} as default translator.")
-            return default
+            val preferred = translators["Microsoft"] ?: translators.values.first()
+            LOG.info("Selected ${preferred.key} as default translator.")
+            return preferred
         }
     }
 }

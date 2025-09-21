@@ -131,6 +131,7 @@ class SettingsState : PersistentStateComponent<SettingsState.State> {
 
     override fun loadState(state: State) {
         this.state = state
+        normalizeTranslationInterval()
         migrateLegacyAppIds()
     }
 
@@ -141,13 +142,22 @@ class SettingsState : PersistentStateComponent<SettingsState.State> {
         var appIds: MutableMap<String, String> = mutableMapOf(),
         var isEnableCache: Boolean = true,
         var maxCacheSize: Int = 500,
-        var translationInterval: Int = 2, // 2 second
+        var translationInterval: Int = 500, // milliseconds
         var isSkipNonTranslatable: Boolean = false
     )
 
     private fun secureStorage(translatorKey: String, credentialId: String): SecureStorage {
         val key = "$translatorKey::$credentialId"
         return credentialSecureStorage.getOrPut(key) { SecureStorage(key) }
+    }
+
+    private fun normalizeTranslationInterval() {
+        if (state.translationInterval in 1..10) {
+            state.translationInterval *= 1000
+        }
+        if (state.translationInterval <= 0) {
+            state.translationInterval = 500
+        }
     }
 
     private fun readSecret(translatorKey: String, descriptor: TranslatorCredentialDescriptor): String {

@@ -74,6 +74,7 @@ import com.airsaid.localization.translate.lang.Lang
 import com.airsaid.localization.translate.lang.flagEmoji
 import com.airsaid.localization.translate.services.TranslatorService
 import com.airsaid.localization.utils.LanguageUtil
+import com.airsaid.localization.ui.components.IdeCheckbox
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
@@ -447,43 +448,6 @@ private fun OptionItem(
         IdeCheckbox(checked = checked)
         Text(text = text, style = MaterialTheme.typography.bodyMedium)
         TooltipIcon(text = tooltip)
-    }
-}
-
-@Composable
-private fun IdeCheckbox(
-    checked: Boolean,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-) {
-    val shape = RoundedCornerShape(3.dp)
-    val colors = MaterialTheme.colorScheme
-    val backgroundColor = when {
-        !enabled -> colors.surface
-        checked -> colors.primary
-        else -> colors.surface
-    }
-    val borderColor = when {
-        !enabled -> colors.outline.copy(alpha = 0.3f)
-        checked -> colors.primary
-        else -> colors.outline.copy(alpha = 0.7f)
-    }
-
-    Box(
-        modifier = modifier
-            .size(16.dp)
-            .border(1.dp, borderColor, shape)
-            .background(backgroundColor, shape),
-        contentAlignment = Alignment.Center,
-    ) {
-        if (checked) {
-            Icon(
-                imageVector = Icons.Default.Check,
-                contentDescription = null,
-                tint = colors.onPrimary,
-                modifier = Modifier.size(10.dp),
-            )
-        }
     }
 }
 

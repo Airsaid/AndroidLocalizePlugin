@@ -28,6 +28,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.util.io.RequestBuilder
 import icons.PluginIcons
 import javax.swing.Icon
+import kotlin.jvm.Volatile
 
 /**
  * @author airsaid
@@ -38,9 +39,16 @@ class MicrosoftTranslator : AbstractTranslator() {
     companion object {
         private val LOG = Logger.getInstance(MicrosoftTranslator::class.java)
         private const val KEY = "Microsoft"
-        private const val HOST_URL = "https://api.cognitive.microsofttranslator.com"
-        private const val TRANSLATE_URL = "$HOST_URL/translate"
-        private const val APPLY_APP_ID_URL = "https://docs.microsoft.com/azure/cognitive-services/translator/translator-how-to-signup"
+        private const val DEFAULT_HOST_URL = "https://api.cognitive.microsofttranslator.com"
+
+        @Volatile
+        internal var hostOverride: String? = null
+
+        private val HOST_URL: String
+            get() = hostOverride ?: DEFAULT_HOST_URL
+
+        private val TRANSLATE_URL: String
+            get() = "$HOST_URL/translate"
     }
 
     private var _supportedLanguages: MutableList<Lang>? = null
@@ -51,11 +59,9 @@ class MicrosoftTranslator : AbstractTranslator() {
 
     override val icon: Icon? = PluginIcons.MICROSOFT_ICON
 
-    override val credentialDefinitions = listOf(
-        TranslatorCredentialDescriptor(id = "appKey", label = "KEY", isSecret = true)
-    )
+    override val credentialDefinitions: List<TranslatorCredentialDescriptor> = emptyList()
 
-    override val credentialHelpUrl: String? = APPLY_APP_ID_URL
+    override val credentialHelpUrl: String? = null
 
     override val supportedLanguages: List<Lang>
         get() {
@@ -166,7 +172,8 @@ class MicrosoftTranslator : AbstractTranslator() {
 
     override fun configureRequestBuilder(requestBuilder: RequestBuilder) {
         requestBuilder.tuner { connection ->
-            connection.setRequestProperty("Ocp-Apim-Subscription-Key", credentialValue("appKey"))
+            val token = MicrosoftEdgeAuthService.getInstance().getAccessToken()
+            connection.setRequestProperty("Authorization", "Bearer $token")
             connection.setRequestProperty("Content-type", "application/json")
         }
     }
