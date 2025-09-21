@@ -16,14 +16,19 @@
 
 package com.airsaid.localization.ui
 
+import androidx.compose.foundation.VerticalScrollbar
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.ui.Alignment
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -32,6 +37,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposePanel
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.airsaid.localization.translate.AbstractTranslator
 import com.airsaid.localization.translate.lang.Lang
 import com.airsaid.localization.translate.lang.flagEmoji
@@ -50,7 +56,7 @@ class SupportLanguagesDialog(private val translator: AbstractTranslator) : Dialo
 
     override fun createCenterPanel(): JComponent {
         val panel = ComposePanel()
-        panel.preferredSize = java.awt.Dimension(520, 420)
+        panel.preferredSize = java.awt.Dimension(460, 420)
         panel.setContent {
             IdeTheme {
                 Surface(
@@ -74,38 +80,56 @@ class SupportLanguagesDialog(private val translator: AbstractTranslator) : Dialo
 
 @Composable
 private fun SupportLanguagesContent(languages: List<Lang>) {
-    Surface(
+    val listState = rememberLazyListState()
+
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(20.dp),
-        shape = RoundedCornerShape(12.dp),
-        tonalElevation = 1.dp,
+            .background(MaterialTheme.colorScheme.background)
+            .padding(horizontal = 20.dp, vertical = 24.dp)
     ) {
-        LazyColumn(
+        Text(
+            text = "Supported languages (${languages.size})",
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+                .padding(top = 12.dp)
         ) {
-            items(languages, key = { it.id }) { language ->
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        val flag = language.flagEmoji
-                        if (flag != null) {
-                            Text(text = flag, style = MaterialTheme.typography.bodyMedium)
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                state = listState,
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(languages, key = { it.id }) { language ->
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            val flag = language.flagEmoji
+                            if (flag != null) {
+                                Text(
+                                    text = flag,
+                                    style = MaterialTheme.typography.headlineSmall.copy(fontSize = 24.sp)
+                                )
+                            }
+                            Text(text = language.englishName, style = MaterialTheme.typography.bodyMedium)
                         }
-                        Text(text = language.englishName, style = MaterialTheme.typography.bodyMedium)
+                        Text(
+                            text = language.code.uppercase(),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
-                    Text(
-                        text = language.code.uppercase(),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
                 }
             }
+            VerticalScrollbar(
+                modifier = Modifier.align(Alignment.CenterEnd),
+                adapter = rememberScrollbarAdapter(listState)
+            )
         }
     }
 }
