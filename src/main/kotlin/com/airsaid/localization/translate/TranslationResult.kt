@@ -17,13 +17,11 @@
 
 package com.airsaid.localization.translate
 
-import com.airsaid.localization.translate.impl.google.GoogleTranslationResult
 
 /**
  * Translation results interface to obtain common translation result.
  *
  * @author airsaid
- * @see GoogleTranslationResult
  */
 interface TranslationResult {
 

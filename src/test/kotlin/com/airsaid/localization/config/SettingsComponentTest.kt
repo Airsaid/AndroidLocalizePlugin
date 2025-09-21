@@ -24,24 +24,25 @@ class SettingsComponentTest {
 
             loader.complete("test-app-id", "test-app-key")
 
-            assertEquals("test-app-id", component.appId)
-            assertEquals("test-app-key", component.appKey)
+            val credentials = component.credentialValues
+            assertEquals("test-app-id", credentials["appId"])
+            assertEquals("test-app-key", credentials["appKey"])
         }
     }
 
     private class RecordingCredentialsLoader : TranslatorCredentialsLoader {
         @Volatile
         var loadCalledOnEdt: Boolean = false
-        private var callback: ((String, String) -> Unit)? = null
+        private var callback: ((Map<String, String>) -> Unit)? = null
 
-        override fun load(translator: AbstractTranslator, onLoaded: (String, String) -> Unit) {
+        override fun load(translator: AbstractTranslator, onLoaded: (Map<String, String>) -> Unit) {
             loadCalledOnEdt = ApplicationManager.getApplication().isDispatchThread
             callback = onLoaded
         }
 
         fun complete(appId: String, appKey: String) {
             ApplicationManager.getApplication().invokeAndWait {
-                callback?.invoke(appId, appKey)
+                callback?.invoke(mapOf("appId" to appId, "appKey" to appKey))
             }
         }
     }

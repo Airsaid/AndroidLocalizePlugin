@@ -12,7 +12,7 @@ Android localization plugin. supports multiple languages and multiple translator
 
 # Features
 - Multiple translator support:
-  - Google translator. 
+  - Google translator.
   - Microsoft translator.
   - Baidu translator.
   - Youdao translator.
@@ -54,7 +54,7 @@ Android localization plugin. supports multiple languages and multiple translator
     **Note: Display one line without extra line breaks and spaces in between.**
 - Q: Translation failure: java.net.HttpRetryException: cannot retry due to redirection, in streaming mode
   
-  A: If you are using the default translation engine (Google), then you can try switching to another engine on the settings page and use your own account for translation. Because the default translation engine is not stable.
+  A: Try switching to another translation engine on the settings page and use your own account for translation. Some default translators rely on shared credentials and may be rate limited.
 
 # ChangeLog
 [ChangeLog](CHANGELOG.md)

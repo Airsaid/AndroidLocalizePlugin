@@ -17,7 +17,6 @@
 
 package com.airsaid.localization.translate
 
-import com.airsaid.localization.translate.impl.google.GoogleTranslator
 import com.airsaid.localization.translate.lang.Lang
 
 /**
@@ -26,7 +25,6 @@ import com.airsaid.localization.translate.lang.Lang
  *
  * @author airsaid
  * @see AbstractTranslator
- * @see GoogleTranslator
  */
 interface Translator {
 

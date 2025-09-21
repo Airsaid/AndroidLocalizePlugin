@@ -27,7 +27,7 @@ class GoogleApiTranslator : AbsGoogleTranslator() {
 
     override val key: String = KEY
 
-    override val name: String = "Google (API)"
+    override val name: String = "Google"
 
     override fun getRequestUrl(fromLang: Lang, toLang: Lang, text: String): String = TRANSLATE_URL
 

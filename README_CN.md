@@ -52,7 +52,7 @@ Android 本地化插件，支持多种语言和翻译器。
   
 - 问题：Translation failure: java.net.HttpRetryException: cannot retry due to redirection, in streaming mode
 
-  回答：如果你使用的是默认的翻译引擎（Google），那么你可以在设置页面尝试切换到其他引擎，并使用自己的账号进行翻译。因为默认的翻译引擎并不稳定。
+  回答：可以在设置页面尝试切换到其他引擎，并使用自己的账号进行翻译。部分默认翻译引擎依赖共享凭证，可能会被限流。
 
 # 更新日志
 [更新日志](CHANGELOG.md)

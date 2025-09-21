@@ -8,21 +8,7 @@ import org.junit.jupiter.api.Test
 class TranslatorServiceTest {
 
   @Test
-  fun `selectDefaultTranslator prefers google when present`() {
-    val google = StubTranslator("Google")
-    val other = StubTranslator("Other")
-    val translators = linkedMapOf(
-      google.key to google,
-      other.key to other,
-    )
-
-    val defaultTranslator = TranslatorService.selectDefaultTranslator(translators)
-
-    assertEquals(google, defaultTranslator)
-  }
-
-  @Test
-  fun `selectDefaultTranslator falls back to first translator when google missing`() {
+  fun `selectDefaultTranslator returns first translator`() {
     val first = StubTranslator("First")
     val second = StubTranslator("Second")
     val translators = linkedMapOf(
@@ -38,10 +24,6 @@ class TranslatorServiceTest {
   private class StubTranslator(override val key: String) : AbstractTranslator() {
     override val name: String = key
     override val supportedLanguages: List<Lang> = emptyList()
-    override val isNeedAppId: Boolean = false
-    override val isNeedAppKey: Boolean = false
-    override val appId: String? get() = null
-    override val appKey: String? get() = null
 
     override fun getRequestUrl(fromLang: Lang, toLang: Lang, text: String): String {
       throw UnsupportedOperationException()

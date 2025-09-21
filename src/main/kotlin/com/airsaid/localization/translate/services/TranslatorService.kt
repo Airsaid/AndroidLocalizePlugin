@@ -18,7 +18,6 @@
 package com.airsaid.localization.translate.services
 
 import com.airsaid.localization.translate.AbstractTranslator
-import com.airsaid.localization.translate.impl.google.GoogleTranslator
 import com.airsaid.localization.translate.interceptors.EscapeCharactersInterceptor
 import com.airsaid.localization.translate.lang.Lang
 import com.intellij.openapi.application.ApplicationManager
@@ -159,13 +158,9 @@ class TranslatorService {
         fun getInstance(): TranslatorService = service()
 
         internal fun selectDefaultTranslator(translators: Map<String, AbstractTranslator>): AbstractTranslator {
-            val googleTranslator = translators[GoogleTranslator.KEY]
-            if (googleTranslator != null) {
-                return googleTranslator
-            }
-            val fallback = translators.values.first()
-            LOG.warn("Google translator is not available. Falling back to ${fallback.key} as default.")
-            return fallback
+            val default = translators.values.first()
+            LOG.info("Selected ${default.key} as default translator.")
+            return default
         }
     }
 }
