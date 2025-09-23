@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -44,6 +43,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -105,7 +105,7 @@ class SettingsComponent {
                 SettingsContent(
                     translators = translatorsState,
                     selectedTranslator = selectedTranslatorState.value,
-                    defaultTranslatorKey = TranslatorService.getInstance().getDefaultTranslator()?.key,
+                    defaultTranslatorKey = TranslatorService.getInstance().getDefaultTranslator().key,
                     enableCacheState = enableCacheState,
                     maxCacheSizeState = maxCacheSizeState,
                     translationIntervalState = translationIntervalState,
@@ -208,17 +208,15 @@ private fun SettingsContent(
 
         SettingsFormRow(label = "Provider") {
             Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = LayoutArrangement.spacedBy(8.dp)
+              modifier = Modifier.weight(1f),
+              verticalArrangement = LayoutArrangement.spacedBy(8.dp)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = LayoutArrangement.spacedBy(FormContentSpacing)
                 ) {
                     TranslatorDropdown(
-                        modifier = Modifier
-                            .width(TranslatorDropdownWidth)
-                            .heightIn(min = CompactFieldHeight),
+                        modifier = Modifier.width(TranslatorDropdownWidth),
                         translators = translators,
                         selectedTranslator = selectedTranslator,
                         defaultTranslatorKey = defaultTranslatorKey,
@@ -241,7 +239,6 @@ private fun SettingsContent(
                 selectedTranslator?.let { translator ->
                     TextButton(
                         onClick = { onShowSupportedLanguages(translator) },
-                        contentPadding = PaddingValues(0.dp),
                         modifier = Modifier.align(Alignment.Start)
                     ) {
                         Text("See supported languages")
@@ -391,7 +388,7 @@ private fun TranslatorDropdown(
     ) {
         OutlinedTextField(
             modifier = Modifier
-                .menuAnchor()
+                .menuAnchor(MenuAnchorType.PrimaryNotEditable, true)
                 .fillMaxWidth()
                 .heightIn(min = CompactFieldHeight),
             value = selectedTranslator?.name.orEmpty(),
