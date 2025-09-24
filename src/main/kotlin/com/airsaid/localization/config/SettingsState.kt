@@ -30,163 +30,146 @@ import com.intellij.openapi.util.text.StringUtil
  * @author airsaid
  */
 @State(
-    name = "com.airsaid.localization.config.SettingsState",
-    storages = [Storage("androidLocalizeSettings.xml")]
+  name = "com.airsaid.localization.config.SettingsState",
+  storages = [Storage("androidLocalizeSettings.xml")]
 )
 @Service
 class SettingsState : PersistentStateComponent<SettingsState.State> {
-    companion object {
-        private val LOG = Logger.getInstance(SettingsState::class.java)
+  companion object {
+    private val LOG = Logger.getInstance(SettingsState::class.java)
 
-        fun getInstance(): SettingsState {
-            return ServiceManager.getService(SettingsState::class.java)
-        }
+    fun getInstance(): SettingsState {
+      return ServiceManager.getService(SettingsState::class.java)
+    }
+  }
+
+  private val credentialSecureStorage = mutableMapOf<String, SecureStorage>()
+  private var state = State()
+
+  fun initSetting() {
+    val translatorService = TranslatorService.getInstance()
+    translatorService.setSelectedTranslator(this.selectedTranslator)
+    translatorService.setEnableCache(isEnableCache)
+    translatorService.maxCacheSize = maxCacheSize
+    translatorService.translationInterval = translationInterval
+
+    AndroidValuesService.getInstance().isSkipNonTranslatable = isSkipNonTranslatable
+  }
+
+  var selectedTranslator: AbstractTranslator
+    get() = if (StringUtil.isEmpty(state.selectedTranslatorKey)) {
+      TranslatorService.getInstance().getDefaultTranslator()
+    } else {
+      TranslatorService.getInstance().getTranslators()[state.selectedTranslatorKey]
+        ?: TranslatorService.getInstance().getDefaultTranslator()
+    }
+    set(translator) {
+      state.selectedTranslatorKey = translator.key
     }
 
-    private val credentialSecureStorage = mutableMapOf<String, SecureStorage>()
-    private var state = State()
+  fun setCredential(translatorKey: String, descriptor: TranslatorCredentialDescriptor, value: String) {
+    if (descriptor.isSecret) {
+      secureStorage(translatorKey, descriptor.id).save(value)
+    } else {
+      val credentials = state.credentials.getOrPut(translatorKey) { mutableMapOf() }
+      if (value.isBlank()) {
+        credentials.remove(descriptor.id)
+        if (credentials.isEmpty()) {
+          state.credentials.remove(translatorKey)
+        }
+      } else {
+        credentials[descriptor.id] = value
+      }
+    }
+  }
 
-    fun initSetting() {
-        val translatorService = TranslatorService.getInstance()
-        LOG.info("initSetting")
-        translatorService.setSelectedTranslator(this.selectedTranslator)
-        translatorService.setEnableCache(isEnableCache)
-        translatorService.maxCacheSize = maxCacheSize
-        translatorService.translationInterval = translationInterval
+  fun getCredential(translatorKey: String, descriptor: TranslatorCredentialDescriptor): String {
+    return if (descriptor.isSecret) {
+      readSecret(translatorKey, descriptor)
+    } else {
+      state.credentials[translatorKey]?.get(descriptor.id) ?: ""
+    }
+  }
 
-        AndroidValuesService.getInstance().isSkipNonTranslatable = isSkipNonTranslatable
+  fun getCredentials(translatorKey: String, descriptors: List<TranslatorCredentialDescriptor>): Map<String, String> {
+    if (descriptors.isEmpty()) return emptyMap()
+    return buildMap {
+      descriptors.forEach { descriptor ->
+        put(descriptor.id, getCredential(translatorKey, descriptor))
+      }
+    }
+  }
+
+  var isEnableCache: Boolean
+    get() = state.isEnableCache
+    set(isEnable) {
+      state.isEnableCache = isEnable
     }
 
-    var selectedTranslator: AbstractTranslator
-        get() = if (StringUtil.isEmpty(state.selectedTranslatorKey)) {
-            TranslatorService.getInstance().getDefaultTranslator()
-        } else {
-            TranslatorService.getInstance().getTranslators()[state.selectedTranslatorKey]
-                ?: TranslatorService.getInstance().getDefaultTranslator()
-        }
-        set(translator) {
-            state.selectedTranslatorKey = translator.key
-        }
-
-    fun setCredential(translatorKey: String, descriptor: TranslatorCredentialDescriptor, value: String) {
-        if (descriptor.isSecret) {
-            secureStorage(translatorKey, descriptor.id).save(value)
-        } else {
-            val credentials = state.credentials.getOrPut(translatorKey) { mutableMapOf() }
-            if (value.isBlank()) {
-                credentials.remove(descriptor.id)
-                if (credentials.isEmpty()) {
-                    state.credentials.remove(translatorKey)
-                }
-            } else {
-                credentials[descriptor.id] = value
-            }
-        }
+  var maxCacheSize: Int
+    get() = state.maxCacheSize
+    set(maxCacheSize) {
+      state.maxCacheSize = maxCacheSize
     }
 
-    fun getCredential(translatorKey: String, descriptor: TranslatorCredentialDescriptor): String {
-        return if (descriptor.isSecret) {
-            readSecret(translatorKey, descriptor)
-        } else {
-            state.credentials[translatorKey]?.get(descriptor.id) ?: ""
-        }
+  var translationInterval: Int
+    get() = state.translationInterval
+    set(intervalTime) {
+      state.translationInterval = intervalTime
     }
 
-    fun getCredentials(translatorKey: String, descriptors: List<TranslatorCredentialDescriptor>): Map<String, String> {
-        if (descriptors.isEmpty()) return emptyMap()
-        return buildMap {
-            descriptors.forEach { descriptor ->
-                put(descriptor.id, getCredential(translatorKey, descriptor))
-            }
-        }
+  var isSkipNonTranslatable: Boolean
+    get() = state.isSkipNonTranslatable
+    set(isSkipNonTranslatable) {
+      state.isSkipNonTranslatable = isSkipNonTranslatable
     }
 
-    var isEnableCache: Boolean
-        get() = state.isEnableCache
-        set(isEnable) {
-            state.isEnableCache = isEnable
-        }
+  override fun getState(): State {
+    return state
+  }
 
-    var maxCacheSize: Int
-        get() = state.maxCacheSize
-        set(maxCacheSize) {
-            state.maxCacheSize = maxCacheSize
-        }
+  override fun loadState(state: State) {
+    this.state = state
+    normalizeTranslationInterval()
+  }
 
-    var translationInterval: Int
-        get() = state.translationInterval
-        set(intervalTime) {
-            state.translationInterval = intervalTime
-        }
+  data class State(
+    var selectedTranslatorKey: String? = null,
+    var credentials: MutableMap<String, MutableMap<String, String>> = mutableMapOf(),
+    var isEnableCache: Boolean = true,
+    var maxCacheSize: Int = 500,
+    var translationInterval: Int = 500, // milliseconds
+    var isSkipNonTranslatable: Boolean = false,
+  )
 
-    var isSkipNonTranslatable: Boolean
-        get() = state.isSkipNonTranslatable
-        set(isSkipNonTranslatable) {
-            state.isSkipNonTranslatable = isSkipNonTranslatable
-        }
+  private fun secureStorage(translatorKey: String, credentialId: String): SecureStorage {
+    val key = "$translatorKey::$credentialId"
+    return credentialSecureStorage.getOrPut(key) { SecureStorage(key) }
+  }
 
-    override fun getState(): State {
-        return state
+  private fun normalizeTranslationInterval() {
+    if (state.translationInterval in 1..10) {
+      state.translationInterval *= 1000
+    }
+    if (state.translationInterval <= 0) {
+      state.translationInterval = 500
+    }
+  }
+
+  private fun readSecret(translatorKey: String, descriptor: TranslatorCredentialDescriptor): String {
+    val storage = secureStorage(translatorKey, descriptor.id)
+    val value = storage.read()
+    if (value.isNotEmpty()) {
+      return value
     }
 
-    override fun loadState(state: State) {
-        this.state = state
-        normalizeTranslationInterval()
-        migrateLegacyAppIds()
+    // Backwards compatibility: migrate legacy key-only storage if present.
+    val legacy = credentialSecureStorage.getOrPut(translatorKey) { SecureStorage(translatorKey) }
+    val legacyValue = legacy.read()
+    if (legacyValue.isNotEmpty()) {
+      storage.save(legacyValue)
+      return legacyValue
     }
-
-    data class State(
-        var selectedTranslatorKey: String? = null,
-        var credentials: MutableMap<String, MutableMap<String, String>> = mutableMapOf(),
-        @Deprecated("Replaced by credentials")
-        var appIds: MutableMap<String, String> = mutableMapOf(),
-        var isEnableCache: Boolean = true,
-        var maxCacheSize: Int = 500,
-        var translationInterval: Int = 500, // milliseconds
-        var isSkipNonTranslatable: Boolean = false
-    )
-
-    private fun secureStorage(translatorKey: String, credentialId: String): SecureStorage {
-        val key = "$translatorKey::$credentialId"
-        return credentialSecureStorage.getOrPut(key) { SecureStorage(key) }
-    }
-
-    private fun normalizeTranslationInterval() {
-        if (state.translationInterval in 1..10) {
-            state.translationInterval *= 1000
-        }
-        if (state.translationInterval <= 0) {
-            state.translationInterval = 500
-        }
-    }
-
-    private fun readSecret(translatorKey: String, descriptor: TranslatorCredentialDescriptor): String {
-        val storage = secureStorage(translatorKey, descriptor.id)
-        val value = storage.read()
-        if (value.isNotEmpty()) {
-            return value
-        }
-
-        // Backwards compatibility: migrate legacy key-only storage if present.
-        val legacy = credentialSecureStorage.getOrPut(translatorKey) { SecureStorage(translatorKey) }
-        val legacyValue = legacy.read()
-        if (legacyValue.isNotEmpty()) {
-            storage.save(legacyValue)
-            return legacyValue
-        }
-        return ""
-    }
-
-    private fun migrateLegacyAppIds() {
-        if (state.appIds.isEmpty()) return
-        val translators = TranslatorService.getInstance().getTranslators()
-        for ((translatorKey, appId) in state.appIds) {
-            val translator = translators[translatorKey] ?: continue
-            val descriptor = translator.credentialDefinitions.firstOrNull { it.id == "appId" }
-            if (descriptor != null && appId.isNotBlank()) {
-                state.credentials.getOrPut(translatorKey) { mutableMapOf() }[descriptor.id] = appId
-            }
-        }
-        state.appIds.clear()
-    }
+    return ""
+  }
 }

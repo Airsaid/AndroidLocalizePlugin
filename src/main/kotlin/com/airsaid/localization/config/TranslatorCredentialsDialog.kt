@@ -1,12 +1,6 @@
 package com.airsaid.localization.config
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -22,12 +16,12 @@ import com.airsaid.localization.ui.ComposeDialog
 import com.airsaid.localization.ui.components.IdeTextField
 import com.intellij.ide.BrowserUtil
 
-class TranslatorCredentialsDialog(
-  private val translator: AbstractTranslator,
-  private val settingsState: SettingsState,
+open class TranslatorCredentialsDialog(
+  protected val translator: AbstractTranslator,
+  protected val settingsState: SettingsState,
 ) : ComposeDialog() {
 
-  private val credentialValuesState: SnapshotStateMap<String, String> = mutableStateMapOf()
+  protected val credentialValuesState: SnapshotStateMap<String, String> = mutableStateMapOf()
 
   init {
     title = "${translator.name} Settings"
@@ -38,7 +32,7 @@ class TranslatorCredentialsDialog(
   }
 
   @Composable
-  override fun Content(onOkAction: (callback: () -> Unit) -> Unit) {
+  override fun Content() {
     val descriptors = remember { translator.credentialDefinitions }
 
     Column(
@@ -46,6 +40,8 @@ class TranslatorCredentialsDialog(
         .padding(horizontal = 20.dp, vertical = 16.dp),
       verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
+      Header()
+
       descriptors.forEach { descriptor ->
         CredentialField(descriptor = descriptor)
       }
@@ -55,14 +51,8 @@ class TranslatorCredentialsDialog(
           Text("How to obtain credentials?")
         }
       }
-    }
 
-    onOkAction {
-      credentialValuesState.forEach { (id, value) ->
-        translator.credentialDefinitions.firstOrNull { it.id == id }?.let { descriptor ->
-          settingsState.setCredential(translator.key, descriptor, value.trim())
-        }
-      }
+      Footer()
     }
   }
 
@@ -92,4 +82,19 @@ class TranslatorCredentialsDialog(
       }
     }
   }
+
+  override fun doOKAction() {
+    super.doOKAction()
+    credentialValuesState.forEach { (id, value) ->
+      translator.credentialDefinitions.firstOrNull { it.id == id }?.let { descriptor ->
+        settingsState.setCredential(translator.key, descriptor, value.trim())
+      }
+    }
+  }
+
+  @Composable
+  protected open fun Header() = Unit
+
+  @Composable
+  protected open fun Footer() = Unit
 }

@@ -3,25 +3,21 @@ package com.airsaid.localization.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -117,6 +113,50 @@ fun IdeTextField(
 }
 
 @Composable
+fun IdeCheckBox(
+  checked: Boolean,
+  onValueChange: (checked: Boolean) -> Unit,
+  modifier: Modifier = Modifier,
+  title: String? = null,
+  subTitle: String? = null,
+  enabled: Boolean = true,
+) {
+  val toggleInteraction = remember { MutableInteractionSource() }
+  Row(
+    modifier = modifier.toggleable(
+      value = checked,
+      interactionSource = toggleInteraction,
+      indication = null,
+      role = Role.Checkbox,
+      onValueChange = onValueChange
+    ),
+    verticalAlignment = Alignment.CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(8.dp)
+  ) {
+    IdeCheckbox(checked = checked)
+    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+      if (!title.isNullOrEmpty()) {
+        Text(
+          text = title,
+          style = MaterialTheme.typography.bodyMedium,
+          color = if (enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+        )
+      }
+
+      if (!subTitle.isNullOrEmpty()) {
+        Text(
+          text = subTitle,
+          style = MaterialTheme.typography.bodySmall,
+          color = if (enabled) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurfaceVariant.copy(
+            alpha = 0.6f
+          )
+        )
+      }
+    }
+  }
+}
+
+@Composable
 fun IdeCheckbox(
   checked: Boolean,
   modifier: Modifier = Modifier,
@@ -151,4 +191,34 @@ fun IdeCheckbox(
       )
     }
   }
+}
+
+@Composable
+fun IdeSwitch(
+  checked: Boolean,
+  onCheckedChange: (Boolean) -> Unit,
+  modifier: Modifier = Modifier,
+  enabled: Boolean = true,
+) {
+  val scheme = MaterialTheme.colorScheme
+  Switch(
+    checked = checked,
+    onCheckedChange = onCheckedChange,
+    enabled = enabled,
+    modifier = modifier.scale(0.85f),
+    colors = SwitchDefaults.colors(
+      checkedThumbColor = scheme.onPrimary,
+      checkedTrackColor = scheme.primary,
+      checkedBorderColor = scheme.primary.copy(alpha = 0.2f),
+      checkedIconColor = scheme.primary,
+      uncheckedThumbColor = scheme.surface,
+      uncheckedTrackColor = scheme.outline.copy(alpha = 0.6f),
+      uncheckedBorderColor = scheme.outline.copy(alpha = 0.4f),
+      uncheckedIconColor = scheme.onSurfaceVariant,
+      disabledCheckedTrackColor = scheme.primary.copy(alpha = 0.3f),
+      disabledCheckedThumbColor = scheme.onSurface.copy(alpha = 0.3f),
+      disabledUncheckedTrackColor = scheme.onSurfaceVariant.copy(alpha = 0.2f),
+      disabledUncheckedThumbColor = scheme.onSurface.copy(alpha = 0.2f),
+    )
+  )
 }

@@ -1,6 +1,7 @@
 package com.airsaid.localization.config
 
 import com.airsaid.localization.translate.AbstractTranslator
+import com.airsaid.localization.translate.impl.deepl.DeepLTranslatorCredentialsDialog
 import com.airsaid.localization.translate.impl.google.GoogleTranslatorSettingsDialog
 import com.intellij.openapi.diagnostic.Logger
 
@@ -11,6 +12,7 @@ object TranslatorConfigurationManager {
   fun showConfigurationDialog(translator: AbstractTranslator): Boolean {
     return when (translator.key) {
       "Google" -> GoogleTranslatorSettingsDialog().showAndGet()
+      "DeepL" -> DeepLTranslatorCredentialsDialog(translator, SettingsState.getInstance()).showAndGet()
       else -> showCredentialDialog(translator)
     }
   }

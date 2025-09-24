@@ -39,12 +39,16 @@ open class DeepLTranslator : AbstractTranslator() {
     companion object {
         private val LOG = Logger.getInstance(DeepLTranslator::class.java)
         private const val KEY = "DeepL"
-        private const val HOST_URL = "https://api-free.deepl.com/v2"
-        private const val TRANSLATE_URL = "$HOST_URL/translate"
+        private const val FREE_HOST_URL = "https://api-free.deepl.com/v2"
+        private const val PRO_HOST_URL = "https://api.deepl.com/v2"
+        private const val TRANSLATE_PATH = "/translate"
         private const val APPLY_APP_ID_URL = "https://www.deepl.com/pro-api?cta=header-pro-api/"
     }
 
     private var _supportedLanguages: MutableList<Lang>? = null
+
+    private val deeplSettings: DeepLTranslatorSettings
+        get() = DeepLTranslatorSettings.getInstance()
 
     override val key: String = KEY
 
@@ -98,8 +102,10 @@ open class DeepLTranslator : AbstractTranslator() {
             return _supportedLanguages!!
         }
 
-    override fun getRequestUrl(fromLang: Lang, toLang: Lang, text: String): String =
-        UrlBuilder(TRANSLATE_URL).build()
+    override fun getRequestUrl(fromLang: Lang, toLang: Lang, text: String): String {
+        val baseUrl = if (deeplSettings.usePro) PRO_HOST_URL else FREE_HOST_URL
+        return UrlBuilder(baseUrl + TRANSLATE_PATH).build()
+    }
 
     override fun getRequestParams(fromLang: Lang, toLang: Lang, text: String): List<Pair<String, String>> {
         return listOf(
