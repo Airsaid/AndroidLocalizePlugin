@@ -22,6 +22,7 @@ import com.airsaid.localization.translate.TranslationException
 import com.airsaid.localization.translate.TranslatorCredentialDescriptor
 import com.airsaid.localization.translate.lang.Lang
 import com.airsaid.localization.translate.lang.Languages
+import com.airsaid.localization.translate.lang.toLang
 import com.airsaid.localization.translate.util.GsonUtil
 import com.airsaid.localization.translate.util.MD5
 import com.google.auto.service.AutoService
@@ -29,7 +30,6 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.Pair
 import com.intellij.util.io.RequestBuilder
 import icons.PluginIcons
-import javax.swing.Icon
 
 /**
  * @author airsaid
@@ -37,96 +37,88 @@ import javax.swing.Icon
 @AutoService(AbstractTranslator::class)
 class BaiduTranslator : AbstractTranslator() {
 
-    companion object {
-        private val LOG = Logger.getInstance(BaiduTranslator::class.java)
-        private const val KEY = "Baidu"
-        private const val HOST_URL = "http://api.fanyi.baidu.com"
-        private const val TRANSLATE_URL = "$HOST_URL/api/trans/vip/translate"
-        private const val APPLY_APP_ID_URL = "http://api.fanyi.baidu.com/api/trans/product/desktop?req=developer"
-    }
+  companion object {
+    private val LOG = Logger.getInstance(BaiduTranslator::class.java)
+    private const val KEY = "Baidu"
+    private const val HOST_URL = "http://api.fanyi.baidu.com"
+    private const val TRANSLATE_URL = "$HOST_URL/api/trans/vip/translate"
+    private const val APPLY_APP_ID_URL = "http://api.fanyi.baidu.com/api/trans/product/desktop?req=developer"
+  }
 
-    private var _supportedLanguages: MutableList<Lang>? = null
+  override val key = KEY
 
-    override val key: String = KEY
+  override val icon = PluginIcons.BAIDU_ICON
 
-    override val name: String = "Baidu"
-
-    override val icon: Icon? = PluginIcons.BAIDU_ICON
-
-    override val supportedLanguages: List<Lang>
-        get() {
-            if (_supportedLanguages == null) {
-                _supportedLanguages = mutableListOf<Lang>().apply {
-                    add(Languages.CHINESE_SIMPLIFIED.setTranslationCode("zh"))
-                    add(Languages.ENGLISH)
-                    add(Languages.JAPANESE.setTranslationCode("jp"))
-                    add(Languages.KOREAN.setTranslationCode("kor"))
-                    add(Languages.FRENCH.setTranslationCode("fra"))
-                    add(Languages.SPANISH.setTranslationCode("spa"))
-                    add(Languages.THAI)
-                    add(Languages.ARABIC.setTranslationCode("ara"))
-                    add(Languages.RUSSIAN)
-                    add(Languages.PORTUGUESE)
-                    add(Languages.GERMAN)
-                    add(Languages.ITALIAN)
-                    add(Languages.GREEK)
-                    add(Languages.DUTCH)
-                    add(Languages.POLISH)
-                    add(Languages.BULGARIAN.setTranslationCode("bul"))
-                    add(Languages.ESTONIAN.setTranslationCode("est"))
-                    add(Languages.DANISH.setTranslationCode("dan"))
-                    add(Languages.FINNISH.setTranslationCode("fin"))
-                    add(Languages.CZECH)
-                    add(Languages.ROMANIAN.setTranslationCode("rom"))
-                    add(Languages.SLOVENIAN.setTranslationCode("slo"))
-                    add(Languages.SWEDISH.setTranslationCode("swe"))
-                    add(Languages.HUNGARIAN)
-                    add(Languages.CHINESE_TRADITIONAL.setTranslationCode("cht"))
-                    add(Languages.VIETNAMESE.setTranslationCode("vie"))
-                }
-            }
-            return _supportedLanguages!!
-        }
-
-    override val credentialDefinitions = listOf(
-        TranslatorCredentialDescriptor(id = "appId", label = "APP ID", isSecret = false),
-        TranslatorCredentialDescriptor(id = "appKey", label = "APP KEY", isSecret = true)
+  override val supportedLanguages: List<Lang> by lazy {
+    listOf(
+      Languages.CHINESE_SIMPLIFIED.toLang().setTranslationCode("zh"),
+      Languages.ENGLISH.toLang(),
+      Languages.JAPANESE.toLang().setTranslationCode("jp"),
+      Languages.KOREAN.toLang().setTranslationCode("kor"),
+      Languages.FRENCH.toLang().setTranslationCode("fra"),
+      Languages.SPANISH.toLang().setTranslationCode("spa"),
+      Languages.THAI.toLang(),
+      Languages.ARABIC.toLang().setTranslationCode("ara"),
+      Languages.RUSSIAN.toLang(),
+      Languages.PORTUGUESE.toLang(),
+      Languages.GERMAN.toLang(),
+      Languages.ITALIAN.toLang(),
+      Languages.GREEK.toLang(),
+      Languages.DUTCH.toLang(),
+      Languages.POLISH.toLang(),
+      Languages.BULGARIAN.toLang().setTranslationCode("bul"),
+      Languages.ESTONIAN.toLang().setTranslationCode("est"),
+      Languages.DANISH.toLang().setTranslationCode("dan"),
+      Languages.FINNISH.toLang().setTranslationCode("fin"),
+      Languages.CZECH.toLang(),
+      Languages.ROMANIAN.toLang().setTranslationCode("rom"),
+      Languages.SLOVENIAN.toLang().setTranslationCode("slo"),
+      Languages.SWEDISH.toLang().setTranslationCode("swe"),
+      Languages.HUNGARIAN.toLang(),
+      Languages.CHINESE_TRADITIONAL.toLang().setTranslationCode("cht"),
+      Languages.VIETNAMESE.toLang().setTranslationCode("vie"),
     )
+  }
 
-    override val credentialHelpUrl: String? = APPLY_APP_ID_URL
+  override val credentialDefinitions = listOf(
+    TranslatorCredentialDescriptor(id = "appId", label = "APP ID", isSecret = false),
+    TranslatorCredentialDescriptor(id = "appKey", label = "APP KEY", isSecret = true)
+  )
 
-    override fun getRequestUrl(fromLang: Lang, toLang: Lang, text: String): String = TRANSLATE_URL
+  override val credentialHelpUrl: String? = APPLY_APP_ID_URL
 
-    override fun getRequestParams(fromLang: Lang, toLang: Lang, text: String): List<Pair<String, String>> {
-        val salt = System.currentTimeMillis().toString()
-        val appId = credentialValue("appId")
-        val securityKey = credentialValue("appKey")
-        val sign = MD5.md5("$appId$text$salt$securityKey")
+  override fun getRequestUrl(fromLang: Lang, toLang: Lang, text: String): String = TRANSLATE_URL
 
-        return listOf(
-            Pair.create("from", fromLang.translationCode),
-            Pair.create("to", toLang.translationCode),
-            Pair.create("appid", appId),
-            Pair.create("salt", salt),
-            Pair.create("sign", sign),
-            Pair.create("q", text)
-        )
+  override fun getRequestParams(fromLang: Lang, toLang: Lang, text: String): List<Pair<String, String>> {
+    val salt = System.currentTimeMillis().toString()
+    val appId = credentialValue("appId")
+    val securityKey = credentialValue("appKey")
+    val sign = MD5.md5("$appId$text$salt$securityKey")
+
+    return listOf(
+      Pair.create("from", fromLang.translationCode),
+      Pair.create("to", toLang.translationCode),
+      Pair.create("appid", appId),
+      Pair.create("salt", salt),
+      Pair.create("sign", sign),
+      Pair.create("q", text)
+    )
+  }
+
+  override fun configureRequestBuilder(requestBuilder: RequestBuilder) {
+    requestBuilder.tuner { connection ->
+      connection.setRequestProperty("Referer", HOST_URL)
     }
+  }
 
-    override fun configureRequestBuilder(requestBuilder: RequestBuilder) {
-        requestBuilder.tuner { connection ->
-            connection.setRequestProperty("Referer", HOST_URL)
-        }
+  override fun parsingResult(fromLang: Lang, toLang: Lang, text: String, resultText: String): String {
+    LOG.info("parsingResult: $resultText")
+    val baiduTranslationResult = GsonUtil.getInstance().gson.fromJson(resultText, BaiduTranslationResult::class.java)
+    return if (baiduTranslationResult.isSuccess()) {
+      baiduTranslationResult.translationResult
+    } else {
+      val message = "${baiduTranslationResult.errorMsg}(${baiduTranslationResult.errorCode})"
+      throw TranslationException(fromLang, toLang, text, message)
     }
-
-    override fun parsingResult(fromLang: Lang, toLang: Lang, text: String, resultText: String): String {
-        LOG.info("parsingResult: $resultText")
-        val baiduTranslationResult = GsonUtil.getInstance().gson.fromJson(resultText, BaiduTranslationResult::class.java)
-        return if (baiduTranslationResult.isSuccess()) {
-            baiduTranslationResult.translationResult
-        } else {
-            val message = "${baiduTranslationResult.errorMsg}(${baiduTranslationResult.errorCode})"
-            throw TranslationException(fromLang, toLang, text, message)
-        }
-    }
+  }
 }

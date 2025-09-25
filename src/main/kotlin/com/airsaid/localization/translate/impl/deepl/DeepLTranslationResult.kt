@@ -23,26 +23,26 @@ import com.airsaid.localization.translate.TranslationResult
  * @author musagil
  */
 data class DeepLTranslationResult(
-    var translations: List<Translation>? = null
+  var translations: List<Translation>? = null
 ) : TranslationResult {
 
-    override val translationResult: String
-        get() {
-            return if (!translations.isNullOrEmpty()) {
-                val result = translations!![0].text
-                result ?: ""
-            } else {
-                ""
-            }
-        }
+  override val translationResult: String
+    get() {
+      return if (!translations.isNullOrEmpty()) {
+        val result = translations!![0].text
+        result ?: ""
+      } else {
+        ""
+      }
+    }
 
-    data class Translation(
-        var text: String? = null,
-        var to: String? = null
-    )
+  data class Translation(
+    var text: String? = null,
+    var to: String? = null
+  )
 
-    data class Error(
-        var code: String? = null,
-        var message: String? = null
-    )
+  data class Error(
+    var code: String? = null,
+    var message: String? = null
+  )
 }

@@ -18,49 +18,48 @@
 package com.airsaid.localization.translate.impl.youdao
 
 import com.airsaid.localization.translate.TranslationResult
-import com.intellij.openapi.util.text.StringUtil
 
 /**
  * @author airsaid
  */
 data class YoudaoTranslationResult(
-    var requestId: String? = null,
-    var errorCode: String? = null,
-    var translation: List<String>? = null
+  var requestId: String? = null,
+  var errorCode: String? = null,
+  var translation: List<String>? = null
 ) : TranslationResult {
 
-    val isSuccess: Boolean
-        get() {
-            val errorCode = this.errorCode
-            return !StringUtil.isEmpty(errorCode) && "0" == errorCode
-        }
-
-    override val translationResult: String
-        get() {
-            val translation = this.translation
-            return if (translation != null && translation.isNotEmpty()) {
-                translation[0] ?: ""
-            } else {
-                ""
-            }
-        }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
-        val that = other as YoudaoTranslationResult
-        return requestId == that.requestId
+  val isSuccess: Boolean
+    get() {
+      val errorCode = this.errorCode
+      return !errorCode.isNullOrEmpty() && "0" == errorCode
     }
 
-    override fun hashCode(): Int {
-        return requestId?.hashCode() ?: 0
+  override val translationResult: String
+    get() {
+      val translation = this.translation
+      return if (translation != null && translation.isNotEmpty()) {
+        translation[0]
+      } else {
+        ""
+      }
     }
 
-    override fun toString(): String {
-        return "YoudaoTranslationResult{" +
-                "requestId='$requestId', " +
-                "errorCode='$errorCode', " +
-                "translation=$translation" +
-                '}'
-    }
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other == null || javaClass != other.javaClass) return false
+    val that = other as YoudaoTranslationResult
+    return requestId == that.requestId
+  }
+
+  override fun hashCode(): Int {
+    return requestId?.hashCode() ?: 0
+  }
+
+  override fun toString(): String {
+    return "YoudaoTranslationResult{" +
+        "requestId='$requestId', " +
+        "errorCode='$errorCode', " +
+        "translation=$translation" +
+        '}'
+  }
 }

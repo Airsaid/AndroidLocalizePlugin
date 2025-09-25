@@ -18,163 +18,159 @@
 package com.airsaid.localization.translate.lang
 
 /**
+ * Enum class for supported languages with Android values directory mapping.
+ *
  * @author airsaid
  */
-// Some language codes and names cannot pass the compiler check
-@Suppress("SpellCheckingInspection", "unused")
-object Languages {
-  val AUTO = Lang(0, "auto", "Auto", "Auto")
-  val ALBANIAN = Lang(1, "sq", "Shqiptar", "Albanian")
-  val ARABIC = Lang(2, "ar", "العربية", "Arabic")
-  val AMHARIC = Lang(3, "am", "አማርኛ", "Amharic")
-  val AZERBAIJANI = Lang(4, "az", "азәрбајҹан", "Azerbaijani")
-  val IRISH = Lang(5, "ga", "Gaeilge", "Irish")
-  val ESTONIAN = Lang(6, "et", "Eesti", "Estonian")
-  val BASQUE = Lang(7, "eu", "Euskal", "Basque")
-  val BELARUSIAN = Lang(8, "be", "беларускі", "Belarusian")
-  val BULGARIAN = Lang(9, "bg", "Български", "Bulgarian")
-  val ICELANDIC = Lang(10, "is", "Íslenska", "Icelandic")
-  val POLISH = Lang(11, "pl", "Polski", "Polish")
-  val BOSNIAN = Lang(12, "bs", "Bosanski", "Bosnian")
-  val PERSIAN = Lang(13, "fa", "Persian", "Persian")
-  val AFRIKAANS = Lang(14, "af", "Afrikaans", "Afrikaans")
-  val DANISH = Lang(15, "da", "Dansk", "Danish")
-  val GERMAN = Lang(16, "de", "Deutsch", "German")
-  val RUSSIAN = Lang(17, "ru", "Русский", "Russian")
-  val FRENCH = Lang(18, "fr", "Français", "French")
-  val FILIPINO = Lang(19, "fil", "Filipino", "Filipino")
-  val FINNISH = Lang(20, "fi", "Suomi", "Finnish")
-  val FRISIAN = Lang(21, "fy", "Frysk", "Frisian")
-  val KHMER = Lang(22, "km", "ខ្មែរ", "Khmer")
-  val GEORGIAN = Lang(23, "ka", "ქართული", "Georgian")
-  val GUJARATI = Lang(24, "gu", "ગુજરાતી", "Gujarati")
-  val KAZAKH = Lang(25, "kk", "Kazakh", "Kazakh")
-  val HAITIAN_CREOLE = Lang(26, "ht", "Haitian Creole", "Haitian Creole")
-  val KOREAN = Lang(27, "ko", "한국어", "Korean")
-  val HAUSA = Lang(28, "ha", "Hausa", "Hausa")
-  val DUTCH = Lang(29, "nl", "Nederlands", "Dutch")
-  val KYRGYZ = Lang(30, "ky", "Кыргыз тили", "Kyrgyz")
-  val GALICIAN = Lang(31, "gl", "Galego", "Galician")
-  val CATALAN = Lang(32, "ca", "Català", "Catalan")
-  val CZECH = Lang(33, "cs", "Čeština", "Czech")
-  val KANNADA = Lang(34, "kn", "ಕನ್ನಡ", "Kannada")
-  val CORSICAN = Lang(35, "co", "Corsa", "Corsican")
-  val CROATIAN = Lang(36, "hr", "Hrvatski", "Croatian")
-  val KURDISH = Lang(37, "ku", "Kurdî", "Kurdish")
-  val LATIN = Lang(38, "la", "Latina", "Latin")
-  val LATVIAN = Lang(39, "lv", "Latviešu", "Latvian")
-  val LAO = Lang(40, "lo", "ລາວ", "Lao")
-  val LITHUANIAN = Lang(41, "lt", "Lietuvių", "Lithuanian")
-  val LUXEMBOURGISH = Lang(42, "lb", "Lëtzebuergesch", "Luxembourgish")
-  val ROMANIAN = Lang(43, "ro", "Română", "Romanian")
-  val MALAGASY = Lang(44, "mg", "Malagasy", "Malagasy")
-  val MALTESE = Lang(45, "mt", "Il-Malti", "Maltese")
-  val MARATHI = Lang(46, "mr", "मराठी", "Marathi")
-  val MALAYALAM = Lang(47, "ml", "മലയാളം", "Malayalam")
-  val MALAY = Lang(48, "ms", "Melayu", "Malay")
-  val MACEDONIAN = Lang(49, "mk", "Македонски", "Macedonian")
-  val MAORI = Lang(50, "mi", "Māori", "Maori")
-  val MONGOLIAN = Lang(51, "mn", "Монгол хэл", "Mongolian")
-  val BANGLA = Lang(52, "bn", "বাংল", "Bangla")
-  val BURMESE = Lang(53, "my", "မြန်မာ", "Burmese")
-  val HMONG = Lang(54, "hmn", "Hmoob", "Hmong")
-  val XHOSA = Lang(55, "xh", "IsiXhosa", "Xhosa")
-  val ZULU = Lang(56, "zu", "Zulu", "Zulu")
-  val NEPALI = Lang(57, "ne", "नेपाली", "Nepali")
-  val NORWEGIAN = Lang(58, "no", "Norsk", "Norwegian")
-  val PUNJABI = Lang(59, "pa", "ਪੰਜਾਬੀ", "Punjabi")
-  val PORTUGUESE = Lang(60, "pt", "Português", "Portuguese")
-  val PASHTO = Lang(61, "ps", "Pashto", "Pashto")
-  val CHICHEWA = Lang(62, "ny", "Chichewa", "Chichewa")
-  val JAPANESE = Lang(63, "ja", "日本語", "Japanese")
-  val SWEDISH = Lang(64, "sv", "Svenska", "Swedish")
-  val SAMOAN = Lang(65, "sm", "Samoa", "Samoan")
-  val SERBIAN = Lang(66, "sr", "Српски", "Serbian")
-  val SOTHO = Lang(67, "st", "Sesotho", "Sotho")
-  val SINHALA = Lang(68, "si", "සිංහල", "Sinhala")
-  val ESPERANTO = Lang(69, "eo", "Esperanta", "Esperanto")
-  val SLOVAK = Lang(70, "sk", "Slovenčina", "Slovak")
-  val SLOVENIAN = Lang(71, "sl", "Slovenščina", "Slovenian")
-  val SWAHILI = Lang(72, "sw", "Kiswahili", "Swahili")
-  val SCOTTISH_GAELIC = Lang(73, "gd", "Gàidhlig na h-Alba", "Scottish Gaelic")
-  val CEBUANO = Lang(74, "ceb", "Cebuano", "Cebuano")
-  val SOMALI = Lang(75, "so", "Somali", "Somali")
-  val TAJIK = Lang(76, "tg", "Тоҷикӣ", "Tajik")
-  val TELUGU = Lang(77, "te", "తెలుగు", "Telugu")
-  val TAMIL = Lang(78, "ta", "தமிழ்", "Tamil")
-  val THAI = Lang(79, "th", "ไทย", "Thai")
-  val TURKISH = Lang(80, "tr", "Türkçe", "Turkish")
-  val WELSH = Lang(81, "cy", "Cymraeg", "Welsh")
-  val URDU = Lang(82, "ur", "اردو", "Urdu")
-  val UKRAINIAN = Lang(83, "uk", "Українська", "Ukrainian")
-  val UZBEK = Lang(84, "uz", "O'zbek", "Uzbek")
-  val SPANISH = Lang(85, "es", "Español", "Spanish")
-  val HEBREW = Lang(86, "iw", "עברית", "Hebrew")
-  val GREEK = Lang(87, "el", "Ελληνικά", "Greek")
-  val HAWAIIAN = Lang(88, "haw", "Hawaiian", "Hawaiian")
-  val SINDHI = Lang(89, "sd", "سنڌي", "Sindhi")
-  val HUNGARIAN = Lang(90, "hu", "Magyar", "Hungarian")
-  val SHONA = Lang(91, "sn", "Shona", "Shona")
-  val ARMENIAN = Lang(92, "hy", "Հայերեն", "Armenian")
-  val IGBO = Lang(93, "ig", "Igbo", "Igbo")
-  val ITALIAN = Lang(94, "it", "Italiano", "Italian")
-  val YIDDISH = Lang(95, "yi", "ייִדיש", "Yiddish")
-  val HINDI = Lang(96, "hi", "हिंदी", "Hindi")
-  val SUNDANESE = Lang(97, "su", "Sunda", "Sundanese")
-  val INDONESIAN = Lang(98, "in-rID", "Indonesia", "Indonesian")
-  val JAVANESE = Lang(99, "jv", "Wong Jawa", "Javanese")
-  val ENGLISH = Lang(100, "en", "English", "English")
-  val YORUBA = Lang(101, "yo", "Yorùbá", "Yoruba")
-  val VIETNAMESE = Lang(102, "vi", "Tiếng Việt", "Vietnamese")
-  val CHINESE_TRADITIONAL = Lang(103, "zh-rTW", "正體中文", "Chinese Traditional")
-  val CHINESE_SIMPLIFIED = Lang(104, "zh-rCN", "简体中文", "Chinese Simplified")
-  val ASSAMESE = Lang(105, "as", "Assamese", "Assamese")
-  val DARI = Lang(106, "prs", "Dari", "Dari")
-  val FIJIAN = Lang(107, "fj", "Fijian", "Fijian")
-  val HMONG_DAW = Lang(108, "mww", "Hmong Daw", "Hmong Daw")
-  val INUKTITUT = Lang(109, "iu", "ᐃᓄᒃᑎᑐᑦ", "Inuktitut")
-  val KLINGON_LATIN = Lang(110, "tlh-Latn", "Klingon (Latin)", "Klingon (Latin)")
-  val KLINGON_PIQAD = Lang(111, "tlh-Piqd", "Klingon (pIqaD)", "Klingon (pIqaD)")
-  val ODIA = Lang(112, "or", "Odia", "Odia")
-  val QUERETARO_OTOMI = Lang(113, "otq", "Querétaro Otomi", "Querétaro Otomi")
-  val TAHITIAN = Lang(114, "ty", "Tahitian", "Tahitian")
-  val TIGRINYA = Lang(115, "ti", "ትግርኛ", "Tigrinya")
-  val TONGAN = Lang(116, "to", "lea fakatonga", "Tongan")
-  val YUCATEC_MAYA = Lang(117, "yua", "Yucatec Maya", "Yucatec Maya")
+enum class Languages(
+  val id: Int,
+  val code: String,
+  val displayName: String,
+  val englishName: String,
+  val flag: String,
+  val directoryName: String,
+) {
+  AUTO(0, "auto", "Auto", "Auto", "🌏", ""),
+  ALBANIAN(1, "sq", "Shqiptar", "Albanian", "🇦🇱", "sq"),
+  ARABIC(2, "ar", "العربية", "Arabic", "🇸🇦", "ar"),
+  AMHARIC(3, "am", "አማርኛ", "Amharic", "🇪🇹", "am"),
+  AZERBAIJANI(4, "az", "азәрбајҹан", "Azerbaijani", "🇦🇿", "az"),
+  IRISH(5, "ga", "Gaeilge", "Irish", "🇮🇪", "ga"),
+  ESTONIAN(6, "et", "Eesti", "Estonian", "🇪🇪", "et"),
+  BASQUE(7, "eu", "Euskal", "Basque", "🇪🇸", "eu"),
+  BELARUSIAN(8, "be", "беларускі", "Belarusian", "🇧🇾", "be"),
+  BULGARIAN(9, "bg", "Български", "Bulgarian", "🇧🇬", "bg"),
+  ICELANDIC(10, "is", "Íslenska", "Icelandic", "🇮🇸", "is"),
+  POLISH(11, "pl", "Polski", "Polish", "🇵🇱", "pl"),
+  BOSNIAN(12, "bs", "Bosanski", "Bosnian", "🇧🇦", "bs"),
+  PERSIAN(13, "fa", "Persian", "Persian", "🇮🇷", "fa"),
+  AFRIKAANS(14, "af", "Afrikaans", "Afrikaans", "🇿🇦", "af"),
+  DANISH(15, "da", "Dansk", "Danish", "🇩🇰", "da"),
+  GERMAN(16, "de", "Deutsch", "German", "🇩🇪", "de"),
+  RUSSIAN(17, "ru", "Русский", "Russian", "🇷🇺", "ru"),
+  FRENCH(18, "fr", "Français", "French", "🇫🇷", "fr"),
+  FILIPINO(19, "fil", "Filipino", "Filipino", "🇵🇭", "fil"),
+  FINNISH(20, "fi", "Suomi", "Finnish", "🇫🇮", "fi"),
+  FRISIAN(21, "fy", "Frysk", "Frisian", "🇳🇱", "fy"),
+  KHMER(22, "km", "ខ្មែរ", "Khmer", "🇰🇭", "km"),
+  GEORGIAN(23, "ka", "ქართული", "Georgian", "🇬🇪", "ka"),
+  GUJARATI(24, "gu", "ગુજરાતી", "Gujarati", "🇮🇳", "gu"),
+  KAZAKH(25, "kk", "Kazakh", "Kazakh", "🇰🇿", "kk"),
+  HAITIAN_CREOLE(26, "ht", "Haitian Creole", "Haitian Creole", "🇭🇹", "ht"),
+  KOREAN(27, "ko", "한국어", "Korean", "🇰🇷", "ko"),
+  HAUSA(28, "ha", "Hausa", "Hausa", "🇳🇬", "ha"),
+  DUTCH(29, "nl", "Nederlands", "Dutch", "🇳🇱", "nl"),
+  KYRGYZ(30, "ky", "Кыргыз тили", "Kyrgyz", "🇰🇬", "ky"),
+  GALICIAN(31, "gl", "Galego", "Galician", "🇪🇸", "gl"),
+  CATALAN(32, "ca", "Català", "Catalan", "🇪🇸", "ca"),
+  CZECH(33, "cs", "Čeština", "Czech", "🇨🇿", "cs"),
+  KANNADA(34, "kn", "ಕನ್ನಡ", "Kannada", "🇮🇳", "kn"),
+  CORSICAN(35, "co", "Corsa", "Corsican", "🇫🇷", "co"),
+  CROATIAN(36, "hr", "Hrvatski", "Croatian", "🇭🇷", "hr"),
+  KURDISH(37, "ku", "Kurdî", "Kurdish", "🇮🇶", "ku"),
+  LATIN(38, "la", "Latina", "Latin", "🇻🇦", "la"),
+  LATVIAN(39, "lv", "Latviešu", "Latvian", "🇱🇻", "lv"),
+  LAO(40, "lo", "ລາວ", "Lao", "🇱🇦", "lo"),
+  LITHUANIAN(41, "lt", "Lietuvių", "Lithuanian", "🇱🇹", "lt"),
+  LUXEMBOURGISH(42, "lb", "Lëtzebuergesch", "Luxembourgish", "🇱🇺", "lb"),
+  ROMANIAN(43, "ro", "Română", "Romanian", "🇷🇴", "ro"),
+  MALAGASY(44, "mg", "Malagasy", "Malagasy", "🇲🇬", "mg"),
+  MALTESE(45, "mt", "Il-Malti", "Maltese", "🇲🇹", "mt"),
+  MARATHI(46, "mr", "मराठी", "Marathi", "🇮🇳", "mr"),
+  MALAYALAM(47, "ml", "മലയാളം", "Malayalam", "🇮🇳", "ml"),
+  MALAY(48, "ms", "Melayu", "Malay", "🇲🇾", "ms"),
+  MACEDONIAN(49, "mk", "Македонски", "Macedonian", "🇲🇰", "mk"),
+  MAORI(50, "mi", "Māori", "Maori", "🇳🇿", "mi"),
+  MONGOLIAN(51, "mn", "Монгол хэл", "Mongolian", "🇲🇳", "mn"),
+  BANGLA(52, "bn", "বাংল", "Bangla", "🇧🇩", "bn"),
+  BURMESE(53, "my", "မြန်မာ", "Burmese", "🇲🇲", "my"),
+  HMONG(54, "hmn", "Hmoob", "Hmong", "🇨🇳", "hmn"),
+  XHOSA(55, "xh", "IsiXhosa", "Xhosa", "🇿🇦", "xh"),
+  ZULU(56, "zu", "Zulu", "Zulu", "🇿🇦", "zu"),
+  NEPALI(57, "ne", "नेपाली", "Nepali", "🇳🇵", "ne"),
+  NORWEGIAN(58, "no", "Norsk", "Norwegian", "🇳🇴", "no"),
+  PUNJABI(59, "pa", "ਪੰਜਾਬੀ", "Punjabi", "🇮🇳", "pa"),
+  PORTUGUESE(60, "pt", "Português", "Portuguese", "🇵🇹", "pt"),
+  PASHTO(61, "ps", "Pashto", "Pashto", "🇦🇫", "ps"),
+  CHICHEWA(62, "ny", "Chichewa", "Chichewa", "🇲🇼", "ny"),
+  JAPANESE(63, "ja", "日本語", "Japanese", "🇯🇵", "ja"),
+  SWEDISH(64, "sv", "Svenska", "Swedish", "🇸🇪", "sv"),
+  SAMOAN(65, "sm", "Samoa", "Samoan", "🇼🇸", "sm"),
+  SERBIAN(66, "sr", "Српски", "Serbian", "🇷🇸", "sr"),
+  SOTHO(67, "st", "Sesotho", "Sotho", "🇱🇸", "st"),
+  SINHALA(68, "si", "සිංහල", "Sinhala", "🇱🇰", "si"),
+  ESPERANTO(69, "eo", "Esperanta", "Esperanto", "🇺🇳", "eo"),
+  SLOVAK(70, "sk", "Slovenčina", "Slovak", "🇸🇰", "sk"),
+  SLOVENIAN(71, "sl", "Slovenščina", "Slovenian", "🇸🇮", "sl"),
+  SWAHILI(72, "sw", "Kiswahili", "Swahili", "🇹🇿", "sw"),
+  SCOTTISH_GAELIC(73, "gd", "Gàidhlig na h-Alba", "Scottish Gaelic", "🇬🇧", "gd"),
+  CEBUANO(74, "ceb", "Cebuano", "Cebuano", "🇵🇭", "ceb"),
+  SOMALI(75, "so", "Somali", "Somali", "🇸🇴", "so"),
+  TAJIK(76, "tg", "Тоҷикӣ", "Tajik", "🇹🇯", "tg"),
+  TELUGU(77, "te", "తెలుగు", "Telugu", "🇮🇳", "te"),
+  TAMIL(78, "ta", "தமிழ்", "Tamil", "🇮🇳", "ta"),
+  THAI(79, "th", "ไทย", "Thai", "🇹🇭", "th"),
+  TURKISH(80, "tr", "Türkçe", "Turkish", "🇹🇷", "tr"),
+  WELSH(81, "cy", "Cymraeg", "Welsh", "🇬🇧", "cy"),
+  URDU(82, "ur", "اردو", "Urdu", "🇵🇰", "ur"),
+  UKRAINIAN(83, "uk", "Українська", "Ukrainian", "🇺🇦", "uk"),
+  UZBEK(84, "uz", "O'zbek", "Uzbek", "🇺🇿", "uz"),
+  SPANISH(85, "es", "Español", "Spanish", "🇪🇸", "es"),
+  HEBREW(86, "iw", "עברית", "Hebrew", "🇮🇱", "iw"),
+  GREEK(87, "el", "Ελληνικά", "Greek", "🇬🇷", "el"),
+  HAWAIIAN(88, "haw", "Hawaiian", "Hawaiian", "🇺🇸", "haw"),
+  SINDHI(89, "sd", "سنڌي", "Sindhi", "🇵🇰", "sd"),
+  HUNGARIAN(90, "hu", "Magyar", "Hungarian", "🇭🇺", "hu"),
+  SHONA(91, "sn", "Shona", "Shona", "🇿🇼", "sn"),
+  ARMENIAN(92, "hy", "Հայերեն", "Armenian", "🇦🇲", "hy"),
+  IGBO(93, "ig", "Igbo", "Igbo", "🇳🇬", "ig"),
+  ITALIAN(94, "it", "Italiano", "Italian", "🇮🇹", "it"),
+  YIDDISH(95, "yi", "ייִדיש", "Yiddish", "🇮🇱", "yi"),
+  HINDI(96, "hi", "हिंदी", "Hindi", "🇮🇳", "hi"),
+  SUNDANESE(97, "su", "Sunda", "Sundanese", "🇮🇩", "su"),
+  INDONESIAN(98, "id", "Indonesia", "Indonesian", "🇮🇩", "in"),
+  JAVANESE(99, "jv", "Wong Jawa", "Javanese", "🇮🇩", "jv"),
+  ENGLISH(100, "en", "English", "English", "🇺🇸", "en"),
+  YORUBA(101, "yo", "Yorùbá", "Yoruba", "🇳🇬", "yo"),
+  VIETNAMESE(102, "vi", "Tiếng Việt", "Vietnamese", "🇻🇳", "vi"),
+  CHINESE_TRADITIONAL(103, "zh-rTW", "正體中文", "Chinese Traditional", "🇨🇳", "zh-rTW"),
+  CHINESE_SIMPLIFIED(104, "zh-rCN", "简体中文", "Chinese Simplified", "🇨🇳", "zh-rCN"),
+  ASSAMESE(105, "as", "Assamese", "Assamese", "🇮🇳", "as"),
+  DARI(106, "prs", "Dari", "Dari", "🇦🇫", "prs"),
+  FIJIAN(107, "fj", "Fijian", "Fijian", "🇫🇯", "fj"),
+  HMONG_DAW(108, "mww", "Hmong Daw", "Hmong Daw", "🇨🇳", "mww"),
+  INUKTITUT(109, "iu", "ᐃᓄᒃᑎᑐᑦ", "Inuktitut", "🇨🇦", "iu"),
+  ODIA(112, "or", "Odia", "Odia", "🇮🇳", "or"),
+  QUERETARO_OTOMI(113, "otq", "Querétaro Otomi", "Querétaro Otomi", "🇲🇽", "otq"),
+  TAHITIAN(114, "ty", "Tahitian", "Tahitian", "🇵🇫", "ty"),
+  TIGRINYA(115, "ti", "ትግርኛ", "Tigrinya", "🇪🇷", "ti"),
+  TONGAN(116, "to", "lea fakatonga", "Tongan", "🇹🇴", "to"),
+  YUCATEC_MAYA(117, "yua", "Yucatec Maya", "Yucatec Maya", "🇲🇽", "yua");
 
-  private val languages: Map<Int, Lang> = mapOf(
-    0 to AUTO, 1 to ALBANIAN, 2 to ARABIC, 3 to AMHARIC, 4 to AZERBAIJANI,
-    5 to IRISH, 6 to ESTONIAN, 7 to BASQUE, 8 to BELARUSIAN, 9 to BULGARIAN,
-    10 to ICELANDIC, 11 to POLISH, 12 to BOSNIAN, 13 to PERSIAN, 14 to AFRIKAANS,
-    15 to DANISH, 16 to GERMAN, 17 to RUSSIAN, 18 to FRENCH, 19 to FILIPINO,
-    20 to FINNISH, 21 to FRISIAN, 22 to KHMER, 23 to GEORGIAN, 24 to GUJARATI,
-    25 to KAZAKH, 26 to HAITIAN_CREOLE, 27 to KOREAN, 28 to HAUSA, 29 to DUTCH,
-    30 to KYRGYZ, 31 to GALICIAN, 32 to CATALAN, 33 to CZECH, 34 to KANNADA,
-    35 to CORSICAN, 36 to CROATIAN, 37 to KURDISH, 38 to LATIN, 39 to LATVIAN,
-    40 to LAO, 41 to LITHUANIAN, 42 to LUXEMBOURGISH, 43 to ROMANIAN, 44 to MALAGASY,
-    45 to MALTESE, 46 to MARATHI, 47 to MALAYALAM, 48 to MALAY, 49 to MACEDONIAN,
-    50 to MAORI, 51 to MONGOLIAN, 52 to BANGLA, 53 to BURMESE, 54 to HMONG,
-    55 to XHOSA, 56 to ZULU, 57 to NEPALI, 58 to NORWEGIAN, 59 to PUNJABI,
-    60 to PORTUGUESE, 61 to PASHTO, 62 to CHICHEWA, 63 to JAPANESE, 64 to SWEDISH,
-    65 to SAMOAN, 66 to SERBIAN, 67 to SOTHO, 68 to SINHALA, 69 to ESPERANTO,
-    70 to SLOVAK, 71 to SLOVENIAN, 72 to SWAHILI, 73 to SCOTTISH_GAELIC, 74 to CEBUANO,
-    75 to SOMALI, 76 to TAJIK, 77 to TELUGU, 78 to TAMIL, 79 to THAI,
-    80 to TURKISH, 81 to WELSH, 82 to URDU, 83 to UKRAINIAN, 84 to UZBEK,
-    85 to SPANISH, 86 to HEBREW, 87 to GREEK, 88 to HAWAIIAN, 89 to SINDHI,
-    90 to HUNGARIAN, 91 to SHONA, 92 to ARMENIAN, 93 to IGBO, 94 to ITALIAN,
-    95 to YIDDISH, 96 to HINDI, 97 to SUNDANESE, 98 to INDONESIAN, 99 to JAVANESE,
-    100 to ENGLISH, 101 to YORUBA, 102 to VIETNAMESE, 103 to CHINESE_TRADITIONAL,
-    104 to CHINESE_SIMPLIFIED, 105 to ASSAMESE, 106 to DARI, 107 to FIJIAN,
-    108 to HMONG_DAW, 109 to INUKTITUT, 110 to KLINGON_LATIN, 111 to KLINGON_PIQAD,
-    112 to ODIA, 113 to QUERETARO_OTOMI, 114 to TAHITIAN, 115 to TIGRINYA,
-    116 to TONGAN, 117 to YUCATEC_MAYA
-  )
+  companion object {
+    fun languages(): List<Lang> {
+      return Languages.entries.map { it.toLang() }
+    }
 
-  fun getLanguages(): List<Lang> {
-    return ArrayList(languages.values)
-  }
-
-  fun getAllSupportedLanguages(): List<Lang> {
-    return getLanguages().filter { it != AUTO }
+    fun allSupportedLanguages(): List<Lang> {
+      return Languages.entries.filter { it != AUTO }.map { it.toLang() }
+    }
   }
 }
+
+fun Languages.toLang(): Lang {
+  return Lang(
+    id = this.id,
+    code = this.code,
+    name = this.displayName,
+    englishName = this.englishName,
+    flag = this.flag,
+    directoryName = this.directoryName
+  )
+}
+
+val Lang.flagEmoji: String?
+  get() = flag.takeIf { it.isNotBlank() }
+
+val Lang.valuesDirectoryQualifier: String?
+  get() = directoryName.takeIf { it.isNotBlank() }

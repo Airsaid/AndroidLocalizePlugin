@@ -1,10 +1,6 @@
 package com.airsaid.localization.translate.impl.openai
 
-import com.intellij.openapi.components.PersistentStateComponent
-import com.intellij.openapi.components.Service
-import com.intellij.openapi.components.State
-import com.intellij.openapi.components.Storage
-import com.intellij.openapi.components.service
+import com.intellij.openapi.components.*
 import java.net.URI
 
 @Service
@@ -101,6 +97,7 @@ class OpenAITranslatorSettings : PersistentStateComponent<OpenAITranslatorSettin
       "gpt-4.1", "gpt-4.1-mini", "gpt-4.1-nano"
     )
     val DEFAULT_MODEL: String = DEFAULT_MODELS.first()
+
     private val MODEL_CACHE_TTL_MS: Long = java.time.Duration.ofDays(1).toMillis()
 
     fun getInstance(): OpenAITranslatorSettings = service()

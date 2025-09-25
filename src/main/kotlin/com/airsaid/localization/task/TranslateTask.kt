@@ -22,6 +22,7 @@ import com.airsaid.localization.services.AndroidValuesService
 import com.airsaid.localization.translate.TranslationException
 import com.airsaid.localization.translate.lang.Lang
 import com.airsaid.localization.translate.lang.Languages
+import com.airsaid.localization.translate.lang.toLang
 import com.airsaid.localization.translate.services.TranslatorService
 import com.airsaid.localization.utils.TextUtil
 import com.intellij.ide.util.PropertiesComponent
@@ -101,17 +102,17 @@ class TranslateTask(
         val toValues = valueService.loadValues(toValuePsiFile)
         val toValuesMap = toValues.stream().collect(
           Collectors.toMap(
-          { psiElement ->
-            if (psiElement is XmlTag) {
-              ApplicationManager.getApplication().runReadAction(Computable {
-                psiElement.getAttributeValue("name") ?: UUID.randomUUID().toString()
-              })
-            } else {
-              UUID.randomUUID().toString()
-            }
-          },
-          { it }
-        ))
+            { psiElement ->
+              if (psiElement is XmlTag) {
+                ApplicationManager.getApplication().runReadAction(Computable {
+                  psiElement.getAttributeValue("name") ?: UUID.randomUUID().toString()
+                })
+              } else {
+                UUID.randomUUID().toString()
+              }
+            },
+            { it }
+          ))
         val translatedValues = doTranslate(progressIndicator, toLanguage, toValuesMap, isOverwriteExistingString)
         translationError?.let { return }
         writeTranslatedValues(progressIndicator, File(toValuePsiFile.virtualFile.path), translatedValues)
@@ -203,7 +204,7 @@ class TranslateTask(
             continue
           }
           try {
-            val translatedText = translatorService.doTranslate(Languages.AUTO, toLanguage, text)
+            val translatedText = translatorService.doTranslate(Languages.AUTO.toLang(), toLanguage, text)
             ApplicationManager.getApplication().runReadAction {
               child.setValue(translatedText)
             }

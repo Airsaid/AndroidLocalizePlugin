@@ -40,8 +40,6 @@ class OpenAITranslator : AbstractTranslator() {
 
   override val key = KEY
 
-  override val name = KEY
-
   override val icon = PluginIcons.OPENAI_ICON
 
   override val credentialDefinitions: List<TranslatorCredentialDescriptor>

@@ -37,62 +37,62 @@ import java.lang.reflect.Type
  * @author airsaid
  */
 @State(
-    name = "com.airsaid.localization.translate.services.TranslationCacheService",
-    storages = [Storage("androidLocalizeTranslationCaches.xml")]
+  name = "com.airsaid.localization.translate.services.TranslationCacheService",
+  storages = [Storage("androidLocalizeTranslationCaches.xml")]
 )
 @Service
 class TranslationCacheService : PersistentStateComponent<TranslationCacheService>, Disposable {
 
-    @Transient
-    private val lruCache = LRUCache<String, String>(CACHE_MAX_SIZE)
+  @Transient
+  private val lruCache = LRUCache<String, String>(CACHE_MAX_SIZE)
 
-    @OptionTag(converter = LruCacheConverter::class)
-    fun getLruCache(): LRUCache<String, String> = lruCache
+  @OptionTag(converter = LruCacheConverter::class)
+  fun getLruCache(): LRUCache<String, String> = lruCache
 
-    fun put(key: String, value: String) {
-        lruCache.put(key, value)
+  fun put(key: String, value: String) {
+    lruCache.put(key, value)
+  }
+
+  fun get(key: String?): String {
+    val value = lruCache.get(key)
+    return value ?: ""
+  }
+
+  fun setMaxCacheSize(maxCacheSize: Int) {
+    lruCache.setMaxCapacity(maxCacheSize)
+  }
+
+  override fun getState(): TranslationCacheService = this
+
+  override fun loadState(state: TranslationCacheService) {
+    XmlSerializerUtil.copyBean(state, this)
+  }
+
+  override fun dispose() {
+    lruCache.clear()
+  }
+
+  class LruCacheConverter : Converter<LRUCache<String, String>>() {
+    override fun fromString(value: String): LRUCache<String, String>? {
+      val type: Type = object : TypeToken<Map<String, String>>() {}.type
+      val map: Map<String, String> = GsonUtil.getInstance().gson.fromJson(value, type)
+      val lruCache = LRUCache<String, String>(CACHE_MAX_SIZE)
+      for ((key, value1) in map) {
+        lruCache.put(key, value1)
+      }
+      return lruCache
     }
 
-    fun get(key: String?): String {
-        val value = lruCache.get(key)
-        return value ?: ""
+    override fun toString(lruCache: LRUCache<String, String>): String? {
+      val values = linkedMapOf<String, String>()
+      lruCache.forEach { key, value -> values[key] = value }
+      return GsonUtil.getInstance().gson.toJson(values)
     }
+  }
 
-    fun setMaxCacheSize(maxCacheSize: Int) {
-        lruCache.setMaxCapacity(maxCacheSize)
-    }
+  companion object {
+    private const val CACHE_MAX_SIZE = 500
 
-    override fun getState(): TranslationCacheService = this
-
-    override fun loadState(state: TranslationCacheService) {
-        XmlSerializerUtil.copyBean(state, this)
-    }
-
-    override fun dispose() {
-        lruCache.clear()
-    }
-
-    class LruCacheConverter : Converter<LRUCache<String, String>>() {
-        override fun fromString(value: String): LRUCache<String, String>? {
-            val type: Type = object : TypeToken<Map<String, String>>() {}.type
-            val map: Map<String, String> = GsonUtil.getInstance().gson.fromJson(value, type)
-            val lruCache = LRUCache<String, String>(CACHE_MAX_SIZE)
-            for ((key, value1) in map) {
-                lruCache.put(key, value1)
-            }
-            return lruCache
-        }
-
-        override fun toString(lruCache: LRUCache<String, String>): String? {
-            val values = linkedMapOf<String, String>()
-            lruCache.forEach { key, value -> values[key] = value }
-            return GsonUtil.getInstance().gson.toJson(values)
-        }
-    }
-
-    companion object {
-        private const val CACHE_MAX_SIZE = 500
-
-        fun getInstance(): TranslationCacheService = service()
-    }
+    fun getInstance(): TranslationCacheService = service()
+  }
 }

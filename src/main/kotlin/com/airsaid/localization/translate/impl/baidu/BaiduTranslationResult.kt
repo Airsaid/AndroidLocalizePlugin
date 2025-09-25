@@ -25,33 +25,33 @@ import com.intellij.openapi.util.text.StringUtil
  * @author airsaid
  */
 data class BaiduTranslationResult(
-    var from: String? = null,
-    var to: String? = null,
-    @SerializedName("trans_result")
-    var contents: List<Content>? = null,
-    @SerializedName("error_code")
-    var errorCode: String? = null,
-    @SerializedName("error_msg")
-    var errorMsg: String? = null
+  var from: String? = null,
+  var to: String? = null,
+  @SerializedName("trans_result")
+  var contents: List<Content>? = null,
+  @SerializedName("error_code")
+  var errorCode: String? = null,
+  @SerializedName("error_msg")
+  var errorMsg: String? = null
 ) : TranslationResult {
 
-    fun isSuccess(): Boolean {
-        val errorCode = this.errorCode
-        return StringUtil.isEmpty(errorCode) || "52000" == errorCode
+  fun isSuccess(): Boolean {
+    val errorCode = this.errorCode
+    return StringUtil.isEmpty(errorCode) || "52000" == errorCode
+  }
+
+  override val translationResult: String
+    get() {
+      val contents = this.contents
+      if (contents.isNullOrEmpty()) {
+        return ""
+      }
+      val dst = contents[0].dst
+      return dst ?: ""
     }
 
-    override val translationResult: String
-        get() {
-            val contents = this.contents
-            if (contents.isNullOrEmpty()) {
-                return ""
-            }
-            val dst = contents[0].dst
-            return dst ?: ""
-        }
-
-    data class Content(
-        var src: String? = null,
-        var dst: String? = null
-    )
+  data class Content(
+    var src: String? = null,
+    var dst: String? = null
+  )
 }

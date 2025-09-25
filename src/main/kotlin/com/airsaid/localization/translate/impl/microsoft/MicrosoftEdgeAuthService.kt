@@ -10,10 +10,8 @@ import com.intellij.openapi.diagnostic.logger
 import com.intellij.util.concurrency.annotations.RequiresBackgroundThread
 import com.intellij.util.io.HttpRequests
 import java.io.IOException
-import java.util.Base64
-import java.util.Date
+import java.util.*
 import java.util.concurrent.atomic.AtomicReference
-import kotlin.jvm.Volatile
 
 /**
  * Fetches and caches Microsoft Translator access tokens using the same public
@@ -55,7 +53,7 @@ class MicrosoftEdgeAuthService {
           connection.setRequestProperty(
             "User-Agent",
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
-              "(KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36"
+                "(KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36"
           )
         }
         .connect { request -> request.readString(null) }

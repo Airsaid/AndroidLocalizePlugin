@@ -4,6 +4,7 @@ import com.airsaid.localization.translate.AbstractTranslator
 import com.airsaid.localization.translate.TranslationException
 import com.airsaid.localization.translate.lang.Lang
 import com.airsaid.localization.translate.lang.Languages
+import com.airsaid.localization.translate.lang.toLang
 import com.airsaid.localization.translate.util.GsonUtil
 import com.airsaid.localization.translate.util.UrlBuilder
 import com.google.auto.service.AutoService
@@ -19,11 +20,11 @@ class GoogleTranslator : AbsGoogleTranslator() {
   private val log = Logger.getInstance(GoogleTranslator::class.java)
 
   override val key: String = KEY
-  override val name: String = "Google"
+
   override val icon: Icon = PluginIcons.GOOGLE_ICON
 
   override fun getRequestUrl(fromLang: Lang, toLang: Lang, text: String): String {
-    val source = fromLang.takeIf { it != Languages.AUTO }?.translationCode ?: "auto"
+    val source = if (fromLang.id == Languages.AUTO.id) "auto" else fromLang.translationCode
     val builder = UrlBuilder(googleApiUrl(TRANSLATE_PATH))
       .addQueryParameter("client", "gtx")
       .addQueryParameter("sl", source)
@@ -32,7 +33,7 @@ class GoogleTranslator : AbsGoogleTranslator() {
       .addQueryParameter("dj", "1")
       .addQueryParameter("ie", "UTF-8")
       .addQueryParameter("oe", "UTF-8")
-      .addQueryParameter("hl", Languages.ENGLISH.translationCode)
+      .addQueryParameter("hl", Languages.ENGLISH.toLang().translationCode)
       .addQueryParameter("tk", text.tk())
     return builder.build()
   }

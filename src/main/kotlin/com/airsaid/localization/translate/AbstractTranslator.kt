@@ -35,10 +35,11 @@ abstract class AbstractTranslator : Translator, TranslatorConfigurable {
 
   abstract override val key: String
 
-  abstract override val name: String
+  override val name: String
+    get() = key
 
   override val supportedLanguages: List<Lang>
-    get() = Languages.getAllSupportedLanguages()
+    get() = Languages.allSupportedLanguages()
 
   companion object {
     protected val LOG = Logger.getInstance(AbstractTranslator::class.java)

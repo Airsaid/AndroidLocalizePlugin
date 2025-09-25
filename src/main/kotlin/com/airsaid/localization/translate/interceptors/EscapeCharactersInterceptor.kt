@@ -25,23 +25,23 @@ import com.intellij.openapi.util.text.StringUtil
  */
 class EscapeCharactersInterceptor : TranslatorService.TranslationInterceptor {
 
-    private val needEscapeChars = mutableListOf<Char>()
+  private val needEscapeChars = mutableListOf<Char>()
 
-    init {
-        needEscapeChars.addAll(listOf('@', '?', '\'', '\"'))
-    }
+  init {
+    needEscapeChars.addAll(listOf('@', '?', '\'', '\"'))
+  }
 
-    override fun process(text: String?): String? {
-        if (StringUtil.isEmpty(text)) {
-            return text
-        }
-        val result = StringBuilder()
-        text!!.forEach { ch ->
-            if (needEscapeChars.contains(ch)) {
-                result.append('\\')
-            }
-            result.append(ch)
-        }
-        return result.toString()
+  override fun process(text: String?): String? {
+    if (StringUtil.isEmpty(text)) {
+      return text
     }
+    val result = StringBuilder()
+    text!!.forEach { ch ->
+      if (needEscapeChars.contains(ch)) {
+        result.append('\\')
+      }
+      result.append(ch)
+    }
+    return result.toString()
+  }
 }

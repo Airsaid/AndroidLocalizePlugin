@@ -77,6 +77,7 @@ internal fun String.tk(): String {
         bytes += (charCode shr 6 or 0xC0).toLong()
         bytes += (charCode and 0x3F or 0x80).toLong()
       }
+
       charCode in 0xD800..0xDBFF && index + 1 < length -> {
         val next = this[index + 1].code
         if (next and 0xFC00 == 0xDC00) {
@@ -92,6 +93,7 @@ internal fun String.tk(): String {
           bytes += (charCode and 0x3F or 0x80).toLong()
         }
       }
+
       else -> {
         bytes += (charCode shr 12 or 0xE0).toLong()
         bytes += (charCode shr 6 and 0x3F or 0x80).toLong()

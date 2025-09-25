@@ -2,6 +2,7 @@ package com.airsaid.localization.translate
 
 import com.airsaid.localization.translate.lang.Lang
 import com.airsaid.localization.translate.lang.Languages
+import com.airsaid.localization.translate.lang.toLang
 import com.intellij.openapi.util.Pair
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpServer
@@ -67,7 +68,7 @@ class AbstractTranslatorNetworkTest {
     }
 
     val inputText = "Hello world + test"
-    val result = translator.doTranslate(Languages.AUTO, Languages.ENGLISH, inputText)
+    val result = translator.doTranslate(Languages.AUTO.toLang(), Languages.ENGLISH.toLang(), inputText)
 
     assertTrue(latch.await(2, TimeUnit.SECONDS))
     assertEquals("\"ok\"", result)
@@ -78,7 +79,7 @@ class AbstractTranslatorNetworkTest {
 
     val expectedBody = listOf(
       "q" to inputText,
-      "lang" to Languages.ENGLISH.translationCode,
+      "lang" to Languages.ENGLISH.toLang().translationCode,
     ).joinToString("&") { (name, value) ->
       "${name}=${URLEncoder.encode(value, StandardCharsets.UTF_8)}"
     }
@@ -114,7 +115,7 @@ class AbstractTranslatorNetworkTest {
     }
 
     val inputText = "Hello"
-    val result = translator.doTranslate(Languages.AUTO, Languages.ENGLISH, inputText)
+    val result = translator.doTranslate(Languages.AUTO.toLang(), Languages.ENGLISH.toLang(), inputText)
 
     assertTrue(latch.await(2, TimeUnit.SECONDS))
     assertEquals("{\"translated\":\"ok\"}", result)
@@ -122,7 +123,7 @@ class AbstractTranslatorNetworkTest {
     val request = capturedRequest.get()
     assertEquals("POST", request.method)
     assertTrue(request.contentType?.contains("application/json") == true)
-    val expectedBody = "{\"text\":\"$inputText\",\"target\":\"${Languages.ENGLISH.translationCode}\"}"
+    val expectedBody = "{\"text\":\"$inputText\",\"target\":\"${Languages.ENGLISH.toLang().translationCode}\"}"
     assertEquals(expectedBody, request.body)
   }
 
@@ -136,7 +137,7 @@ class AbstractTranslatorNetworkTest {
   private open inner class TestTranslator(private val endpoint: String) : AbstractTranslator() {
     override val key: String = "Test"
     override val name: String = "Test"
-    override val supportedLanguages: List<Lang> = listOf(Languages.ENGLISH)
+    override val supportedLanguages: List<Lang> = listOf(Languages.ENGLISH.toLang())
 
     override fun getRequestUrl(fromLang: Lang, toLang: Lang, text: String): String {
       return baseUrl + endpoint
