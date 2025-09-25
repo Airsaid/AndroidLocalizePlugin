@@ -40,8 +40,7 @@ class TranslationException : RuntimeException {
     this.fromLang = fromLang
     this.toLang = toLang
     this.text = text
-    cause.printStackTrace()
-    LOG.error("TranslationException: ${cause.message}", cause)
+    LOG.warn("TranslationException: ${cause.message}", cause)
   }
 
   constructor(fromLang: Lang, toLang: Lang, text: String, message: String) : super(
@@ -50,6 +49,6 @@ class TranslationException : RuntimeException {
     this.fromLang = fromLang
     this.toLang = toLang
     this.text = text
-    LOG.error("TranslationException: $message")
+    LOG.warn("TranslationException: $message")
   }
 }

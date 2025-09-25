@@ -68,8 +68,7 @@ abstract class AbstractTranslator : Translator, TranslatorConfigurable {
         parsingResult(fromLang, toLang, text, resultText)
       }
     } catch (e: Exception) {
-      e.printStackTrace()
-      LOG.error(e.message, e)
+      LOG.warn("Translation request failed: ${e.message}", e)
       throw TranslationException(fromLang, toLang, text, e)
     }
   }
