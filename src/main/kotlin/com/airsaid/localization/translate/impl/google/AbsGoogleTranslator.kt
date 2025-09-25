@@ -29,31 +29,31 @@ import javax.swing.Icon
  */
 abstract class AbsGoogleTranslator : AbstractTranslator() {
 
-    protected var _supportedLanguages: MutableList<Lang>? = null
+  protected var _supportedLanguages: MutableList<Lang>? = null
 
-    override val icon: Icon = PluginIcons.GOOGLE_ICON
+  override val icon: Icon = PluginIcons.GOOGLE_ICON
 
-    override val credentialDefinitions: List<TranslatorCredentialDescriptor> = emptyList()
+  override val credentialDefinitions: List<TranslatorCredentialDescriptor> = emptyList()
 
-    override val supportedLanguages: List<Lang>
-        get() {
-            if (_supportedLanguages == null) {
-                val languages = Languages.getLanguages()
-                _supportedLanguages = mutableListOf<Lang>().apply {
-                    for (i in 1..104) {
-                        var lang = languages[i]
-                        lang = when (lang) {
-                            Languages.CHINESE_SIMPLIFIED -> lang.setTranslationCode("zh-CN")
-                            Languages.CHINESE_TRADITIONAL -> lang.setTranslationCode("zh-TW")
-                            Languages.FILIPINO -> lang.setTranslationCode("tl")
-                            Languages.INDONESIAN -> lang.setTranslationCode("id")
-                            Languages.JAVANESE -> lang.setTranslationCode("jw")
-                            else -> lang
-                        }
-                        add(lang)
-                    }
-                }
+  override val supportedLanguages: List<Lang>
+    get() {
+      if (_supportedLanguages == null) {
+        val languages = Languages.getLanguages()
+        _supportedLanguages = mutableListOf<Lang>().apply {
+          for (i in 1..104) {
+            var lang = languages[i]
+            lang = when (lang) {
+              Languages.CHINESE_SIMPLIFIED -> lang.setTranslationCode("zh-CN")
+              Languages.CHINESE_TRADITIONAL -> lang.setTranslationCode("zh-TW")
+              Languages.FILIPINO -> lang.setTranslationCode("tl")
+              Languages.INDONESIAN -> lang.setTranslationCode("id")
+              Languages.JAVANESE -> lang.setTranslationCode("jw")
+              else -> lang
             }
-            return _supportedLanguages!!
+            add(lang)
+          }
         }
+      }
+      return _supportedLanguages!!
+    }
 }

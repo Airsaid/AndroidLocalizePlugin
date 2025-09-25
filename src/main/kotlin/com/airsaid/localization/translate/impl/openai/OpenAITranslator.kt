@@ -18,16 +18,14 @@
 package com.airsaid.localization.translate.impl.openai
 
 import com.airsaid.localization.translate.AbstractTranslator
-import com.airsaid.localization.translate.TranslatorCredentialDescriptor
 import com.airsaid.localization.translate.TranslationException
+import com.airsaid.localization.translate.TranslatorCredentialDescriptor
 import com.airsaid.localization.translate.lang.Lang
-import com.airsaid.localization.translate.lang.Languages
 import com.airsaid.localization.translate.util.GsonUtil
 import com.google.auto.service.AutoService
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.util.io.RequestBuilder
 import icons.PluginIcons
-import javax.swing.Icon
 
 @AutoService(AbstractTranslator::class)
 class OpenAITranslator : AbstractTranslator() {
@@ -50,9 +48,6 @@ class OpenAITranslator : AbstractTranslator() {
     get() = listOf(
       TranslatorCredentialDescriptor(id = "appKey", label = "API Key", isSecret = true)
     )
-
-  override val supportedLanguages: List<Lang>
-    get() = Languages.getLanguages()
 
   override val requestContentType: String
     get() = "application/json"

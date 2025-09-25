@@ -19,6 +19,7 @@ package com.airsaid.localization.translate
 
 import com.airsaid.localization.config.SettingsState
 import com.airsaid.localization.translate.lang.Lang
+import com.airsaid.localization.translate.lang.Languages
 import com.airsaid.localization.translate.util.HttpRequestFactory
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.Pair
@@ -33,7 +34,11 @@ import javax.swing.Icon
 abstract class AbstractTranslator : Translator, TranslatorConfigurable {
 
   abstract override val key: String
+
   abstract override val name: String
+
+  override val supportedLanguages: List<Lang>
+    get() = Languages.getAllSupportedLanguages()
 
   companion object {
     protected val LOG = Logger.getInstance(AbstractTranslator::class.java)
