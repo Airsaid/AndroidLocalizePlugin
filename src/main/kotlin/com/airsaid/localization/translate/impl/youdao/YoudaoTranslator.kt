@@ -156,8 +156,8 @@ class YoudaoTranslator : AbstractTranslator() {
         }
 
     override val credentialDefinitions = listOf(
-        TranslatorCredentialDescriptor(id = "appId", label = "应用 ID", isSecret = false),
-        TranslatorCredentialDescriptor(id = "appKey", label = "应用秘钥", isSecret = true)
+        TranslatorCredentialDescriptor(id = "appId", label = "APP ID", isSecret = false),
+        TranslatorCredentialDescriptor(id = "appKey", label = "APP KEY", isSecret = true)
     )
 
     override val credentialHelpUrl: String? = APPLY_APP_ID_URL
