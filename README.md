@@ -18,7 +18,7 @@ Android localization plugin. supports multiple languages and multiple translator
   - Youdao translator.
   - Ali translator.
   - DeepL translator.
-  - OpenAI ChatGPT translator.
+  - OpenAI translator.
 - Supports up to 100+ languages.
 - One key generates all translation files.
 - Support no translation of existing string.

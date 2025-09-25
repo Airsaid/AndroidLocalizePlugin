@@ -17,37 +17,43 @@
 
 package com.airsaid.localization.translate.impl.openai
 
+import com.google.gson.annotations.SerializedName
+
 data class OpenAIResponse(
-    var choices: List<Choice>?,
-    var created: Int?,
-    var id: String?,
-    var `object`: String?,
-    var usage: Usage?
+  var choices: List<Choice>?,
+  var created: Int?,
+  var id: String?,
+  var `object`: String?,
+  var usage: Usage?
 ) {
-    val translation: String
-        get() {
-            return if (!choices.isNullOrEmpty()) {
-                val result = choices!![0].message?.content
-                result?.trim() ?: ""
-            } else {
-                ""
-            }
-        }
+  val translation: String
+    get() {
+      return if (!choices.isNullOrEmpty()) {
+        val result = choices!![0].message?.content
+        result?.trim() ?: ""
+      } else {
+        ""
+      }
+    }
 
-    data class Choice(
-        var finish_reason: String?,
-        var index: Int?,
-        var message: Message?
-    )
+  data class Choice(
+    @SerializedName("finish_reason")
+    var finishReason: String?,
+    var index: Int?,
+    var message: Message?
+  )
 
-    data class Message(
-        var content: String?,
-        var role: String?
-    )
+  data class Message(
+    var content: String?,
+    var role: String?
+  )
 
-    data class Usage(
-        var completion_tokens: Int?,
-        var prompt_tokens: Int?,
-        var total_tokens: Int?
-    )
+  data class Usage(
+    @SerializedName("completion_tokens")
+    var completionTokens: Int?,
+    @SerializedName("prompt_tokens")
+    var promptTokens: Int?,
+    @SerializedName("total_tokens")
+    var totalTokens: Int?
+  )
 }

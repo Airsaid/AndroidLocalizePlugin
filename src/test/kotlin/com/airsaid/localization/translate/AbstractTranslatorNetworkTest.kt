@@ -136,8 +136,6 @@ class AbstractTranslatorNetworkTest {
   private open inner class TestTranslator(private val endpoint: String) : AbstractTranslator() {
     override val key: String = "Test"
     override val name: String = "Test"
-    override val isNeedAppId: Boolean = false
-    override val isNeedAppKey: Boolean = false
     override val supportedLanguages: List<Lang> = listOf(Languages.ENGLISH)
 
     override fun getRequestUrl(fromLang: Lang, toLang: Lang, text: String): String {

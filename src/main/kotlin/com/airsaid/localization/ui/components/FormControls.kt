@@ -12,7 +12,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -23,6 +26,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 
 private val CompactFieldHeight = 36.dp
+private val CompactDropdownHeight = 32.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -109,6 +113,104 @@ fun IdeTextField(
         )
       }
     )
+  }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun IdeDropdownField(
+  value: String,
+  options: List<String>,
+  onOptionSelected: (String) -> Unit,
+  modifier: Modifier = Modifier,
+  enabled: Boolean = true,
+  placeholder: String? = null,
+  loading: Boolean = false,
+) {
+  var expanded by remember { mutableStateOf(false) }
+
+  val dropdownEnabled = enabled && options.isNotEmpty() && !loading
+  val colors = OutlinedTextFieldDefaults.colors(
+    focusedContainerColor = MaterialTheme.colorScheme.surface,
+    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+    disabledContainerColor = MaterialTheme.colorScheme.surface,
+    focusedBorderColor = MaterialTheme.colorScheme.primary,
+    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.7f),
+    disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
+    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+    disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+    cursorColor = MaterialTheme.colorScheme.primary,
+    focusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
+    focusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    unfocusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
+  )
+
+  if (!dropdownEnabled && expanded) {
+    expanded = false
+  }
+
+  ExposedDropdownMenuBox(
+    expanded = expanded,
+    onExpandedChange = {
+      if (dropdownEnabled) {
+        expanded = !expanded
+      }
+    }
+  ) {
+    val fieldModifier = modifier
+      .menuAnchor(MenuAnchorType.PrimaryNotEditable, true)
+      .fillMaxWidth()
+      .heightIn(min = CompactDropdownHeight)
+      .defaultMinSize(minHeight = CompactDropdownHeight)
+
+    OutlinedTextField(
+      value = value,
+      onValueChange = {},
+      modifier = fieldModifier,
+      readOnly = true,
+      singleLine = true,
+      enabled = dropdownEnabled,
+      textStyle = MaterialTheme.typography.bodyMedium,
+      placeholder = placeholder?.let { placeholderText ->
+        {
+          Text(
+            text = placeholderText,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+          )
+        }
+      },
+      trailingIcon = {
+        if (loading) {
+          CircularProgressIndicator(
+            modifier = Modifier.size(16.dp),
+            strokeWidth = 2.dp
+          )
+        } else {
+          ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+        }
+      },
+      colors = colors,
+    )
+
+    DropdownMenu(
+      expanded = expanded,
+      onDismissRequest = { expanded = false }
+    ) {
+      options.forEach { option ->
+        DropdownMenuItem(
+          text = { Text(option) },
+          onClick = {
+            expanded = false
+            onOptionSelected(option)
+          }
+        )
+      }
+    }
   }
 }
 
