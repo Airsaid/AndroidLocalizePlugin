@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.airsaid.localization.constant.Constants
@@ -454,7 +455,6 @@ private fun FavoriteLanguagesSection(
       onFavoriteToggle = onFavoriteToggle,
       emptyMessage = resolvedEmptyMessage,
       modifier = gridModifier,
-      emptyAlignment = Alignment.CenterStart,
     )
   }
 }
@@ -501,6 +501,7 @@ private fun LanguagesGrid(
         text = emptyMessage,
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
+        textAlign = TextAlign.Center,
       )
     }
   } else {
