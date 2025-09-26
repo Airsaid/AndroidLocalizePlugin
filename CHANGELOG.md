@@ -4,18 +4,21 @@
 
 ## [Unreleased]
 
+### Added
+- Detailed translation progress updates showing the current language, processed item counts, and writeback status.
+- Quick access settings button in the Select Languages dialog footer and a donations card within the settings UI.
+- Provide Qodana and Codecov configuration files.
+
 ### Changed
 - Align build scripts and workflows with IntelliJ Platform Plugin Template 2025 updates.
-- Upgrade Gradle wrapper to 9.0 and align Kotlin toolchain with Compose-compatible 2.0.21.
-- Raise minimum supported IntelliJ Platform build to 251 (2025.1).
+- Upgrade Gradle wrapper to 9.0 and align the Kotlin toolchain with Compose compatible 2.0.21.
+- Raise the minimum supported IntelliJ Platform build to 251 (2025.1).
 - Refactor TranslateAction to follow IntelliJ action system best practices.
 - Configure tests to run on the JUnit 5 framework while retaining required runtime compatibility.
-- Rebuild plugin UI (settings and dialogs) using Compose.
+- Rebuild plugin UI (settings and dialogs) using Compose with searchable grids, favorite chips, and polished empty states.
 - Load secure credentials asynchronously to avoid password safe access on the EDT.
-- Align Compose typography/colours with IDE themes, add language filtering chips, and polish dialog layouts.
-
-### Added
-- Provide Qodana and Codecov configuration files.
+- Reduce the minimum translation interval to 50 ms to keep throttled bursts responsive.
+- Update Compose theme colours to rely on JBColor so dialogs respect light and dark backgrounds.
 
 ### Fixed
 - Restore visibility of the "Translate to Other Languages" action when selecting resource files from the Project view.
