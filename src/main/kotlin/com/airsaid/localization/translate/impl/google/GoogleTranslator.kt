@@ -24,7 +24,7 @@ class GoogleTranslator : AbsGoogleTranslator() {
   override val icon: Icon = PluginIcons.GOOGLE_ICON
 
   override fun getRequestUrl(fromLang: Lang, toLang: Lang, text: String): String {
-    val source = if (fromLang.id == Languages.AUTO.id) "auto" else fromLang.translationCode
+    val source = if (fromLang.code.equals(Languages.AUTO.code, ignoreCase = true)) "auto" else fromLang.translationCode
     val builder = UrlBuilder(googleApiUrl(TRANSLATE_PATH))
       .addQueryParameter("client", "gtx")
       .addQueryParameter("sl", source)

@@ -26,7 +26,6 @@ import com.intellij.openapi.util.text.StringUtil
  * @author airsaid
  */
 data class Lang(
-  val id: Int,
   val code: String,
   val name: String,
   val englishName: String,
@@ -46,11 +45,11 @@ data class Lang(
     if (this === other) return true
     if (other == null || javaClass != other.javaClass) return false
     val language = other as Lang
-    return id == language.id
+    return code == language.code
   }
 
   override fun hashCode(): Int {
-    return id.hashCode()
+    return code.hashCode()
   }
 
   public override fun clone(): Lang {
@@ -64,7 +63,6 @@ data class Lang(
 
   override fun toString(): String {
     return "Lang{" +
-        "id=$id, " +
         "code='$code', " +
         "name='$name', " +
         "englishName='$englishName', " +

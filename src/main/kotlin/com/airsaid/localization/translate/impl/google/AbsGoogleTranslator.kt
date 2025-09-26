@@ -36,12 +36,12 @@ abstract class AbsGoogleTranslator : AbstractTranslator() {
   override val supportedLanguages: List<Lang> by lazy {
     Languages.allSupportedLanguages()
       .map { lang ->
-        when (lang.id) {
-          Languages.CHINESE_SIMPLIFIED.id -> lang.setTranslationCode("zh-CN")
-          Languages.CHINESE_TRADITIONAL.id -> lang.setTranslationCode("zh-TW")
-          Languages.FILIPINO.id -> lang.setTranslationCode("tl")
-          Languages.INDONESIAN.id -> lang.setTranslationCode("id")
-          Languages.JAVANESE.id -> lang.setTranslationCode("jw")
+        when (lang.code) {
+          Languages.CHINESE_SIMPLIFIED.code -> lang.setTranslationCode("zh-CN")
+          Languages.CHINESE_TRADITIONAL.code -> lang.setTranslationCode("zh-TW")
+          Languages.FILIPINO.code -> lang.setTranslationCode("tl")
+          Languages.INDONESIAN.code -> lang.setTranslationCode("id")
+          Languages.JAVANESE.code -> lang.setTranslationCode("jw")
           else -> lang
         }
       }

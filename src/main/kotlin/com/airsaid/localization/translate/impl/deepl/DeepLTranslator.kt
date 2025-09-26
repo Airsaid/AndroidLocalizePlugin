@@ -66,7 +66,6 @@ open class DeepLTranslator : AbstractTranslator() {
       add(Languages.GREEK.toLang())
       add(
         Languages.ENGLISH.toLang().copy(
-          id = 118,
           code = "en-gb",
           name = "English (British)",
           englishName = "English (British)",
@@ -75,7 +74,6 @@ open class DeepLTranslator : AbstractTranslator() {
       )
       add(
         Languages.ENGLISH.toLang().copy(
-          id = 119,
           code = "en-us",
           name = "English (American)",
           englishName = "English (American)",
@@ -98,7 +96,6 @@ open class DeepLTranslator : AbstractTranslator() {
       add(Languages.POLISH.toLang())
       add(
         Languages.PORTUGUESE.toLang().copy(
-          id = 120,
           code = "pt-br",
           name = "Portuguese (Brazilian)",
           englishName = "Portuguese (Brazilian)",
@@ -107,7 +104,6 @@ open class DeepLTranslator : AbstractTranslator() {
       )
       add(
         Languages.PORTUGUESE.toLang().copy(
-          id = 121,
           code = "pt-pt",
           name = "Portuguese (European)",
           englishName = "Portuguese (European)",
