@@ -27,23 +27,23 @@ import com.intellij.openapi.project.Project
  */
 object NotificationUtil {
 
-    private const val NOTIFICATION_GROUP_ID = "Android Localize Plugin"
+  private const val NOTIFICATION_GROUP_ID = "Android Localize Plugin"
 
-    private val NOTIFICATION_GROUP: NotificationGroup =
-        NotificationGroupManager.getInstance().getNotificationGroup(NOTIFICATION_GROUP_ID)
+  private val NOTIFICATION_GROUP: NotificationGroup =
+    NotificationGroupManager.getInstance().getNotificationGroup(NOTIFICATION_GROUP_ID)
 
-    fun notifyInfo(project: Project?, content: String) {
-        NOTIFICATION_GROUP.createNotification(content, NotificationType.INFORMATION)
-            .notify(project)
-    }
+  fun notifyInfo(project: Project?, content: String) {
+    NOTIFICATION_GROUP.createNotification(content, NotificationType.INFORMATION)
+      .notify(project)
+  }
 
-    fun notifyWarning(project: Project?, content: String) {
-        NOTIFICATION_GROUP.createNotification(content, NotificationType.WARNING)
-            .notify(project)
-    }
+  fun notifyWarning(project: Project?, content: String) {
+    NOTIFICATION_GROUP.createNotification(content, NotificationType.WARNING)
+      .notify(project)
+  }
 
-    fun notifyError(project: Project?, content: String) {
-        NOTIFICATION_GROUP.createNotification(content, NotificationType.ERROR)
-            .notify(project)
-    }
+  fun notifyError(project: Project?, content: String) {
+    NOTIFICATION_GROUP.createNotification(content, NotificationType.ERROR)
+      .notify(project)
+  }
 }

@@ -23,31 +23,31 @@ import javax.swing.Icon
  * @author airsaid
  */
 object PluginIcons {
-    @JvmField
-    val TRANSLATE_ACTION_ICON: Icon = load("/icons/icon_translate.svg")
+  @JvmField
+  val TRANSLATE_ACTION_ICON: Icon = load("/icons/icon_translate.svg")
 
-    @JvmField
-    val GOOGLE_ICON: Icon = load("/icons/icon_google.svg")
+  @JvmField
+  val GOOGLE_ICON: Icon = load("/icons/icon_google.svg")
 
-    @JvmField
-    val BAIDU_ICON: Icon = load("/icons/icon_baidu.svg")
+  @JvmField
+  val BAIDU_ICON: Icon = load("/icons/icon_baidu.svg")
 
-    @JvmField
-    val YOUDAO_ICON: Icon = load("/icons/icon_youdao.svg")
+  @JvmField
+  val YOUDAO_ICON: Icon = load("/icons/icon_youdao.svg")
 
-    @JvmField
-    val MICROSOFT_ICON: Icon = load("/icons/icon_microsoft.svg")
+  @JvmField
+  val MICROSOFT_ICON: Icon = load("/icons/icon_microsoft.svg")
 
-    @JvmField
-    val ALI_ICON: Icon = load("/icons/icon_ali.svg")
+  @JvmField
+  val ALI_ICON: Icon = load("/icons/icon_ali.svg")
 
-    @JvmField
-    val DEEP_L_ICON: Icon = load("/icons/icon_deepl.svg")
+  @JvmField
+  val DEEP_L_ICON: Icon = load("/icons/icon_deepl.svg")
 
-    @JvmField
-    val OPENAI_ICON: Icon = load("/icons/icon_openai.svg")
+  @JvmField
+  val OPENAI_ICON: Icon = load("/icons/icon_openai.svg")
 
-    private fun load(path: String): Icon {
-        return IconLoader.getIcon(path, PluginIcons::class.java)
-    }
+  private fun load(path: String): Icon {
+    return IconLoader.getIcon(path, PluginIcons::class.java)
+  }
 }

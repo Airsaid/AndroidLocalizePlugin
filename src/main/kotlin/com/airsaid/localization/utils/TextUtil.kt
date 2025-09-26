@@ -24,15 +24,15 @@ import com.intellij.openapi.util.text.StringUtil
  */
 object TextUtil {
 
-    fun isEmptyOrSpacesLineBreak(s: CharSequence?): Boolean {
-        if (StringUtil.isEmpty(s)) {
-            return true
-        }
-        for (i in s!!.indices) {
-            if (s[i] != ' ' && s[i] != '\r' && s[i] != '\n') {
-                return false
-            }
-        }
-        return true
+  fun isEmptyOrSpacesLineBreak(s: CharSequence?): Boolean {
+    if (StringUtil.isEmpty(s)) {
+      return true
     }
+    for (i in s!!.indices) {
+      if (s[i] != ' ' && s[i] != '\r' && s[i] != '\n') {
+        return false
+      }
+    }
+    return true
+  }
 }

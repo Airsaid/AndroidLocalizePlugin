@@ -22,33 +22,33 @@ package com.airsaid.localization.translate.util
  */
 class UrlBuilder(private val baseUrl: String) {
 
-    private val queryParameters: MutableList<Pair<String, String>> = mutableListOf()
+  private val queryParameters: MutableList<Pair<String, String>> = mutableListOf()
 
-    fun addQueryParameter(key: String, value: String): UrlBuilder {
-        queryParameters.add(Pair(key, value))
-        return this
-    }
+  fun addQueryParameter(key: String, value: String): UrlBuilder {
+    queryParameters.add(Pair(key, value))
+    return this
+  }
 
-    fun addQueryParameters(key: String, vararg values: String): UrlBuilder {
-        queryParameters.addAll(values.map { value -> Pair(key, value) })
-        return this
-    }
+  fun addQueryParameters(key: String, vararg values: String): UrlBuilder {
+    queryParameters.addAll(values.map { value -> Pair(key, value) })
+    return this
+  }
 
-    fun build(): String {
-        val result = StringBuilder(baseUrl)
-        for (i in queryParameters.indices) {
-            if (i == 0) {
-                result.append("?")
-            } else {
-                result.append("&")
-            }
-            val param = queryParameters[i]
-            val key = param.first
-            val value = param.second
-            result.append(key)
-                .append("=")
-                .append(value)
-        }
-        return result.toString()
+  fun build(): String {
+    val result = StringBuilder(baseUrl)
+    for (i in queryParameters.indices) {
+      if (i == 0) {
+        result.append("?")
+      } else {
+        result.append("&")
+      }
+      val param = queryParameters[i]
+      val key = param.first
+      val value = param.second
+      result.append(key)
+        .append("=")
+        .append(value)
     }
+    return result.toString()
+  }
 }

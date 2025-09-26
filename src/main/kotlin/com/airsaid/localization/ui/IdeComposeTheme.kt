@@ -22,76 +22,76 @@ import javax.swing.UIManager
  */
 @Composable
 fun IdeTheme(content: @Composable () -> Unit) {
-    val isDark = UIUtil.isUnderDarcula()
+  val isDark = UIUtil.isUnderDarcula()
 
-    val panelBackground = UIUtil.getPanelBackground().toComposeColor()
-    val surfaceColor = getUiColor("Panel.background", UIUtil.getPanelBackground()).toComposeColor()
-    val surfaceVariant = getUiColor("EditorPane.background", UIUtil.getPanelBackground()).toComposeColor()
-    val foreground = UIUtil.getLabelForeground().toComposeColor()
-    val secondaryForeground = UIUtil.getInactiveTextColor().toComposeColor()
-    val outline = getUiColor("Component.borderColor", JBColor(0xD7DCE2, 0x3C3F41)).toComposeColor()
-    val accent = JBColor(0x3574F0, 0x7EA7FF).toComposeColor()
+  val panelBackground = UIUtil.getPanelBackground().toComposeColor()
+  val surfaceColor = getUiColor("Panel.background", UIUtil.getPanelBackground()).toComposeColor()
+  val surfaceVariant = getUiColor("EditorPane.background", UIUtil.getPanelBackground()).toComposeColor()
+  val foreground = UIUtil.getLabelForeground().toComposeColor()
+  val secondaryForeground = UIUtil.getInactiveTextColor().toComposeColor()
+  val outline = getUiColor("Component.borderColor", JBColor(0xD7DCE2, 0x3C3F41)).toComposeColor()
+  val accent = JBColor(0x3574F0, 0x7EA7FF).toComposeColor()
 
-    val colorScheme = if (isDark) {
-        darkColorScheme(
-            primary = accent,
-            onPrimary = Color.White,
-            secondary = accent,
-            onSecondary = Color.White,
-            background = panelBackground,
-            onBackground = foreground,
-            surface = panelBackground,
-            onSurface = foreground,
-            surfaceVariant = surfaceVariant,
-            onSurfaceVariant = secondaryForeground,
-            outline = outline,
-        )
-    } else {
-        lightColorScheme(
-            primary = accent,
-            onPrimary = Color.White,
-            secondary = accent,
-            onSecondary = Color.White,
-            background = panelBackground,
-            onBackground = foreground,
-            surface = panelBackground,
-            onSurface = foreground,
-            surfaceVariant = surfaceVariant,
-            onSurfaceVariant = secondaryForeground,
-            outline = outline,
-        )
-    }
-
-    val typography = buildIdeTypography()
-
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = typography,
-        content = content,
+  val colorScheme = if (isDark) {
+    darkColorScheme(
+      primary = accent,
+      onPrimary = Color.White,
+      secondary = accent,
+      onSecondary = Color.White,
+      background = panelBackground,
+      onBackground = foreground,
+      surface = surfaceColor,
+      onSurface = foreground,
+      surfaceVariant = surfaceVariant,
+      onSurfaceVariant = secondaryForeground,
+      outline = outline,
     )
+  } else {
+    lightColorScheme(
+      primary = accent,
+      onPrimary = Color.White,
+      secondary = accent,
+      onSecondary = Color.White,
+      background = panelBackground,
+      onBackground = foreground,
+      surface = surfaceColor,
+      onSurface = foreground,
+      surfaceVariant = surfaceVariant,
+      onSurfaceVariant = secondaryForeground,
+      outline = outline,
+    )
+  }
+
+  val typography = buildIdeTypography()
+
+  MaterialTheme(
+    colorScheme = colorScheme,
+    typography = typography,
+    content = content,
+  )
 }
 
 private fun buildIdeTypography(): Typography {
-    val baseFont = UIManager.getFont("Label.font") ?: java.awt.Font("SansSerif", java.awt.Font.PLAIN, 13)
-    val baseSize = baseFont.size2D
+  val baseFont = UIManager.getFont("Label.font") ?: java.awt.Font("SansSerif", java.awt.Font.PLAIN, 13)
+  val baseSize = baseFont.size2D
 
-    fun style(multiplier: Float, weight: FontWeight = FontWeight.Normal) = TextStyle(
-        fontFamily = FontFamily.SansSerif,
-        fontWeight = weight,
-        fontSize = (baseSize * multiplier).sp,
-    )
+  fun style(multiplier: Float, weight: FontWeight = FontWeight.Normal) = TextStyle(
+    fontFamily = FontFamily.SansSerif,
+    fontWeight = weight,
+    fontSize = (baseSize * multiplier).sp,
+  )
 
-    return Typography(
-        bodyLarge = style(1.05f),
-        bodyMedium = style(1f),
-        bodySmall = style(0.9f),
-        titleLarge = style(1.3f, FontWeight.SemiBold),
-        titleMedium = style(1.15f, FontWeight.SemiBold),
-        titleSmall = style(1f, FontWeight.Medium),
-        headlineSmall = style(1.4f, FontWeight.SemiBold),
-        labelMedium = style(0.9f, FontWeight.Medium),
-        labelSmall = style(0.85f, FontWeight.Medium),
-    )
+  return Typography(
+    bodyLarge = style(1.05f),
+    bodyMedium = style(1f),
+    bodySmall = style(0.9f),
+    titleLarge = style(1.3f, FontWeight.SemiBold),
+    titleMedium = style(1.15f, FontWeight.SemiBold),
+    titleSmall = style(1f, FontWeight.Medium),
+    headlineSmall = style(1.4f, FontWeight.SemiBold),
+    labelMedium = style(0.9f, FontWeight.Medium),
+    labelSmall = style(0.85f, FontWeight.Medium),
+  )
 }
 
 private fun getUiColor(key: String, fallback: AwtColor): AwtColor = UIManager.getColor(key) ?: fallback

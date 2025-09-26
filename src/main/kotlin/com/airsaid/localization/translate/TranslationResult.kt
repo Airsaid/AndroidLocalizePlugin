@@ -25,10 +25,10 @@ package com.airsaid.localization.translate
  */
 interface TranslationResult {
 
-    /**
-     * Get a translation result of the specified text.
-     *
-     * @return translation result text.
-     */
-    val translationResult: String
+  /**
+   * Get a translation result of the specified text.
+   *
+   * @return translation result text.
+   */
+  val translationResult: String
 }

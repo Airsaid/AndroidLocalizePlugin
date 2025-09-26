@@ -25,14 +25,14 @@ import com.google.gson.GsonBuilder
  */
 class GsonUtil private constructor() {
 
-    val gson: Gson = GsonBuilder().create()
+  val gson: Gson = GsonBuilder().create()
 
-    companion object {
-        @JvmStatic
-        fun getInstance(): GsonUtil = GsonUtilHolder.instance
-    }
+  companion object {
+    @JvmStatic
+    fun getInstance(): GsonUtil = GsonUtilHolder.instance
+  }
 
-    private object GsonUtilHolder {
-        val instance = GsonUtil()
-    }
+  private object GsonUtilHolder {
+    val instance = GsonUtil()
+  }
 }

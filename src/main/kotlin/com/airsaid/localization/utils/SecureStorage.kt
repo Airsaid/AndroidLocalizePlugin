@@ -28,18 +28,18 @@ import com.intellij.ide.passwordSafe.PasswordSafe
  */
 class SecureStorage(private val key: String) {
 
-    fun save(text: String) {
-        val credentialAttributes = createCredentialAttributes()
-        val credentials = Credentials(key, text)
-        PasswordSafe.instance.set(credentialAttributes, credentials)
-    }
+  fun save(text: String) {
+    val credentialAttributes = createCredentialAttributes()
+    val credentials = Credentials(key, text)
+    PasswordSafe.instance.set(credentialAttributes, credentials)
+  }
 
-    fun read(): String {
-        val password = PasswordSafe.instance.getPassword(createCredentialAttributes())
-        return password ?: ""
-    }
+  fun read(): String {
+    val password = PasswordSafe.instance.getPassword(createCredentialAttributes())
+    return password ?: ""
+  }
 
-    private fun createCredentialAttributes(): CredentialAttributes {
-        return CredentialAttributes(generateServiceName(Constants.PLUGIN_NAME, key))
-    }
+  private fun createCredentialAttributes(): CredentialAttributes {
+    return CredentialAttributes(generateServiceName(Constants.PLUGIN_NAME, key))
+  }
 }

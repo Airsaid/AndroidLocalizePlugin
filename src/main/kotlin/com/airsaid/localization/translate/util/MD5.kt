@@ -26,34 +26,34 @@ import java.security.NoSuchAlgorithmException
  */
 object MD5 {
 
-    private val hexDigits = charArrayOf(
-        '0', '1', '2', '3', '4', '5', '6', '7',
-        '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
-    )
+  private val hexDigits = charArrayOf(
+    '0', '1', '2', '3', '4', '5', '6', '7',
+    '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
+  )
 
-    fun md5(input: String?): String? {
-        if (input == null) {
-            return null
-        }
-
-        return try {
-            val messageDigest = MessageDigest.getInstance("MD5")
-            val inputByteArray = input.toByteArray(StandardCharsets.UTF_8)
-            messageDigest.update(inputByteArray)
-            val resultByteArray = messageDigest.digest()
-            byteArrayToHex(resultByteArray)
-        } catch (e: NoSuchAlgorithmException) {
-            null
-        }
+  fun md5(input: String?): String? {
+    if (input == null) {
+      return null
     }
 
-    private fun byteArrayToHex(byteArray: ByteArray): String {
-        val resultCharArray = CharArray(byteArray.size * 2)
-        var index = 0
-        for (b in byteArray) {
-            resultCharArray[index++] = hexDigits[b.toInt() ushr 4 and 0xf]
-            resultCharArray[index++] = hexDigits[b.toInt() and 0xf]
-        }
-        return String(resultCharArray)
+    return try {
+      val messageDigest = MessageDigest.getInstance("MD5")
+      val inputByteArray = input.toByteArray(StandardCharsets.UTF_8)
+      messageDigest.update(inputByteArray)
+      val resultByteArray = messageDigest.digest()
+      byteArrayToHex(resultByteArray)
+    } catch (e: NoSuchAlgorithmException) {
+      null
     }
+  }
+
+  private fun byteArrayToHex(byteArray: ByteArray): String {
+    val resultCharArray = CharArray(byteArray.size * 2)
+    var index = 0
+    for (b in byteArray) {
+      resultCharArray[index++] = hexDigits[b.toInt() ushr 4 and 0xf]
+      resultCharArray[index++] = hexDigits[b.toInt() and 0xf]
+    }
+    return String(resultCharArray)
+  }
 }
