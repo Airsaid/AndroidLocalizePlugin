@@ -122,7 +122,7 @@ class SelectLanguagesDialog(private val project: Project) : ComposeDialog(projec
     }
 
     Surface(
-      modifier = Modifier.fillMaxSize(),
+      modifier = Modifier.fillMaxSize().padding(16.dp),
       color = MaterialTheme.colorScheme.background,
     ) {
       SelectLanguagesContent(
@@ -271,12 +271,7 @@ private fun SelectLanguagesContent(
     derivedStateOf { languages.isNotEmpty() && languages.all { selectedLanguages.contains(it) } }
   }
 
-  Column(
-    modifier = Modifier
-      .fillMaxSize()
-      .padding(20.dp),
-    verticalArrangement = Arrangement.spacedBy(18.dp)
-  ) {
+  Column(modifier = Modifier.fillMaxSize()) {
     LanguagesCard(
       filterText = filterText,
       onFilterChange = { filterText = it },
@@ -336,8 +331,9 @@ private fun LanguagesCard(
     favoriteLanguages.toList()
   } else {
     favoriteLanguages.filter {
-      it.englishName.contains(filterText, ignoreCase = true) ||
-          it.code.contains(filterText, ignoreCase = true)
+      it.code.contains(filterText, ignoreCase = true) ||
+          it.englishName.contains(filterText, ignoreCase = true) ||
+          it.name.contains(filterText, ignoreCase = true)
     }
   }
 
@@ -352,15 +348,12 @@ private fun LanguagesCard(
     modifier = modifier
       .fillMaxWidth()
       .heightIn(min = 260.dp),
-    shape = RoundedCornerShape(12.dp),
     tonalElevation = 0.dp,
     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.12f)),
     color = MaterialTheme.colorScheme.surface,
   ) {
     Column(
-      modifier = Modifier
-        .fillMaxSize()
-        .padding(18.dp),
+      modifier = Modifier.fillMaxSize(),
       verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
       OptionsSection(
@@ -409,7 +402,7 @@ private fun LanguagesCard(
         onLanguageToggled = onLanguageToggled,
         onFavoriteToggle = onFavoriteToggle,
         emptyMessage = "No languages match your filter",
-        modifier = Modifier.weight(1f, fill = true),
+        modifier = Modifier.fillMaxSize(),
       )
     }
   }
@@ -430,14 +423,7 @@ private fun FavoriteLanguagesSection(
   val languagesToDisplay = if (hasFavorites) filteredFavoriteLanguages else emptyList()
   val emptyMessage = when {
     !hasFavorites -> "No favorite languages yet. \nClick the star beside a language below to add it."
-    languagesToDisplay.isEmpty() -> "No favorite languages match your filter"
-    else -> null
-  }
-  val resolvedEmptyMessage = emptyMessage ?: "No favorite languages match your filter"
-  val gridModifier = if (languagesToDisplay.isEmpty()) {
-    Modifier.padding(vertical = 8.dp)
-  } else {
-    Modifier.heightIn(max = 216.dp)
+    else -> "No favorite languages match your filter"
   }
   Column(
     modifier = Modifier.fillMaxWidth(),
@@ -462,8 +448,8 @@ private fun FavoriteLanguagesSection(
       favoriteLanguages = favoriteLanguages,
       onLanguageToggled = onLanguageToggled,
       onFavoriteToggle = onFavoriteToggle,
-      emptyMessage = resolvedEmptyMessage,
-      modifier = gridModifier,
+      emptyMessage = emptyMessage,
+      modifier = Modifier.fillMaxWidth().heightIn(max = 142.dp),
     )
   }
 }
@@ -503,9 +489,8 @@ private fun LanguagesGrid(
   modifier: Modifier = Modifier,
   emptyAlignment: Alignment = Alignment.Center,
 ) {
-  val containerModifier = modifier.fillMaxWidth()
   if (languages.isEmpty()) {
-    Box(modifier = containerModifier, contentAlignment = emptyAlignment) {
+    Box(modifier = modifier, contentAlignment = emptyAlignment) {
       Text(
         text = emptyMessage,
         style = MaterialTheme.typography.bodyMedium,
@@ -515,13 +500,13 @@ private fun LanguagesGrid(
     }
   } else {
     val languagesGridState = rememberLazyGridState()
-    Row(modifier = containerModifier, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+    Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
       LazyVerticalGrid(
         state = languagesGridState,
         columns = GridCells.Fixed(4),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = Modifier.weight(1f, fill = true)
+        modifier = Modifier.wrapContentHeight().weight(1f, fill = true)
       ) {
         items(languages, key = { it.code }) { language ->
           LanguageOption(
@@ -635,7 +620,7 @@ private fun LanguageOption(
 
   Row(
     modifier = modifier
-      .defaultMinSize(minHeight = 64.dp)
+      .height(64.dp)
       .border(BorderStroke(1.dp, borderColor), RoundedCornerShape(12.dp))
       .background(backgroundColor, RoundedCornerShape(12.dp))
       .padding(horizontal = 12.dp, vertical = 8.dp)
@@ -718,8 +703,7 @@ private fun TranslatorFooter(translator: AbstractTranslator, onOpenSettings: () 
             color = MaterialTheme.colorScheme.onSurfaceVariant,
           )
         }
-      },
-      delayMillis = 300,
+      }
     ) {
       IconButton(onClick = onOpenSettings) {
         Icon(
