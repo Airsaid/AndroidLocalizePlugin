@@ -88,10 +88,11 @@ class TranslateTask(
       .getBoolean(Constants.KEY_IS_OVERWRITE_EXISTING_STRING)
     LOG.info("run isOverwriteExistingString: $isOverwriteExistingString")
 
+    val totalTranslatableCount = countTranslatableValues()
     for (toLanguage in toLanguages) {
       if (progressIndicator.isCanceled) break
 
-      progressIndicator.text = "Translation to ${toLanguage.englishName}..."
+      updateProgressText(progressIndicator, toLanguage, 0, totalTranslatableCount)
 
       val resourceDir = valueFile.parent.parent
       val valueFileName = valueFile.name
@@ -113,11 +114,23 @@ class TranslateTask(
             },
             { it }
           ))
-        val translatedValues = doTranslate(progressIndicator, toLanguage, toValuesMap, isOverwriteExistingString)
+        val translatedValues = doTranslate(
+          progressIndicator,
+          toLanguage,
+          toValuesMap,
+          isOverwriteExistingString,
+          totalTranslatableCount
+        )
         translationError?.let { return }
         writeTranslatedValues(progressIndicator, File(toValuePsiFile.virtualFile.path), translatedValues)
       } else {
-        val translatedValues = doTranslate(progressIndicator, toLanguage, null, isOverwriteExistingString)
+        val translatedValues = doTranslate(
+          progressIndicator,
+          toLanguage,
+          null,
+          isOverwriteExistingString,
+          totalTranslatableCount
+        )
         translationError?.let { return }
         val valueFile = valueService.getValueFile(resourceDir, toLanguage, valueFileName)
         writeTranslatedValues(progressIndicator, valueFile, translatedValues)
@@ -133,11 +146,13 @@ class TranslateTask(
     progressIndicator: ProgressIndicator,
     toLanguage: Lang,
     toValues: Map<String, PsiElement>?,
-    isOverwrite: Boolean
+    isOverwrite: Boolean,
+    totalTranslatableCount: Int
   ): List<PsiElement> {
     LOG.info("doTranslate toLanguage: ${toLanguage.englishName}, toValues: $toValues, isOverwrite: $isOverwrite")
 
     val translatedValues = ArrayList<PsiElement>()
+    var translatedCount = 0
     for (value in values) {
       if (translationError != null) break
       if (progressIndicator.isCanceled) break
@@ -146,6 +161,9 @@ class TranslateTask(
         if (!valueService.isTranslatable(value)) {
           continue
         }
+
+        translatedCount += 1
+        updateProgressText(progressIndicator, toLanguage, translatedCount, totalTranslatableCount)
 
         val name = ApplicationManager.getApplication().runReadAction(Computable {
           value.getAttributeValue("name")
@@ -235,6 +253,28 @@ class TranslateTask(
     valueService.writeValueFile(translatedValues, valueFile)
 
     refreshAndOpenFile(valueFile)
+  }
+
+  private fun countTranslatableValues(): Int {
+    return values.count { value ->
+      value is XmlTag && valueService.isTranslatable(value)
+    }
+  }
+
+  private fun updateProgressText(
+    progressIndicator: ProgressIndicator,
+    toLanguage: Lang,
+    current: Int,
+    total: Int
+  ) {
+    progressIndicator.text = if (total > 0) {
+      val clampedCurrent = current.coerceAtMost(total)
+      progressIndicator.fraction = clampedCurrent.toDouble() / total
+      "Translating to ${toLanguage.englishName} ($clampedCurrent/$total)..."
+    } else {
+      progressIndicator.fraction = 0.0
+      "Translating to ${toLanguage.englishName}..."
+    }
   }
 
   private fun refreshAndOpenFile(file: File) {
