@@ -19,6 +19,7 @@ package com.airsaid.localization.utils
 
 import com.airsaid.localization.constant.Constants
 import com.airsaid.localization.translate.lang.Lang
+import com.airsaid.localization.translate.lang.Languages
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
 import org.apache.http.util.TextUtils
@@ -30,37 +31,66 @@ import org.apache.http.util.TextUtils
  */
 object LanguageUtil {
 
-    private const val SEPARATOR_SELECTED_LANGUAGES_CODE = ","
+  private const val SEPARATOR_SELECTED_LANGUAGES_CODE = ","
 
-    /**
-     * Save the language data selected in the current project.
-     *
-     * @param project   current project.
-     * @param languages selected language.
-     */
-    fun saveSelectedLanguage(project: Project, languages: List<Lang>) {
-        PropertiesComponent.getInstance(project)
-            .setValue(Constants.KEY_SELECTED_LANGUAGES, getLanguageIdString(languages))
-    }
+  /**
+   * Persist the selected language codes in the current project.
+   *
+   * @param project current project.
+   * @param languages selected language.
+   */
+  fun saveSelectedLanguages(project: Project, languages: List<Lang>) {
+    PropertiesComponent.getInstance(project)
+      .setValue(Constants.KEY_SELECTED_LANGUAGES, getLanguageCodeString(languages))
+  }
 
-    /**
-     * Get saved language code data in the current project.
-     *
-     * @param project current project.
-     * @return null if not saved, otherwise return the saved language id data.
-     */
-    fun getSelectedLanguageIds(project: Project?): List<String>? {
-        val codeString = PropertiesComponent.getInstance(project!!)
-            .getValue(Constants.KEY_SELECTED_LANGUAGES)
+  /**
+   * Fetch the persisted selected language codes for the given project.
+   *
+   * @param project current project.
+   * @return the selected language codes, or null if not set before.
+   */
+  fun getSelectedLanguageIds(project: Project): List<String> {
+    val codeString = PropertiesComponent.getInstance(project)
+      .getValue(Constants.KEY_SELECTED_LANGUAGES)
 
-        if (TextUtils.isEmpty(codeString)) {
-            return null
-        }
+    return parseStoredLanguageCodes(codeString)
+  }
 
-        return codeString!!.split(SEPARATOR_SELECTED_LANGUAGES_CODE)
-    }
+  /**
+   * Persist the favorite language codes in the current project.
+   *
+   * @param project  current project.
+   * @param languages favorite language.
+   */
+  fun saveFavoriteLanguages(project: Project, languages: List<Lang>) {
+    PropertiesComponent.getInstance(project)
+      .setValue(Constants.KEY_FAVORITE_LANGUAGES, getLanguageCodeString(languages))
+  }
 
-    private fun getLanguageIdString(language: List<Lang>): String {
-        return language.joinToString(SEPARATOR_SELECTED_LANGUAGES_CODE) { it.id.toString() }
-    }
+  /**
+   * Fetch the persisted favorite language codes for the given project.
+   *
+   * @param project current project.
+   * @return the favorite language codes, or null if not set before.
+   */
+  fun getFavoriteLanguageIds(project: Project): List<String> {
+    val codeString = PropertiesComponent.getInstance(project)
+      .getValue(Constants.KEY_FAVORITE_LANGUAGES)
+
+    return parseStoredLanguageCodes(codeString)
+  }
+
+  private fun getLanguageCodeString(language: List<Lang>): String {
+    return language.joinToString(SEPARATOR_SELECTED_LANGUAGES_CODE) { it.code }
+  }
+
+  private fun parseStoredLanguageCodes(value: String?): List<String> {
+    if (value.isNullOrEmpty()) return emptyList()
+
+    return value.split(SEPARATOR_SELECTED_LANGUAGES_CODE)
+      .map { it.trim() }
+      .filter { it.isNotEmpty() && Languages.entries.any { lang -> lang.code == it } }
+      .distinct()
+  }
 }

@@ -22,167 +22,197 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.awt.ComposePanel
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.painter.BitmapPainter
-import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.airsaid.localization.constant.Constants
 import com.airsaid.localization.translate.AbstractTranslator
 import com.airsaid.localization.translate.lang.Lang
-import com.airsaid.localization.translate.lang.flagEmoji
+import com.airsaid.localization.translate.lang.Languages
 import com.airsaid.localization.translate.services.TranslatorService
 import com.airsaid.localization.ui.components.IdeCheckbox
+import com.airsaid.localization.ui.components.SwingIcon
 import com.airsaid.localization.utils.LanguageUtil
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.DialogWrapper
 import java.awt.Dimension
 import java.awt.Toolkit
-import javax.swing.JComponent
 import kotlin.math.roundToInt
 
 /**
  * Compose-driven dialog used to pick the languages that should be generated.
+ *
+ * @author airsaid
  */
-class SelectLanguagesDialog(private val project: Project?) : DialogWrapper(project, false) {
+class SelectLanguagesDialog(private val project: Project) : ComposeDialog(project, false) {
 
+  /**
+   * Callback for when the OK button is clicked.
+   */
   interface OnClickListener {
+    /**
+     * Called when the OK button is clicked.
+     *
+     * @param selectedLanguage The list of selected languages.
+     */
     fun onClickListener(selectedLanguage: List<Lang>)
   }
 
   private val translatorService = TranslatorService.getInstance()
+  private val translator = translatorService.getSelectedTranslator()
+  private val supportedLanguages = translator.supportedLanguages.sortedBy { it.code }
+  private val defaultFavoriteCodes = Languages.defaultFavoriteCodes()
+
+  private val favoriteLanguages = mutableStateListOf<Lang>()
   private val selectedLanguages = mutableStateListOf<Lang>()
-  private val selectAllState = mutableStateOf(false)
   private val overwriteExistingState = mutableStateOf(false)
   private val openTranslatedFileState = mutableStateOf(false)
 
+  private var stateInitialized by mutableStateOf(false)
+
   private var onClickListener: OnClickListener? = null
 
-  private lateinit var translator: AbstractTranslator
-  private lateinit var supportedLanguages: List<Lang>
-
   init {
-    initState()
     title = "Select Translated Languages"
-    init()
   }
 
+  /**
+   * Sets the listener to be invoked when the OK button is clicked.
+   *
+   * @param listener The listener to be invoked.
+   */
   fun setOnClickListener(listener: OnClickListener) {
     onClickListener = listener
   }
 
-  override fun createCenterPanel(): JComponent {
-    val panel = ComposePanel()
-    val (preferredSize, minimumSize) = calculateDialogSize()
-    panel.preferredSize = preferredSize
-    panel.minimumSize = minimumSize
-    panel.setContent {
-      IdeTheme {
-        Surface(
-          modifier = Modifier.fillMaxSize(),
-          color = MaterialTheme.colorScheme.background,
-        ) {
-          SelectLanguagesContent(
-            translator = translator,
-            supportedLanguages = supportedLanguages,
-            selectedLanguages = selectedLanguages,
-            selectAllStateChecked = selectAllState.value,
-            overwriteExistingChecked = overwriteExistingState.value,
-            openTranslatedFileChecked = openTranslatedFileState.value,
-            onSelectAllChanged = { handleSelectAll(it) },
-            onOverwriteChanged = { checked ->
-              overwriteExistingState.value = checked
-            },
-            onOpenTranslatedFileChanged = { checked ->
-              openTranslatedFileState.value = checked
-            },
-            onLanguageToggled = { lang, checked ->
-              if (checked) {
-                if (!selectedLanguages.contains(lang)) {
-                  selectedLanguages.add(lang)
-                }
-              } else {
-                selectedLanguages.remove(lang)
-              }
-
-              val allSelected = selectedLanguages.size == supportedLanguages.size && supportedLanguages.isNotEmpty()
-              if (selectAllState.value != allSelected) {
-                selectAllState.value = allSelected
-              }
-
-              okAction.isEnabled = selectedLanguages.isNotEmpty()
-            },
-          )
-        }
+  @Composable
+  override fun Content() {
+    LaunchedEffect(Unit) {
+      if (!stateInitialized) {
+        loadState()
       }
     }
-    return panel
+
+    if (!stateInitialized) {
+      Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        CircularProgressIndicator()
+      }
+      return
+    }
+
+    val languages by remember {
+      derivedStateOf { translator.supportedLanguages.filterNot { favoriteLanguages.contains(it) } }
+    }
+
+    Surface(
+      modifier = Modifier.fillMaxSize(),
+      color = MaterialTheme.colorScheme.background,
+    ) {
+      SelectLanguagesContent(
+        translator = translator,
+        languages = languages,
+        favoriteLanguages = favoriteLanguages,
+        selectedLanguages = selectedLanguages,
+        overwriteExistingChecked = overwriteExistingState.value,
+        openTranslatedFileChecked = openTranslatedFileState.value,
+        onSelectAllChanged = { selectAll(languages, it) },
+        onFavoriteSelectAllChanged = { selectAll(favoriteLanguages, it) },
+        onOverwriteChanged = { checked -> overwriteExistingState.value = checked },
+        onOpenTranslatedFileChanged = { checked -> openTranslatedFileState.value = checked },
+        onLanguageToggled = { lang, checked -> selectLanguage(lang, checked) },
+        onFavoriteToggle = { lang, isFavorite -> setFavoriteLanguage(lang, isFavorite) },
+      )
+    }
+
+    OnClickOK {
+      LanguageUtil.saveSelectedLanguages(project, selectedLanguages)
+      properties().setValue(Constants.KEY_IS_OVERWRITE_EXISTING_STRING, overwriteExistingState.value)
+      properties().setValue(Constants.KEY_IS_OPEN_TRANSLATED_FILE, openTranslatedFileState.value)
+      onClickListener?.onClickListener(selectedLanguages.toList())
+    }
+
+    okAction.isEnabled = selectedLanguages.isNotEmpty()
   }
 
-  override fun doOKAction() {
-    project?.let { LanguageUtil.saveSelectedLanguage(it, selectedLanguages) }
-    properties().setValue(Constants.KEY_IS_SELECT_ALL, selectAllState.value)
-    properties().setValue(Constants.KEY_IS_OVERWRITE_EXISTING_STRING, overwriteExistingState.value)
-    properties().setValue(Constants.KEY_IS_OPEN_TRANSLATED_FILE, openTranslatedFileState.value)
-    onClickListener?.onClickListener(selectedLanguages.toList())
-    super.doOKAction()
+  override fun preferredSize(): Dimension {
+    val (preferred, minimum) = calculateDialogSize()
+    window?.minimumSize = minimum
+    return preferred
   }
 
-  override fun getDimensionServiceKey(): String? {
-    val key = translator.key
+  override fun getDimensionServiceKey(): String {
+    val key = translatorService.getSelectedTranslator().key
     return "#com.airsaid.localization.ui.SelectLanguagesDialog#$key"
   }
 
-  private fun initState() {
+  private fun loadState() {
     val properties = properties()
-    translator = translatorService.getSelectedTranslator()
-    supportedLanguages = translator.supportedLanguages.sortedBy { it.englishName }
 
-    val savedLanguageIds = LanguageUtil.getSelectedLanguageIds(project)
-    selectedLanguages.clear()
-    if (!savedLanguageIds.isNullOrEmpty()) {
-      selectedLanguages.addAll(supportedLanguages.filter { savedLanguageIds.contains(it.id.toString()) })
+    favoriteLanguages.clear()
+    val favoriteLanguageCodes = LanguageUtil.getFavoriteLanguageIds(project)
+    if (favoriteLanguageCodes.isNotEmpty()) {
+      favoriteLanguages.addAll(supportedLanguages.filter { favoriteLanguageCodes.contains(it.code) })
+    }
+    if (favoriteLanguages.isEmpty() && defaultFavoriteCodes.isNotEmpty()) {
+      favoriteLanguages.addAll(supportedLanguages.filter { defaultFavoriteCodes.contains(it.code) })
     }
 
-    selectAllState.value = properties.getBoolean(Constants.KEY_IS_SELECT_ALL)
-    if (selectAllState.value) {
-      selectedLanguages.clear()
-      selectedLanguages.addAll(supportedLanguages)
+    selectedLanguages.clear()
+    val selectedLanguageCodes = LanguageUtil.getSelectedLanguageIds(project)
+    if (selectedLanguageCodes.isNotEmpty()) {
+      selectedLanguages.addAll(supportedLanguages.filter { selectedLanguageCodes.contains(it.code) })
     }
 
     overwriteExistingState.value = properties.getBoolean(Constants.KEY_IS_OVERWRITE_EXISTING_STRING)
     openTranslatedFileState.value = properties.getBoolean(Constants.KEY_IS_OPEN_TRANSLATED_FILE)
 
-    okAction.isEnabled = selectedLanguages.isNotEmpty()
+    stateInitialized = true
   }
 
-  private fun handleSelectAll(checked: Boolean) {
-    selectAllState.value = checked
-    if (checked) {
-      selectedLanguages.clear()
-      selectedLanguages.addAll(supportedLanguages)
-    } else {
-      selectedLanguages.clear()
+  private fun selectAll(languages: List<Lang>, checked: Boolean) {
+    languages.forEach { lang ->
+      selectLanguage(lang, checked)
     }
-    okAction.isEnabled = selectedLanguages.isNotEmpty()
+  }
+
+  private fun selectLanguage(lang: Lang, checked: Boolean) {
+    if (checked) {
+      if (!selectedLanguages.contains(lang)) {
+        selectedLanguages.add(lang)
+      }
+    } else {
+      selectedLanguages.remove(lang)
+    }
+  }
+
+  private fun setFavoriteLanguage(lang: Lang, isFavorite: Boolean) {
+    if (isFavorite) {
+      if (!favoriteLanguages.contains(lang)) {
+        favoriteLanguages.add(lang)
+      }
+    } else {
+      if (favoriteLanguages.contains(lang)) {
+        favoriteLanguages.remove(lang)
+      }
+    }
+    LanguageUtil.saveFavoriteLanguages(project, favoriteLanguages)
   }
 
   private fun properties(): PropertiesComponent {
-    return if (project != null) PropertiesComponent.getInstance(project) else PropertiesComponent.getInstance()
+    return PropertiesComponent.getInstance(project)
   }
 
   private fun calculateDialogSize(): Pair<Dimension, Dimension> {
@@ -210,17 +240,26 @@ class SelectLanguagesDialog(private val project: Project?) : DialogWrapper(proje
 @Composable
 private fun SelectLanguagesContent(
   translator: AbstractTranslator,
-  supportedLanguages: List<Lang>,
+  languages: List<Lang>,
+  favoriteLanguages: SnapshotStateList<Lang>,
   selectedLanguages: SnapshotStateList<Lang>,
-  selectAllStateChecked: Boolean,
   overwriteExistingChecked: Boolean,
   openTranslatedFileChecked: Boolean,
   onSelectAllChanged: (Boolean) -> Unit,
+  onFavoriteSelectAllChanged: (Boolean) -> Unit,
   onOverwriteChanged: (Boolean) -> Unit,
   onOpenTranslatedFileChanged: (Boolean) -> Unit,
   onLanguageToggled: (Lang, Boolean) -> Unit,
+  onFavoriteToggle: (Lang, Boolean) -> Unit,
 ) {
   var filterText by rememberSaveable { mutableStateOf("") }
+
+  val favoriteSelectAllChecked by remember(selectedLanguages) {
+    derivedStateOf { favoriteLanguages.isNotEmpty() && favoriteLanguages.all { selectedLanguages.contains(it) } }
+  }
+  val languagesSelectAllChecked by remember(selectedLanguages) {
+    derivedStateOf { languages.isNotEmpty() && languages.all { selectedLanguages.contains(it) } }
+  }
 
   Column(
     modifier = Modifier
@@ -231,15 +270,19 @@ private fun SelectLanguagesContent(
     LanguagesCard(
       filterText = filterText,
       onFilterChange = { filterText = it },
-      allLanguages = supportedLanguages,
+      languages = languages,
+      favoriteLanguages = favoriteLanguages,
       selectedLanguages = selectedLanguages,
-      selectAll = selectAllStateChecked,
+      selectAll = languagesSelectAllChecked,
+      favoriteSelectAll = favoriteSelectAllChecked,
       overwriteExisting = overwriteExistingChecked,
       openTranslatedFile = openTranslatedFileChecked,
       onSelectAllChanged = onSelectAllChanged,
+      onFavoriteSelectAllChanged = onFavoriteSelectAllChanged,
       onOverwriteChanged = onOverwriteChanged,
       onOpenTranslatedFileChanged = onOpenTranslatedFileChanged,
       onLanguageToggled = onLanguageToggled,
+      onFavoriteToggle = onFavoriteToggle,
       modifier = Modifier.weight(1f, fill = true),
     )
 
@@ -252,23 +295,47 @@ private fun SelectLanguagesContent(
 private fun LanguagesCard(
   filterText: String,
   onFilterChange: (String) -> Unit,
-  allLanguages: List<Lang>,
+  languages: List<Lang>,
+  favoriteLanguages: SnapshotStateList<Lang>,
   selectedLanguages: SnapshotStateList<Lang>,
   selectAll: Boolean,
+  favoriteSelectAll: Boolean,
   overwriteExisting: Boolean,
   openTranslatedFile: Boolean,
   onSelectAllChanged: (Boolean) -> Unit,
+  onFavoriteSelectAllChanged: (Boolean) -> Unit,
   onOverwriteChanged: (Boolean) -> Unit,
   onOpenTranslatedFileChanged: (Boolean) -> Unit,
   onLanguageToggled: (Lang, Boolean) -> Unit,
+  onFavoriteToggle: (Lang, Boolean) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val filteredLanguages = remember(filterText, allLanguages) {
-    if (filterText.isBlank()) allLanguages
-    else allLanguages.filter {
+  val filteredLanguages = remember(filterText, languages) {
+    if (filterText.isBlank()) {
+      languages
+    } else {
+      languages.filter {
+        it.code.contains(filterText, ignoreCase = true) ||
+            it.englishName.contains(filterText, ignoreCase = true) ||
+            it.name.contains(filterText, ignoreCase = true)
+      }
+    }
+  }
+
+  val filteredFavoriteLanguages = if (filterText.isBlank()) {
+    favoriteLanguages.toList()
+  } else {
+    favoriteLanguages.filter {
       it.englishName.contains(filterText, ignoreCase = true) ||
           it.code.contains(filterText, ignoreCase = true)
     }
+  }
+
+  val favoriteSelectedCount by remember {
+    derivedStateOf { favoriteLanguages.count { selectedLanguages.contains(it) } }
+  }
+  val selectedLanguagesCount by remember {
+    derivedStateOf { selectedLanguages.count { !favoriteLanguages.contains(it) } }
   }
 
   Surface(
@@ -282,7 +349,7 @@ private fun LanguagesCard(
   ) {
     Column(
       modifier = Modifier
-        .fillMaxWidth()
+        .fillMaxSize()
         .padding(18.dp),
       verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -301,45 +368,118 @@ private fun LanguagesCard(
         modifier = Modifier.fillMaxWidth(),
       )
 
-      LanguagesHeader(
-        total = allLanguages.size,
-        selected = selectedLanguages.size,
-        selectAll = selectAll,
-        onSelectAllChanged = onSelectAllChanged,
+      FavoriteLanguagesSection(
+        favoriteLanguages = favoriteLanguages,
+        filteredFavoriteLanguages = filteredFavoriteLanguages,
+        selectedLanguages = selectedLanguages,
+        selectedCount = favoriteSelectedCount,
+        selectAll = favoriteSelectAll,
+        onSelectAllChanged = onFavoriteSelectAllChanged,
+        onLanguageToggled = onLanguageToggled,
+        onFavoriteToggle = onFavoriteToggle,
       )
+
+      LanguagesHeader(
+        title = "Languages",
+        total = languages.size,
+        selected = selectedLanguagesCount,
+      ) {
+        OptionItem(
+          text = "Select all",
+          tooltip = "Select every supported language.",
+          checked = selectAll,
+          onCheckedChange = onSelectAllChanged,
+        )
+      }
 
       LanguagesGrid(
         languages = filteredLanguages,
         selectedLanguages = selectedLanguages,
+        favoriteLanguages = favoriteLanguages,
         onLanguageToggled = onLanguageToggled,
+        onFavoriteToggle = onFavoriteToggle,
+        emptyMessage = "No languages match your filter",
+        modifier = Modifier.weight(1f, fill = true),
       )
     }
   }
 }
 
 @Composable
-private fun LanguagesHeader(
-  total: Int,
-  selected: Int,
+private fun FavoriteLanguagesSection(
+  favoriteLanguages: SnapshotStateList<Lang>,
+  filteredFavoriteLanguages: List<Lang>,
+  selectedLanguages: SnapshotStateList<Lang>,
+  selectedCount: Int,
   selectAll: Boolean,
   onSelectAllChanged: (Boolean) -> Unit,
+  onLanguageToggled: (Lang, Boolean) -> Unit,
+  onFavoriteToggle: (Lang, Boolean) -> Unit,
+) {
+  val hasFavorites = favoriteLanguages.isNotEmpty()
+  val languagesToDisplay = if (hasFavorites) filteredFavoriteLanguages else emptyList()
+  val emptyMessage = when {
+    !hasFavorites -> "No favorite languages yet. \nClick the star beside a language below to add it."
+    languagesToDisplay.isEmpty() -> "No favorite languages match your filter"
+    else -> null
+  }
+  val resolvedEmptyMessage = emptyMessage ?: "No favorite languages match your filter"
+  val gridModifier = if (languagesToDisplay.isEmpty()) {
+    Modifier.padding(vertical = 8.dp)
+  } else {
+    Modifier.heightIn(max = 216.dp)
+  }
+  Column(
+    modifier = Modifier.fillMaxWidth(),
+    verticalArrangement = Arrangement.spacedBy(12.dp)
+  ) {
+    LanguagesHeader(
+      title = "Favorite Languages",
+      total = favoriteLanguages.size,
+      selected = selectedCount,
+    ) {
+      OptionItem(
+        text = "Select all",
+        tooltip = "Select every favorite language.",
+        checked = selectAll,
+        onCheckedChange = onSelectAllChanged,
+      )
+    }
+
+    LanguagesGrid(
+      languages = languagesToDisplay,
+      selectedLanguages = selectedLanguages,
+      favoriteLanguages = favoriteLanguages,
+      onLanguageToggled = onLanguageToggled,
+      onFavoriteToggle = onFavoriteToggle,
+      emptyMessage = resolvedEmptyMessage,
+      modifier = gridModifier,
+      emptyAlignment = Alignment.CenterStart,
+    )
+  }
+}
+
+@Composable
+private fun LanguagesHeader(
+  title: String,
+  total: Int,
+  selected: Int,
+  modifier: Modifier = Modifier,
+  trailingContent: (@Composable RowScope.() -> Unit)? = null,
 ) {
   Row(
-    modifier = Modifier.fillMaxWidth(),
+    modifier = modifier.fillMaxWidth(),
     verticalAlignment = Alignment.CenterVertically,
   ) {
     Text(
-      text = "Languages ($selected/$total)",
+      text = "$title ($selected/$total)",
       style = MaterialTheme.typography.titleSmall,
       color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
-    Spacer(modifier = Modifier.weight(1f))
-    OptionItem(
-      text = "Select all",
-      tooltip = "Select every supported language.",
-      checked = selectAll,
-      onCheckedChange = onSelectAllChanged,
-    )
+    if (trailingContent != null) {
+      Spacer(modifier = Modifier.weight(1f))
+      trailingContent()
+    }
   }
 }
 
@@ -347,26 +487,43 @@ private fun LanguagesHeader(
 private fun LanguagesGrid(
   languages: List<Lang>,
   selectedLanguages: SnapshotStateList<Lang>,
+  favoriteLanguages: SnapshotStateList<Lang>,
   onLanguageToggled: (Lang, Boolean) -> Unit,
+  onFavoriteToggle: (Lang, Boolean) -> Unit,
+  emptyMessage: String,
+  modifier: Modifier = Modifier,
+  emptyAlignment: Alignment = Alignment.Center,
 ) {
+  val containerModifier = modifier.fillMaxWidth()
   if (languages.isEmpty()) {
-    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-      Text(text = "No languages match your filter", style = MaterialTheme.typography.bodyMedium)
+    Box(modifier = containerModifier, contentAlignment = emptyAlignment) {
+      Text(
+        text = emptyMessage,
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+      )
     }
   } else {
-    LazyVerticalGrid(
-      columns = GridCells.Fixed(4),
-      verticalArrangement = Arrangement.spacedBy(12.dp),
-      horizontalArrangement = Arrangement.spacedBy(12.dp),
-      modifier = Modifier.fillMaxSize()
-    ) {
-      items(languages, key = { it.id }) { language ->
-        LanguageOption(
-          language = language,
-          isSelected = language in selectedLanguages,
-          onToggle = { checked -> onLanguageToggled(language, checked) },
-        )
+    val languagesGridState = rememberLazyGridState()
+    Row(modifier = containerModifier, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+      LazyVerticalGrid(
+        state = languagesGridState,
+        columns = GridCells.Fixed(4),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.weight(1f, fill = true)
+      ) {
+        items(languages, key = { it.code }) { language ->
+          LanguageOption(
+            language = language,
+            isSelected = language in selectedLanguages,
+            isFavorite = language in favoriteLanguages,
+            onToggle = { checked -> onLanguageToggled(language, checked) },
+            onFavoriteToggle = { checked -> onFavoriteToggle(language, checked) },
+          )
+        }
       }
+      VerticalScrollbar(rememberScrollbarAdapter(languagesGridState))
     }
   }
 }
@@ -456,17 +613,18 @@ private fun TooltipIcon(text: String) {
 private fun LanguageOption(
   language: Lang,
   isSelected: Boolean,
+  isFavorite: Boolean,
   onToggle: (Boolean) -> Unit,
+  onFavoriteToggle: (Boolean) -> Unit,
+  modifier: Modifier = Modifier,
 ) {
-  val flag = language.flagEmoji
-  val displayName = remember(language) { "${language.englishName} (${language.code})" }
   val backgroundColor =
     if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant
   val borderColor =
     if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
 
   Row(
-    modifier = Modifier
+    modifier = modifier
       .defaultMinSize(minHeight = 64.dp)
       .border(BorderStroke(1.dp, borderColor), RoundedCornerShape(12.dp))
       .background(backgroundColor, RoundedCornerShape(12.dp))
@@ -482,17 +640,42 @@ private fun LanguageOption(
     verticalAlignment = Alignment.CenterVertically,
   ) {
     IdeCheckbox(checked = isSelected)
-    if (flag != null) {
+    Text(
+      text = language.flag,
+      style = MaterialTheme.typography.headlineMedium,
+    )
+    Column(
+      modifier = Modifier.weight(1f, fill = true),
+      verticalArrangement = Arrangement.spacedBy(2.dp),
+    ) {
       Text(
-        text = flag,
-        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 20.sp),
+        text = language.name,
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurface,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+      )
+      Text(
+        text = "${language.englishName} (${language.code})",
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        maxLines = 2,
+        overflow = TextOverflow.Ellipsis,
       )
     }
-    Text(
-      text = displayName,
-      style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
-      color = MaterialTheme.colorScheme.onSurface,
-    )
+    IconToggleButton(
+      checked = isFavorite,
+      onCheckedChange = onFavoriteToggle,
+      modifier = Modifier.size(32.dp),
+    ) {
+      Icon(
+        imageVector = Icons.Filled.Star,
+        contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
+        tint = if (isFavorite) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurfaceVariant.copy(
+          alpha = 0.45f
+        ),
+      )
+    }
   }
 }
 
@@ -503,7 +686,7 @@ private fun TranslatorFooter(translator: AbstractTranslator) {
     horizontalArrangement = Arrangement.Center,
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    TranslatorIcon(icon = translator.icon)
+    SwingIcon(icon = translator.icon)
     Spacer(modifier = Modifier.width(8.dp))
     Text(
       text = "${translator.name} Translator",
@@ -511,24 +694,4 @@ private fun TranslatorFooter(translator: AbstractTranslator) {
       color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
   }
-}
-
-@Composable
-private fun TranslatorIcon(icon: javax.swing.Icon?, modifier: Modifier = Modifier) {
-  if (icon == null) return
-  val imageBitmap = remember(icon) { icon.toImageBitmap() }
-  Image(
-    painter = remember(imageBitmap) { BitmapPainter(imageBitmap) },
-    contentDescription = null,
-    modifier = modifier.size(20.dp),
-  )
-}
-
-private fun javax.swing.Icon.toImageBitmap(): ImageBitmap {
-  val image = java.awt.image.BufferedImage(iconWidth, iconHeight, java.awt.image.BufferedImage.TYPE_INT_ARGB)
-  val graphics = image.createGraphics()
-  graphics.background = java.awt.Color(0, 0, 0, 0)
-  paintIcon(null, graphics, 0, 0)
-  graphics.dispose()
-  return image.toComposeImageBitmap()
 }

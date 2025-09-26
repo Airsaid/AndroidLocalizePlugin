@@ -23,10 +23,10 @@ package com.airsaid.localization.constant
  * @author airsaid
  */
 object Constants {
-    const val PLUGIN_NAME = "AndroidLocalize"
-    const val PLUGIN_ID = "com.github.airsaid.androidlocalize"
-    const val KEY_SELECTED_LANGUAGES = "$PLUGIN_ID.selected_languages"
-    const val KEY_IS_OVERWRITE_EXISTING_STRING = "$PLUGIN_ID.is_overwrite_existing_string"
-    const val KEY_IS_SELECT_ALL = "$PLUGIN_ID.is_select_all"
-    const val KEY_IS_OPEN_TRANSLATED_FILE = "$PLUGIN_ID.is_open_translated_file"
+  const val PLUGIN_NAME = "AndroidLocalize"
+  const val PLUGIN_ID = "com.github.airsaid.androidlocalize"
+  const val KEY_SELECTED_LANGUAGES = "$PLUGIN_ID.selected_languages.v2"
+  const val KEY_FAVORITE_LANGUAGES = "$PLUGIN_ID.favorite_languages"
+  const val KEY_IS_OVERWRITE_EXISTING_STRING = "$PLUGIN_ID.is_overwrite_existing_string"
+  const val KEY_IS_OPEN_TRANSLATED_FILE = "$PLUGIN_ID.is_open_translated_file"
 }

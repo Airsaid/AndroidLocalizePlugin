@@ -38,8 +38,9 @@ abstract class AbstractTranslator : Translator, TranslatorConfigurable {
   override val name: String
     get() = key
 
-  override val supportedLanguages: List<Lang>
-    get() = Languages.allSupportedLanguages()
+  override val supportedLanguages: List<Lang> by lazy {
+    Languages.allSupportedLanguages()
+  }
 
   companion object {
     protected val LOG = Logger.getInstance(AbstractTranslator::class.java)

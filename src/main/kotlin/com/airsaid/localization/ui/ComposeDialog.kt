@@ -28,6 +28,8 @@ abstract class ComposeDialog(
 
   override fun createCenterPanel(): JComponent = composePanel
 
+  protected open fun preferredSize(): Dimension? = null
+
   @Composable
   protected abstract fun Content()
 
@@ -37,8 +39,6 @@ abstract class ComposeDialog(
       onClickOKCallback = callback
     }
   }
-
-  protected open fun preferredSize(): Dimension? = null
 
   override fun doOKAction() {
     onClickOKCallback?.invoke()

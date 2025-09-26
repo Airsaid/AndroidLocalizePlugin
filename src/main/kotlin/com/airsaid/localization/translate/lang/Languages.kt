@@ -132,7 +132,7 @@ enum class Languages(
   ENGLISH("en", "English", "English", "🇺🇸", "en"),
   YORUBA("yo", "Yorùbá", "Yoruba", "🇳🇬", "yo"),
   VIETNAMESE("vi", "Tiếng Việt", "Vietnamese", "🇻🇳", "vi"),
-  CHINESE_TRADITIONAL("zh-rTW", "正體中文", "Chinese Traditional", "🇨🇳", "zh-rTW"),
+  CHINESE_TRADITIONAL("zh-rTW", "繁體中文", "Chinese Traditional", "🇨🇳", "zh-rTW"),
   CHINESE_SIMPLIFIED("zh-rCN", "简体中文", "Chinese Simplified", "🇨🇳", "zh-rCN"),
   ASSAMESE("as", "Assamese", "Assamese", "🇮🇳", "as"),
   DARI("prs", "Dari", "Dari", "🇦🇫", "prs"),
