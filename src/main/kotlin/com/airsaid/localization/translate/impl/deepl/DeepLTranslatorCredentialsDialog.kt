@@ -9,6 +9,11 @@ import com.airsaid.localization.config.TranslatorCredentialsDialog
 import com.airsaid.localization.translate.AbstractTranslator
 import com.airsaid.localization.ui.components.IdeCheckBox
 
+/**
+ * Credentials dialog that exposes DeepL-specific configuration switches.
+ *
+ * @author airsaid
+ */
 class DeepLTranslatorCredentialsDialog(
   translator: AbstractTranslator,
   settingsState: SettingsState,
@@ -29,6 +34,9 @@ class DeepLTranslatorCredentialsDialog(
     )
   }
 
+  /**
+   * Persists the DeepL Pro preference alongside credential values.
+   */
   override fun doOKAction() {
     super.doOKAction()
     deeplSettings.usePro = useDeepLPro

@@ -6,6 +6,11 @@ import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.service
 
+/**
+ * Persisted configuration controlling how Google translator requests are routed.
+ *
+ * @author airsaid
+ */
 @Service
 @State(name = "com.airsaid.localization.GoogleTranslatorSettings", storages = [Storage("googleTranslatorSettings.xml")])
 class GoogleTranslatorSettings : PersistentStateComponent<GoogleTranslatorSettings.State> {

@@ -19,6 +19,11 @@ package com.airsaid.localization.translate.impl.openai
 
 import com.google.gson.annotations.SerializedName
 
+/**
+ * Response envelope returned by the OpenAI chat completions API.
+ *
+ * @author airsaid
+ */
 data class OpenAIResponse(
   var choices: List<Choice>?,
   var created: Int?,

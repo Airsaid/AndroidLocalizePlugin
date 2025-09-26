@@ -26,6 +26,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.awt.Dimension
 
+/**
+ * Compose dialog for managing OpenAI translator credentials, hosts, and models.
+ *
+ * @author airsaid
+ */
 class OpenAITranslatorSettingsDialog(
   translator: AbstractTranslator,
   settingsState: SettingsState,
@@ -232,6 +237,7 @@ class OpenAITranslatorSettingsDialog(
       }
     }
 
+    // Persist the dialog selections so subsequent requests reuse them.
     OnClickOK {
       openAISettings.selectedModel = selectedModel
       openAISettings.useCustomModel = useCustomModel

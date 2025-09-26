@@ -19,12 +19,22 @@ private val LOG: Logger = Logger.getInstance("GoogleToken")
 private var cachedToken: Token? = null
 private val tokenLock = Any()
 
+/**
+ * Clears any cached TKK tokens so subsequent calls fetch fresh credentials.
+ *
+ * @author airsaid
+ */
 internal fun resetGoogleTokenCache() {
   synchronized(tokenLock) {
     cachedToken = null
   }
 }
 
+/**
+ * Returns the current TKK token pair, fetching or regenerating when required.
+ *
+ * @author airsaid
+ */
 @RequiresBackgroundThread
 internal fun currentTkk(): Pair<Long, Long> {
   synchronized(tokenLock) {
@@ -65,6 +75,11 @@ private fun generateLocal(hour: Long): Token {
   return Token(hour, value, hour)
 }
 
+/**
+ * Computes the Google translate token for the given payload.
+ *
+ * @author airsaid
+ */
 internal fun String.tk(): String {
   val (d, e) = currentTkk()
   val bytes = mutableListOf<Long>()

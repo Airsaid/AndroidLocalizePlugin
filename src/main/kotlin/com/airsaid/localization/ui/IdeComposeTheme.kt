@@ -15,6 +15,11 @@ import com.intellij.util.ui.UIUtil
 import java.awt.Color as AwtColor
 import javax.swing.UIManager
 
+/**
+ * Material theme tuned to match the current IntelliJ look and feel.
+ *
+ * @author airsaid
+ */
 @Composable
 fun IdeTheme(content: @Composable () -> Unit) {
     val isDark = UIUtil.isUnderDarcula()

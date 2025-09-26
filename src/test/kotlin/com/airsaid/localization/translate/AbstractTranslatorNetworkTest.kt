@@ -21,6 +21,11 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
 
+/**
+ * Integration-style tests exercising the HTTP workflow shared by translators.
+ *
+ * @author airsaid
+ */
 class AbstractTranslatorNetworkTest {
 
   private lateinit var server: HttpServer
@@ -134,6 +139,11 @@ class AbstractTranslatorNetworkTest {
     }
   }
 
+  /**
+   * Minimal translator harness pointing to the test server.
+   *
+   * @author airsaid
+   */
   private open inner class TestTranslator(private val endpoint: String) : AbstractTranslator() {
     override val key: String = "Test"
     override val name: String = "Test"

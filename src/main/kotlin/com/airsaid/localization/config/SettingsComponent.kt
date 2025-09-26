@@ -56,6 +56,8 @@ import androidx.compose.foundation.layout.Arrangement as LayoutArrangement
 
 /**
  * Compose implementation of the settings panel exposed through the IDE Settings.
+ *
+ * @author airsaid
  */
 class SettingsComponent {
   companion object {

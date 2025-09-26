@@ -15,6 +15,11 @@ import com.airsaid.localization.ui.components.IdeCheckBox
 import com.airsaid.localization.ui.components.IdeTextField
 import java.awt.Dimension
 
+/**
+ * Compose dialog allowing users to toggle the Google translator backend address.
+ *
+ * @author airsaid
+ */
 class GoogleTranslatorSettingsDialog : ComposeDialog() {
 
   private val settings = GoogleTranslatorSettings.getInstance()
@@ -78,6 +83,7 @@ class GoogleTranslatorSettingsDialog : ComposeDialog() {
     }
 
     OnClickOK {
+      // Persist the selected endpoint and toggle when the user accepts the dialog.
       settings.useCustomServer = useCustomServer
       if (useCustomServer) {
         settings.serverUrl = serverUrl.ifBlank { GoogleTranslatorSettings.DEFAULT_SERVER_URL }

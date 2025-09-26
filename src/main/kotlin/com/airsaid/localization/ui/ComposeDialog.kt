@@ -8,6 +8,11 @@ import com.intellij.openapi.ui.DialogWrapper
 import java.awt.Dimension
 import javax.swing.JComponent
 
+/**
+ * Base dialog wrapper that embeds Compose UI inside IntelliJ Swing dialogs.
+ *
+ * @author airsaid
+ */
 abstract class ComposeDialog(
   project: Project? = null,
   canBeParent: Boolean = true
@@ -40,6 +45,9 @@ abstract class ComposeDialog(
     }
   }
 
+  /**
+   * Invokes the registered OK callback prior to delegating to the Swing dialog handler.
+   */
   override fun doOKAction() {
     onClickOKCallback?.invoke()
     super.doOKAction()

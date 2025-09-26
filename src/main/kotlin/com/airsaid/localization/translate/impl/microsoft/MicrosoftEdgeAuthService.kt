@@ -17,6 +17,8 @@ import java.util.concurrent.atomic.AtomicReference
  * Fetches and caches Microsoft Translator access tokens using the same public
  * endpoint leveraged by the Microsoft Edge browser. This removes the need for
  * user-provided subscription keys.
+ *
+ * @author airsaid
  */
 @Service
 class MicrosoftEdgeAuthService {

@@ -23,6 +23,8 @@ import com.intellij.util.io.RequestBuilder
 /**
  * Factory methods for creating [RequestBuilder] instances that honour the IDE's
  * proxy and timeout settings.
+ *
+ * @author airsaid
  */
 object HttpRequestFactory {
 

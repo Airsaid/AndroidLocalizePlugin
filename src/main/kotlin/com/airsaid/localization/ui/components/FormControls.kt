@@ -28,6 +28,11 @@ import androidx.compose.ui.unit.dp
 private val CompactFieldHeight = 36.dp
 private val CompactDropdownHeight = 32.dp
 
+/**
+ * IntelliJ-styled text field wrapper that supports secure input and Compose slots.
+ *
+ * @author airsaid
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Suppress("LongParameterList")
@@ -116,6 +121,11 @@ fun IdeTextField(
   }
 }
 
+/**
+ * Dropdown field that mirrors IntelliJ look and feel while showing a loading indicator.
+ *
+ * @author airsaid
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IdeDropdownField(
@@ -214,6 +224,11 @@ fun IdeDropdownField(
   }
 }
 
+/**
+ * Check box row with optional title and subtitle consistent with IDE visuals.
+ *
+ * @author airsaid
+ */
 @Composable
 fun IdeCheckBox(
   checked: Boolean,
@@ -258,6 +273,11 @@ fun IdeCheckBox(
   }
 }
 
+/**
+ * Compact checkbox indicator used within other form controls.
+ *
+ * @author airsaid
+ */
 @Composable
 fun IdeCheckbox(
   checked: Boolean,
@@ -295,6 +315,11 @@ fun IdeCheckbox(
   }
 }
 
+/**
+ * Toggle switch preconfigured to match IntelliJ color tokens.
+ *
+ * @author airsaid
+ */
 @Composable
 fun IdeSwitch(
   checked: Boolean,

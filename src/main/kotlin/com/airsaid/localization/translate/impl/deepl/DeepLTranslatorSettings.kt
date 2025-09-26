@@ -6,6 +6,11 @@ import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.components.service
 
+/**
+ * Persistent storage for DeepL translator runtime preferences.
+ *
+ * @author airsaid
+ */
 @Service
 @State(name = "com.airsaid.localization.DeepLTranslatorSettings", storages = [Storage("deeplTranslatorSettings.xml")])
 class DeepLTranslatorSettings : PersistentStateComponent<DeepLTranslatorSettings.State> {

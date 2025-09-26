@@ -4,6 +4,11 @@ import com.intellij.util.io.RequestBuilder
 
 private const val GOOGLE_REFERER = "https://translate.google.com/"
 
+/**
+ * Builds the Google translate HTTP endpoint, respecting custom server overrides.
+ *
+ * @author airsaid
+ */
 internal fun googleApiUrl(path: String): String {
   val settings = GoogleTranslatorSettings.getInstance()
   val base = if (settings.useCustomServer) settings.serverUrl else GoogleTranslatorSettings.DEFAULT_SERVER_URL
@@ -12,6 +17,11 @@ internal fun googleApiUrl(path: String): String {
   return "$normalizedBase/$normalizedPath"
 }
 
+/**
+ * Applies the HTTP headers expected by the Google translate service.
+ *
+ * @author airsaid
+ */
 internal fun RequestBuilder.withGoogleHeaders(): RequestBuilder = apply {
   tuner { connection ->
     connection.setRequestProperty("Referer", GOOGLE_REFERER)

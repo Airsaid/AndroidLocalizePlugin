@@ -14,6 +14,11 @@ import com.intellij.util.io.RequestBuilder
 import icons.PluginIcons
 import javax.swing.Icon
 
+/**
+ * Translator implementation that proxies requests through the Google translate web endpoint.
+ *
+ * @author airsaid
+ */
 @AutoService(AbstractTranslator::class)
 class GoogleTranslator : AbsGoogleTranslator() {
 
@@ -46,6 +51,9 @@ class GoogleTranslator : AbsGoogleTranslator() {
     requestBuilder.withGoogleHeaders()
   }
 
+  /**
+   * Parses the JSON payload and surfaces API errors as `TranslationException`.
+   */
   override fun parsingResult(fromLang: Lang, toLang: Lang, text: String, resultText: String): String {
     val response = GsonUtil.getInstance().gson.fromJson(resultText, GoogleTranslationResponse::class.java)
     response.error?.message?.let { message ->

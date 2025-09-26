@@ -5,6 +5,11 @@ import com.airsaid.localization.translate.lang.Lang
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
+/**
+ * Unit tests covering translator selection logic.
+ *
+ * @author airsaid
+ */
 class TranslatorServiceTest {
 
   @Test
@@ -21,6 +26,11 @@ class TranslatorServiceTest {
     assertEquals(first, defaultTranslator)
   }
 
+  /**
+   * Minimal translator stub used to drive selection scenarios.
+   *
+   * @author airsaid
+   */
   private class StubTranslator(override val key: String) : AbstractTranslator() {
     override val name: String = key
     override val supportedLanguages: List<Lang> = emptyList()

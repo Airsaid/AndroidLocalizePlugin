@@ -27,6 +27,11 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.util.io.RequestBuilder
 import icons.PluginIcons
 
+/**
+ * Translator backed by the OpenAI chat completions API.
+ *
+ * @author airsaid
+ */
 @AutoService(AbstractTranslator::class)
 class OpenAITranslator : AbstractTranslator() {
   companion object {
@@ -50,6 +55,9 @@ class OpenAITranslator : AbstractTranslator() {
   override val requestContentType: String
     get() = "application/json"
 
+  /**
+   * Verifies credentials before delegating to the base network workflow.
+   */
   @Throws(TranslationException::class)
   override fun doTranslate(fromLang: Lang, toLang: Lang, text: String): String {
     if (credentialValue("appKey").isBlank()) {

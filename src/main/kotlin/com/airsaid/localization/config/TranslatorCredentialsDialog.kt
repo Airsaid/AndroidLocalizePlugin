@@ -16,6 +16,11 @@ import com.airsaid.localization.ui.ComposeDialog
 import com.airsaid.localization.ui.components.IdeTextField
 import com.intellij.ide.BrowserUtil
 
+/**
+ * Base Compose dialog for collecting and persisting translator credentials.
+ *
+ * @author airsaid
+ */
 open class TranslatorCredentialsDialog(
   protected val translator: AbstractTranslator,
   protected val settingsState: SettingsState,
@@ -83,6 +88,9 @@ open class TranslatorCredentialsDialog(
     }
   }
 
+  /**
+   * Persists the sanitized credential values before closing the dialog.
+   */
   override fun doOKAction() {
     super.doOKAction()
     credentialValuesState.forEach { (id, value) ->

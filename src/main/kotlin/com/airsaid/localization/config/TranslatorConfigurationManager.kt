@@ -6,6 +6,11 @@ import com.airsaid.localization.translate.impl.google.GoogleTranslatorSettingsDi
 import com.airsaid.localization.translate.impl.openai.OpenAITranslatorSettingsDialog
 import com.intellij.openapi.diagnostic.Logger
 
+/**
+ * Routes translator configuration requests to the appropriate UI dialog.
+ *
+ * @author airsaid
+ */
 object TranslatorConfigurationManager {
 
   private val LOG = Logger.getInstance(TranslatorConfigurationManager::class.java)

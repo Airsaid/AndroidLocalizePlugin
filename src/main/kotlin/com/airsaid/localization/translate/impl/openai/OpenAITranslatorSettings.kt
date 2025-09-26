@@ -3,6 +3,11 @@ package com.airsaid.localization.translate.impl.openai
 import com.intellij.openapi.components.*
 import java.net.URI
 
+/**
+ * Persisted configuration controlling OpenAI translator models and API host.
+ *
+ * @author airsaid
+ */
 @Service
 @State(
   name = "com.airsaid.localization.OpenAITranslatorSettings",
@@ -102,6 +107,9 @@ class OpenAITranslatorSettings : PersistentStateComponent<OpenAITranslatorSettin
 
     fun getInstance(): OpenAITranslatorSettings = service()
 
+    /**
+     * Sanitizes the configured host into a valid absolute URL used for API calls.
+     */
     fun normalizeBaseUrl(host: String): String {
       val rawHost = host.trim().ifBlank { DEFAULT_API_HOST }
       val hostWithScheme = ensureScheme(rawHost)

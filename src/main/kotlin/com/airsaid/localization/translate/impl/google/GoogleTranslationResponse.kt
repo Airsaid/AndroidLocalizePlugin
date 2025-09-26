@@ -2,6 +2,11 @@ package com.airsaid.localization.translate.impl.google
 
 import com.google.gson.annotations.SerializedName
 
+/**
+ * Response model capturing fields returned by the Google translate endpoint.
+ *
+ * @author airsaid
+ */
 internal data class GoogleTranslationResponse(
   @SerializedName("sentences") val sentences: List<Sentence>?,
   @SerializedName("src") val sourceLanguage: String?,
