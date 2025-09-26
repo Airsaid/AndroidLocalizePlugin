@@ -205,7 +205,7 @@ class TranslateTask(
           try {
             val translatedText = translatorService.doTranslate(Languages.AUTO.toLang(), toLanguage, text)
             ApplicationManager.getApplication().runReadAction {
-              child.setValue(translatedText)
+              child.value = translatedText
             }
           } catch (e: TranslationException) {
             LOG.warn(e)
