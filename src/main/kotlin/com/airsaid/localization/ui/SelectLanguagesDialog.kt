@@ -27,6 +27,7 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -39,6 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.airsaid.localization.config.SettingsConfigurable
 import com.airsaid.localization.constant.Constants
 import com.airsaid.localization.translate.AbstractTranslator
 import com.airsaid.localization.translate.lang.Lang
@@ -48,6 +50,7 @@ import com.airsaid.localization.ui.components.IdeCheckbox
 import com.airsaid.localization.ui.components.SwingIcon
 import com.airsaid.localization.utils.LanguageUtil
 import com.intellij.ide.util.PropertiesComponent
+import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
 import java.awt.Dimension
 import java.awt.Toolkit
@@ -135,6 +138,7 @@ class SelectLanguagesDialog(private val project: Project) : ComposeDialog(projec
         onOpenTranslatedFileChanged = { checked -> openTranslatedFileState.value = checked },
         onLanguageToggled = { lang, checked -> selectLanguage(lang, checked) },
         onFavoriteToggle = { lang, isFavorite -> setFavoriteLanguage(lang, isFavorite) },
+        onOpenSettings = { openPluginSettings() },
       )
     }
 
@@ -236,6 +240,10 @@ class SelectLanguagesDialog(private val project: Project) : ComposeDialog(projec
     val minimum = Dimension(minWidth, minHeight)
     return preferred to minimum
   }
+
+  private fun openPluginSettings() {
+    ShowSettingsUtil.getInstance().showSettingsDialog(project, SettingsConfigurable::class.java)
+  }
 }
 
 @Composable
@@ -252,6 +260,7 @@ private fun SelectLanguagesContent(
   onOpenTranslatedFileChanged: (Boolean) -> Unit,
   onLanguageToggled: (Lang, Boolean) -> Unit,
   onFavoriteToggle: (Lang, Boolean) -> Unit,
+  onOpenSettings: () -> Unit,
 ) {
   var filterText by rememberSaveable { mutableStateOf("") }
 
@@ -287,7 +296,7 @@ private fun SelectLanguagesContent(
       modifier = Modifier.weight(1f, fill = true),
     )
 
-    TranslatorFooter(translator = translator)
+    TranslatorFooter(translator = translator, onOpenSettings = onOpenSettings)
   }
 }
 
@@ -680,8 +689,9 @@ private fun LanguageOption(
   }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun TranslatorFooter(translator: AbstractTranslator) {
+private fun TranslatorFooter(translator: AbstractTranslator, onOpenSettings: () -> Unit) {
   Row(
     modifier = Modifier.fillMaxWidth(),
     horizontalArrangement = Arrangement.Center,
@@ -694,5 +704,30 @@ private fun TranslatorFooter(translator: AbstractTranslator) {
       style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
       color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
+    TooltipArea(
+      tooltip = {
+        Surface(
+          shape = RoundedCornerShape(6.dp),
+          shadowElevation = 4.dp,
+          color = MaterialTheme.colorScheme.surfaceVariant,
+        ) {
+          Text(
+            text = "Open plugin settings",
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+          )
+        }
+      },
+      delayMillis = 300,
+    ) {
+      IconButton(onClick = onOpenSettings) {
+        Icon(
+          imageVector = Icons.Filled.Settings,
+          contentDescription = "Open plugin settings",
+          tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+      }
+    }
   }
 }
