@@ -12,8 +12,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.intellij.ui.JBColor
 import com.intellij.util.ui.UIUtil
-import java.awt.Color as AwtColor
 import javax.swing.UIManager
+import java.awt.Color as AwtColor
 
 /**
  * Material theme tuned to match the current IntelliJ look and feel.
@@ -22,9 +22,9 @@ import javax.swing.UIManager
  */
 @Composable
 fun IdeTheme(content: @Composable () -> Unit) {
-  val isDark = UIUtil.isUnderDarcula()
+  val isDark = !JBColor.isBright()
 
-  val panelBackground = UIUtil.getPanelBackground().toComposeColor()
+  val panelBackground = JBColor.background().toComposeColor()
   val surfaceColor = getUiColor("Panel.background", UIUtil.getPanelBackground()).toComposeColor()
   val surfaceVariant = getUiColor("EditorPane.background", UIUtil.getPanelBackground()).toComposeColor()
   val foreground = UIUtil.getLabelForeground().toComposeColor()
