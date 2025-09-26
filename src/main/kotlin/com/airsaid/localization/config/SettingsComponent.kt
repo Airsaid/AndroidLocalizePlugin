@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import com.airsaid.localization.translate.AbstractTranslator
 import com.airsaid.localization.translate.services.TranslatorService
 import com.airsaid.localization.ui.IdeTheme
-import com.airsaid.localization.ui.SupportLanguagesDialog
+import com.airsaid.localization.ui.SupportedLanguagesDialog
 import com.airsaid.localization.ui.components.IdeSwitch
 import com.airsaid.localization.ui.components.IdeTextField
 import com.intellij.openapi.diagnostic.Logger
@@ -83,7 +83,7 @@ class SettingsComponent {
           maxCacheSizeState = maxCacheSizeState,
           translationIntervalState = translationIntervalState,
           onTranslatorSelected = { translator -> applySelectedTranslator(translator) },
-          onShowSupportedLanguages = { translator -> SupportLanguagesDialog(translator).show() },
+          onShowSupportedLanguages = { translator -> SupportedLanguagesDialog(translator).show() },
           onConfigureTranslator = { translator ->
             TranslatorConfigurationManager.showConfigurationDialog(translator)
           }
