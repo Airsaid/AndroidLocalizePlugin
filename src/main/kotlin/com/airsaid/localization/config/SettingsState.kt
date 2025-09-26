@@ -152,7 +152,7 @@ class SettingsState : PersistentStateComponent<SettingsState.State> {
       state.translationInterval *= 1000
     }
     if (state.translationInterval <= 0) {
-      state.translationInterval = 500
+      state.translationInterval = 50
     }
   }
 
