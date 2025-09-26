@@ -43,6 +43,7 @@ import com.airsaid.localization.ui.IdeTheme
 import com.airsaid.localization.ui.SupportedLanguagesDialog
 import com.airsaid.localization.ui.components.IdeSwitch
 import com.airsaid.localization.ui.components.IdeTextField
+import com.intellij.ide.BrowserUtil
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.util.ui.UIUtil
 import java.awt.Dimension
@@ -153,6 +154,8 @@ private val TranslatorDropdownWidth = 280.dp
 private val CompactFieldHeight = 36.dp
 private val FormContentSpacing = 8.dp
 private const val MAX_REQUEST_INTERVAL_MS = 60_000
+private const val DONATION_URL =
+  "https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/README.md#support-and-donations"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -286,6 +289,11 @@ private fun SettingsContent(
         }
       )
     }
+
+    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.35f))
+
+    SectionHeader(title = "Donation")
+    DonationSection()
   }
 }
 
@@ -337,6 +345,24 @@ private fun SettingsFormRow(
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier.padding(start = LabelColumnWidth + FormContentSpacing, top = 4.dp)
       )
+    }
+  }
+}
+
+@Composable
+private fun DonationSection() {
+  Column {
+    Text(
+      text = "If this plugin has helped simplify your localization workflow,\nconsider supporting its ongoing development so it can continue to improve.",
+      style = MaterialTheme.typography.bodyMedium,
+      color = MaterialTheme.colorScheme.onSurface
+    )
+
+    TextButton(
+      onClick = { BrowserUtil.browse(DONATION_URL) },
+      modifier = Modifier.align(Alignment.Start)
+    ) {
+      Text("Buy me a coffee  ☕")
     }
   }
 }
