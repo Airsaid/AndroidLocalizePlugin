@@ -144,7 +144,6 @@ class TranslateTask(
 
       if (value is XmlTag) {
         if (!valueService.isTranslatable(value)) {
-          translatedValues.add(value)
           continue
         }
 
