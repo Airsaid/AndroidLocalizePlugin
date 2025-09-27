@@ -79,17 +79,17 @@ Android 本地化插件，支持多种语言和翻译器。
     <tr align="center">
       <td>
         <a href="https://opencollective.com/androidlocalizeplugin/donate" target="_blank">
-          <img src="https://raw.githubusercontent.com/Airsaid/Resources/master/Images/opencollective-logo.png" width=298 alt="Donate To Our Collective">
+          <img src="https://raw.githubusercontent.com/Airsaid/Resources/main/Images/opencollective-logo.png" width=298 alt="Donate To Our Collective">
         </a>
       </td>
       <td>
         <a href="https://pay.weixin.qq.com/index.php/public/wechatpay_en" target="_blank">
-          <img src="https://raw.githubusercontent.com/Airsaid/Resources/master/Images/AndroidLocalizePlugin_WeChatPay.jpg" alt="WeChat Pay">
+          <img src="https://raw.githubusercontent.com/Airsaid/Resources/main/Images/AndroidLocalizePlugin_WeChatPay.jpg" alt="WeChat Pay">
         </a>
       </td>
       <td>
         <a href="https://global.alipay.com" target="_blank">
-          <img src="https://raw.githubusercontent.com/Airsaid/Resources/master/Images/AndroidLocalizePlugin_Alipay.jpg" alt="Alipay">
+          <img src="https://raw.githubusercontent.com/Airsaid/Resources/main/Images/AndroidLocalizePlugin_Alipay.jpg" alt="Alipay">
         </a>
       </td>
     </tr>

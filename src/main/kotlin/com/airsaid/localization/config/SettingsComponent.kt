@@ -157,7 +157,7 @@ private val CompactFieldHeight = 36.dp
 private val FormContentSpacing = 8.dp
 private const val MAX_REQUEST_INTERVAL_MS = 60_000
 private const val DONATION_URL =
-  "https://github.com/Airsaid/AndroidLocalizePlugin/blob/master/README.md#support-and-donations"
+  "https://github.com/Airsaid/AndroidLocalizePlugin/blob/main/README.md#support-and-donations"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
