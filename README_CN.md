@@ -7,7 +7,7 @@
 
 [Website](https://plugins.jetbrains.com/plugin/11174-androidlocalize) | [GitHub](https://github.com/Airsaid/AndroidLocalizePlugin) | [Issues](https://github.com/Airsaid/AndroidLocalizePlugin/issues) | [Reviews](https://plugins.jetbrains.com/plugin/11174-androidlocalize/reviews)
 
-Android 本地化插件，支持多种语言和翻译器。
+Android/KMP(Kotlin Multiplatform) 本地化插件，支持多种语言和翻译器。
 
 # 功能
 - 多翻译器支持：
