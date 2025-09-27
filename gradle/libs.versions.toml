@@ -12,7 +12,7 @@ compose = "1.7.0-beta02"
 
 # plugins
 changelog = "2.4.0"
-intelliJPlatform = "2.7.2"
+intelliJPlatform = "2.9.0"
 kotlin = "2.0.21"
 kover = "0.9.1"
 qodana = "2025.1.1"
