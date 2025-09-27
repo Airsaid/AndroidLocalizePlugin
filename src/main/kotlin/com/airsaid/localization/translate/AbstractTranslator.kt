@@ -45,7 +45,9 @@ abstract class AbstractTranslator : Translator, TranslatorConfigurable {
   companion object {
     protected val LOG = Logger.getInstance(AbstractTranslator::class.java)
     private const val DEFAULT_CONTENT_TYPE = "application/x-www-form-urlencoded"
-    private const val DEFAULT_TIMEOUT_MS = 60 * 1000
+    private const val DEFAULT_TIMEOUT_MS = 30 * 1000
+    private const val MAX_RETRY_COUNT = 3
+    private const val BASE_RETRY_DELAY_MS = 500L
   }
 
   @Throws(TranslationException::class)
@@ -53,26 +55,49 @@ abstract class AbstractTranslator : Translator, TranslatorConfigurable {
     checkSupportedLanguages(fromLang, toLang, text)
 
     val requestUrl = getRequestUrl(fromLang, toLang, text)
-    val requestBuilder = createRequestBuilder(requestUrl)
-    configureRequestBuilder(requestBuilder)
+    var lastException: Exception? = null
 
-    return try {
-      val payload = buildRequestPayload(fromLang, toLang, text)
-      requestBuilder.connect { request ->
-        payload.form?.let { request.write(it) }
-        payload.body?.let { body ->
-          if (payload.form != null && body.isNotEmpty()) {
-            request.write("&")
+    for (attempt in 0..MAX_RETRY_COUNT) {
+      val requestBuilder = createRequestBuilder(requestUrl)
+      configureRequestBuilder(requestBuilder)
+
+      try {
+        val payload = buildRequestPayload(fromLang, toLang, text)
+        return requestBuilder.connect { request ->
+          payload.form?.let { request.write(it) }
+          payload.body?.let { body ->
+            if (payload.form != null && body.isNotEmpty()) {
+              request.write("&")
+            }
+            request.write(body)
           }
-          request.write(body)
+          val resultText = request.readString()
+          parsingResult(fromLang, toLang, text, resultText)
         }
-        val resultText = request.readString()
-        parsingResult(fromLang, toLang, text, resultText)
+      } catch (e: Exception) {
+        lastException = e
+        val shouldRetry = e.isRecoverable() && attempt < MAX_RETRY_COUNT
+        if (!shouldRetry) {
+          LOG.error("Translation request failed: ${e.message}", e)
+          throw TranslationException(fromLang, toLang, text, e)
+        }
+        LOG.warn("Recoverable translation failure, retrying (attempt ${attempt + 1} of ${MAX_RETRY_COUNT + 1}): ${e.message}")
+        val backoffDelayMs = BASE_RETRY_DELAY_MS * (1L shl attempt)
+        try {
+          Thread.sleep(backoffDelayMs)
+        } catch (interruptedException: InterruptedException) {
+          Thread.currentThread().interrupt()
+          throw TranslationException(fromLang, toLang, text, interruptedException)
+        }
       }
-    } catch (e: Exception) {
-      LOG.warn("Translation request failed: ${e.message}", e)
-      throw TranslationException(fromLang, toLang, text, e)
     }
+
+    throw TranslationException(
+      fromLang,
+      toLang,
+      text,
+      lastException ?: IllegalStateException("Translation failed without capturing an exception")
+    )
   }
 
   protected open fun createRequestBuilder(requestUrl: String): RequestBuilder {
@@ -143,5 +168,21 @@ abstract class AbstractTranslator : Translator, TranslatorConfigurable {
     return RequestPayload(requestParams, requestBody)
   }
 }
-
 private data class RequestPayload(val form: String?, val body: String?)
+
+private fun Throwable.isRecoverable(): Boolean {
+  return generateSequence(this) { it.cause }
+    .any { cause ->
+      when (cause) {
+        is java.net.SocketTimeoutException,
+        is java.net.ConnectException,
+        is java.net.NoRouteToHostException,
+        is java.net.SocketException,
+        is java.util.concurrent.TimeoutException -> true
+        else -> {
+          val message = cause.message?.lowercase() ?: return@any false
+          message.contains("timeout") || message.contains("connection refused")
+        }
+      }
+    }
+}
