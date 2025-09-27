@@ -1,21 +1,78 @@
-Please ensure you have given all the following requested information in your report.
+## Issue Report
 
+Please ensure you have provided all the following requested information in your report.
 
-#### Please select the affected platforms
+### Environment Information
+
+#### Platform
 - [ ] Android Studio
-- [ ] IntelliJ IDEA
+- [ ] IntelliJ IDEA Community
+- [ ] IntelliJ IDEA Ultimate
 
-#### Please select the translator to use
+#### IDE Version
+- IDE Version:
+- IDE Build Number: (Help → About → Build)
+
+#### Plugin Information
+- Plugin Version:
+- Plugin Source: [ ] JetBrains Marketplace [ ] Manual Installation
+
+### Translation Configuration
+
+#### Translator Used
 - [ ] Google
-- [ ] Google (API)
 - [ ] Microsoft
 - [ ] Baidu
 - [ ] Youdao
 - [ ] Ali
+- [ ] DeepL
+- [ ] OpenAI
 
-#### Version of Plugin and IDE
-- Plugin Version:
-- IDE Version:
+#### Translation Settings
+- Using API Key: [ ] Yes [ ] No
+- Translation Interval: (ms)
+- Cache Enabled: [ ] Yes [ ] No
 
-#### Issue details
-_Please provide the details of your issue_
+### Issue Details
+
+#### Issue Type
+- [ ] Translation Error/Failure
+- [ ] UI/Interface Issue
+- [ ] Performance Issue
+- [ ] Configuration Problem
+- [ ] Feature Request
+- [ ] Other
+
+#### Description
+_Please provide a detailed description of the issue:_
+
+#### Steps to Reproduce
+1.
+2.
+3.
+
+#### Expected Behavior
+_What you expected to happen:_
+
+#### Actual Behavior
+_What actually happened:_
+
+#### Error Messages
+_If applicable, please include any error messages or stack traces:_
+
+```
+[Paste error messages here]
+```
+
+#### Sample Files
+_If the issue is related to specific string resources, please provide a sample:_
+
+```xml
+<!-- Example strings.xml content that causes the issue -->
+```
+
+### Checklist
+- [ ] I have searched existing issues to ensure this is not a duplicate
+- [ ] I have provided all the requested information above
+- [ ] I have tested with the latest version of the plugin
+- [ ] I have checked the FAQ in the README
