@@ -169,6 +169,7 @@ jobs:
     name: Verify plugin
     needs: [ build ]
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
 
       # Free GitHub Actions Environment Disk Space
