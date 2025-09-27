@@ -1,0 +1,20 @@
+name: "Close stale issues"
+on:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v9
+        with:
+          stale-issue-message: |
+            This issue has had no recent activity and is now marked as stale.  
+            Please leave a comment if it is still relevant; otherwise, it will be closed soon.
+          close-issue-message: |
+            This issue has been closed due to inactivity.  
+            If the problem persists, feel free to reopen it or open a new issue.
+          days-before-stale: 30
+          days-before-close: 7
+          exempt-issue-labels: "pinned,security"
