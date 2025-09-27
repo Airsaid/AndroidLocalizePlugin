@@ -32,8 +32,9 @@ Android 本地化插件，支持多种语言和翻译器。
 - 第四步：点击 OK。
 
 # 预览
-![image](preview/preview.gif)
+![image](preview/preview.png)
 ![image](preview/settings.png)
+![image](preview/openai_settings.png)
 
 # 安装
 [![Install Plugin](preview/install.png)](https://plugins.jetbrains.com/plugin/11174-androidlocalize)
@@ -46,9 +47,8 @@ Android 本地化插件，支持多种语言和翻译器。
     <string name="app_name" translatable="false">HelloAndroid</string>
     <string name="star_rating">Check out our 5<xliff:g id="star">\u2605</xliff:g></string>
     <string name="app_home_url">Visit us at <xliff:g id="application_homepage">https://github.com/Airsaid/AndroidLocalizePlugin</xliff:g></string>
-    <string name="prod_name">Learn more at <xliff:g id="game_group">Muggle Game Studio</xliff:g></string>
+    <string name="prod_name">Learn more at <xliff:g id="studio">Muggle Studio</xliff:g></string>
     ```
-  **注意：一行展示，中间不要有多余的换行和空格。**
   
 - 问题：Translation failure: java.net.HttpRetryException: cannot retry due to redirection, in streaming mode
 
@@ -84,7 +84,7 @@ Android 本地化插件，支持多种语言和翻译器。
       </td>
       <td>
         <a href="https://pay.weixin.qq.com/index.php/public/wechatpay_en" target="_blank">
-          <img src="https://raw.githubusercontent.com/Airsaid/Resources/master/Images/AndroidLocalizePlugin_WeChatPay.jpg" alt="WeChat Play">
+          <img src="https://raw.githubusercontent.com/Airsaid/Resources/master/Images/AndroidLocalizePlugin_WeChatPay.jpg" alt="WeChat Pay">
         </a>
       </td>
       <td>

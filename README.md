@@ -35,8 +35,9 @@ Android localization plugin. supports multiple languages and multiple translator
 <!-- Plugin description end -->
 
 # Preview
-![image](preview/preview.gif)
+![image](preview/preview.png)
 ![image](preview/settings.png)
+![image](preview/openai_settings.png)
 
 # Install
 [![Install Plugin](preview/install.png)](https://plugins.jetbrains.com/plugin/11174-androidlocalize)
@@ -49,9 +50,8 @@ Android localization plugin. supports multiple languages and multiple translator
     <string name="app_name" translatable="false">HelloAndroid</string>
     <string name="star_rating">Check out our 5<xliff:g id="star">\u2605</xliff:g></string>
     <string name="app_home_url">Visit us at <xliff:g id="application_homepage">https://github.com/Airsaid/AndroidLocalizePlugin</xliff:g></string>
-    <string name="prod_name">Learn more at <xliff:g id="game_group">Muggle Game Studio</xliff:g></string>
+    <string name="prod_name">Learn more at <xliff:g id="studio">Muggle Studio</xliff:g></string>
     ```
-    **Note: Display one line without extra line breaks and spaces in between.**
 - Q: Translation failure: java.net.HttpRetryException: cannot retry due to redirection, in streaming mode
   
   A: Try switching to another translation engine on the settings page and use your own account for translation. Some default translators rely on shared credentials and may be rate limited.
@@ -86,7 +86,7 @@ You can contribute and support this project by doing any of the following:
       </td>
       <td>
         <a href="https://pay.weixin.qq.com/index.php/public/wechatpay_en" target="_blank">
-          <img src="https://raw.githubusercontent.com/Airsaid/Resources/master/Images/AndroidLocalizePlugin_WeChatPay.jpg" alt="WeChat Play">
+          <img src="https://raw.githubusercontent.com/Airsaid/Resources/master/Images/AndroidLocalizePlugin_WeChatPay.jpg" alt="WeChat Pay">
         </a>
       </td>
       <td>
