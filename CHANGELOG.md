@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [4.0.0] (2025-09-27)
+
 ### Added
 - Detailed translation progress updates showing the current language, processed item counts, and writeback status.
 - Quick access settings button in the Select Languages dialog footer and a donations card within the settings UI.
