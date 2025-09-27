@@ -1,6 +1,6 @@
 [versions]
 # libraries
-junitJupiter = "5.10.2"
+junitJupiter = "5.13.4"
 junitPlatform = "1.10.2"
 junittest4 = "4.13.2"
 opentest4j = "1.3.0"
