@@ -99,9 +99,6 @@ You can contribute and support this project by doing any of the following:
 
 **Thank you for your support!**
 
-# Sponsors
-[![Development powered by JetBrains](https://pic.stackoverflow.wiki/uploadImages/111/201/226/60/2021/06/20/18/45/3aba65f5-1231-4c9a-817f-83cd5a29fd0c.svg)](https://jb.gg/OpenSourc)
-
 # License
 ```
 Copyright 2018 Airsaid. https://github.com/airsaid

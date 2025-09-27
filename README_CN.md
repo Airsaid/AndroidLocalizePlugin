@@ -97,9 +97,6 @@ Android 本地化插件，支持多种语言和翻译器。
 
 **感谢您的支持！**
 
-# 赞助商
-[![Development powered by JetBrains](https://pic.stackoverflow.wiki/uploadImages/111/201/226/60/2021/06/20/18/45/3aba65f5-1231-4c9a-817f-83cd5a29fd0c.svg)](https://jb.gg/OpenSourc)
-
 # 许可证
 ```
 Copyright 2018 Airsaid. https://github.com/airsaid
