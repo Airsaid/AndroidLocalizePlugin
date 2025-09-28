@@ -52,6 +52,7 @@ import com.airsaid.localization.utils.LanguageUtil
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import java.awt.Dimension
 import java.awt.Toolkit
 import kotlin.math.roundToInt
@@ -84,8 +85,10 @@ class SelectLanguagesDialog(private val project: Project) : ComposeDialog(projec
   private val selectedLanguages = mutableStateListOf<Lang>()
   private val overwriteExistingState = mutableStateOf(false)
   private val openTranslatedFileState = mutableStateOf(false)
+  private val autoSelectExistingState = mutableStateOf(false)
 
   private var stateInitialized by mutableStateOf(false)
+  private var resourceDir: VirtualFile? = null
 
   private var onClickListener: OnClickListener? = null
 
@@ -102,11 +105,27 @@ class SelectLanguagesDialog(private val project: Project) : ComposeDialog(projec
     onClickListener = listener
   }
 
+  /**
+   * Sets the resource directory to enable auto-selecting existing languages.
+   *
+   * @param resourceDir The resource directory containing values folders.
+   */
+  fun setResourceDir(resourceDir: VirtualFile) {
+    this.resourceDir = resourceDir
+  }
+
   @Composable
   override fun Content() {
     LaunchedEffect(Unit) {
       if (!stateInitialized) {
         loadState()
+      }
+    }
+
+    // Monitor changes to auto-select setting
+    LaunchedEffect(autoSelectExistingState.value) {
+      if (stateInitialized && autoSelectExistingState.value) {
+        selectExistingLanguages()
       }
     }
 
@@ -132,10 +151,13 @@ class SelectLanguagesDialog(private val project: Project) : ComposeDialog(projec
         selectedLanguages = selectedLanguages,
         overwriteExistingChecked = overwriteExistingState.value,
         openTranslatedFileChecked = openTranslatedFileState.value,
+        autoSelectExistingChecked = autoSelectExistingState.value,
+        hasResourceDir = resourceDir != null,
         onSelectAllChanged = { selectAll(languages, it) },
         onFavoriteSelectAllChanged = { selectAll(favoriteLanguages, it) },
         onOverwriteChanged = { checked -> overwriteExistingState.value = checked },
         onOpenTranslatedFileChanged = { checked -> openTranslatedFileState.value = checked },
+        onAutoSelectExistingChanged = { checked -> autoSelectExistingState.value = checked },
         onLanguageToggled = { lang, checked -> selectLanguage(lang, checked) },
         onFavoriteToggle = { lang, isFavorite -> setFavoriteLanguage(lang, isFavorite) },
         onOpenSettings = { openPluginSettings() },
@@ -146,6 +168,7 @@ class SelectLanguagesDialog(private val project: Project) : ComposeDialog(projec
       LanguageUtil.saveSelectedLanguages(project, selectedLanguages)
       properties().setValue(Constants.KEY_IS_OVERWRITE_EXISTING_STRING, overwriteExistingState.value)
       properties().setValue(Constants.KEY_IS_OPEN_TRANSLATED_FILE, openTranslatedFileState.value)
+      properties().setValue(Constants.KEY_IS_AUTO_SELECT_EXISTING, autoSelectExistingState.value)
       onClickListener?.onClickListener(selectedLanguages.toList())
     }
 
@@ -183,6 +206,12 @@ class SelectLanguagesDialog(private val project: Project) : ComposeDialog(projec
 
     overwriteExistingState.value = properties.getBoolean(Constants.KEY_IS_OVERWRITE_EXISTING_STRING)
     openTranslatedFileState.value = properties.getBoolean(Constants.KEY_IS_OPEN_TRANSLATED_FILE)
+    autoSelectExistingState.value = properties.getBoolean(Constants.KEY_IS_AUTO_SELECT_EXISTING)
+
+    // If auto-select existing languages is enabled and resource directory is available, auto-select existing languages
+    if (autoSelectExistingState.value) {
+      selectExistingLanguages()
+    }
 
     stateInitialized = true
   }
@@ -214,6 +243,15 @@ class SelectLanguagesDialog(private val project: Project) : ComposeDialog(projec
       }
     }
     LanguageUtil.saveFavoriteLanguages(project, favoriteLanguages)
+  }
+
+  private fun selectExistingLanguages() {
+    resourceDir?.let { resDir ->
+      val existingLanguages = LanguageUtil.getExistingProjectLanguages(resDir, supportedLanguages)
+      existingLanguages.forEach { lang ->
+        selectLanguage(lang, true)
+      }
+    }
   }
 
   private fun properties(): PropertiesComponent {
@@ -254,10 +292,13 @@ private fun SelectLanguagesContent(
   selectedLanguages: SnapshotStateList<Lang>,
   overwriteExistingChecked: Boolean,
   openTranslatedFileChecked: Boolean,
+  autoSelectExistingChecked: Boolean,
+  hasResourceDir: Boolean,
   onSelectAllChanged: (Boolean) -> Unit,
   onFavoriteSelectAllChanged: (Boolean) -> Unit,
   onOverwriteChanged: (Boolean) -> Unit,
   onOpenTranslatedFileChanged: (Boolean) -> Unit,
+  onAutoSelectExistingChanged: (Boolean) -> Unit,
   onLanguageToggled: (Lang, Boolean) -> Unit,
   onFavoriteToggle: (Lang, Boolean) -> Unit,
   onOpenSettings: () -> Unit,
@@ -282,10 +323,13 @@ private fun SelectLanguagesContent(
       favoriteSelectAll = favoriteSelectAllChecked,
       overwriteExisting = overwriteExistingChecked,
       openTranslatedFile = openTranslatedFileChecked,
+      autoSelectExisting = autoSelectExistingChecked,
+      hasResourceDir = hasResourceDir,
       onSelectAllChanged = onSelectAllChanged,
       onFavoriteSelectAllChanged = onFavoriteSelectAllChanged,
       onOverwriteChanged = onOverwriteChanged,
       onOpenTranslatedFileChanged = onOpenTranslatedFileChanged,
+      onAutoSelectExistingChanged = onAutoSelectExistingChanged,
       onLanguageToggled = onLanguageToggled,
       onFavoriteToggle = onFavoriteToggle,
       modifier = Modifier.weight(1f, fill = true),
@@ -307,10 +351,13 @@ private fun LanguagesCard(
   favoriteSelectAll: Boolean,
   overwriteExisting: Boolean,
   openTranslatedFile: Boolean,
+  autoSelectExisting: Boolean,
+  hasResourceDir: Boolean,
   onSelectAllChanged: (Boolean) -> Unit,
   onFavoriteSelectAllChanged: (Boolean) -> Unit,
   onOverwriteChanged: (Boolean) -> Unit,
   onOpenTranslatedFileChanged: (Boolean) -> Unit,
+  onAutoSelectExistingChanged: (Boolean) -> Unit,
   onLanguageToggled: (Lang, Boolean) -> Unit,
   onFavoriteToggle: (Lang, Boolean) -> Unit,
   modifier: Modifier = Modifier,
@@ -361,6 +408,9 @@ private fun LanguagesCard(
         onOverwriteChanged = onOverwriteChanged,
         openTranslatedFile = openTranslatedFile,
         onOpenTranslatedFileChanged = onOpenTranslatedFileChanged,
+        autoSelectExisting = autoSelectExisting,
+        hasResourceDir = hasResourceDir,
+        onAutoSelectExistingChanged = onAutoSelectExistingChanged,
       )
 
       OutlinedTextField(
@@ -530,6 +580,9 @@ private fun OptionsSection(
   onOverwriteChanged: (Boolean) -> Unit,
   openTranslatedFile: Boolean,
   onOpenTranslatedFileChanged: (Boolean) -> Unit,
+  autoSelectExisting: Boolean,
+  hasResourceDir: Boolean,
+  onAutoSelectExistingChanged: (Boolean) -> Unit,
 ) {
   FlowRow(
     horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -547,6 +600,14 @@ private fun OptionsSection(
       checked = openTranslatedFile,
       onCheckedChange = onOpenTranslatedFileChanged,
     )
+    if (hasResourceDir) {
+      OptionItem(
+        text = "Auto-select existing languages",
+        tooltip = "Automatically select languages that already exist in your project when opening this dialog.",
+        checked = autoSelectExisting,
+        onCheckedChange = onAutoSelectExistingChanged,
+      )
+    }
   }
 }
 

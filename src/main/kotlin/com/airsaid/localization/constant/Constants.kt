@@ -29,4 +29,5 @@ object Constants {
   const val KEY_FAVORITE_LANGUAGES = "$PLUGIN_ID.favorite_languages"
   const val KEY_IS_OVERWRITE_EXISTING_STRING = "$PLUGIN_ID.is_overwrite_existing_string"
   const val KEY_IS_OPEN_TRANSLATED_FILE = "$PLUGIN_ID.is_open_translated_file"
+  const val KEY_IS_AUTO_SELECT_EXISTING = "$PLUGIN_ID.is_auto_select_existing"
 }

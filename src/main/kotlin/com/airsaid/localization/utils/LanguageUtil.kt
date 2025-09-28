@@ -22,6 +22,7 @@ import com.airsaid.localization.translate.lang.Lang
 import com.airsaid.localization.translate.lang.Languages
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import org.apache.http.util.TextUtils
 
 /**
@@ -83,6 +84,41 @@ object LanguageUtil {
 
   private fun getLanguageCodeString(language: List<Lang>): String {
     return language.joinToString(SEPARATOR_SELECTED_LANGUAGES_CODE) { it.code }
+  }
+
+  /**
+   * Get languages that already exist in the project by scanning the resource directories.
+   *
+   * @param resourceDir the resource directory (parent of values directories).
+   * @param supportedLanguages the list of supported languages from translator.
+   * @return list of languages that have corresponding values directories in the project.
+   */
+  fun getExistingProjectLanguages(resourceDir: VirtualFile, supportedLanguages: List<Lang>): List<Lang> {
+    val existingLanguages = mutableListOf<Lang>()
+
+    for (child in resourceDir.children) {
+      if (child.isDirectory) {
+        val dirName = child.name
+
+        if (dirName == "values") {
+          // Default values directory represents the default language (usually English)
+          // We'll look for a language with empty directoryName or "en" code
+          val defaultLang = supportedLanguages.find { it.directoryName.isBlank() || it.code == "en" }
+          defaultLang?.let { existingLanguages.add(it) }
+        } else if (dirName.startsWith("values-")) {
+          val languageCode = dirName.substring(7) // Remove "values-" prefix
+
+          // Find matching language by directory name
+          val matchingLang = supportedLanguages.find { lang ->
+            lang.directoryName == languageCode
+          }
+
+          matchingLang?.let { existingLanguages.add(it) }
+        }
+      }
+    }
+
+    return existingLanguages.distinct()
   }
 
   private fun parseStoredLanguageCodes(value: String?): List<String> {

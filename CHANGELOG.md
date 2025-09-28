@@ -4,6 +4,9 @@
 
 ## [Unreleased]
 
+### Added
+- Auto-select existing languages option in the Select Languages dialog to automatically detect and select languages that already exist in the project.
+
 ### Fixed
 - ExceptionInInitializerError when opening plguin.
 

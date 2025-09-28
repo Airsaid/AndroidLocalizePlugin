@@ -98,6 +98,11 @@ private fun isTranslatable(values: List<PsiElement>, valueService: AndroidValues
 
 private fun showSelectLanguageDialog(project: Project, values: List<PsiElement>, valueFile: PsiFile) {
   val dialog = SelectLanguagesDialog(project)
+
+  // Set resource directory for auto-selecting existing languages
+  val resourceDir = valueFile.virtualFile.parent.parent
+  dialog.setResourceDir(resourceDir)
+
   dialog.setOnClickListener(object : SelectLanguagesDialog.OnClickListener {
     override fun onClickListener(selectedLanguage: List<Lang>) {
       val translationTask = TranslateTask(project, "Translating...", selectedLanguage, values, valueFile)
