@@ -12,7 +12,7 @@ alimt = "1.0.3"
 changelog = "2.4.0"
 intelliJPlatform = "2.9.0"
 kotlin = "2.1.20"
-kover = "0.9.1"
+kover = "0.9.2"
 qodana = "2025.1.1"
 composePlugin = "1.9.0"
 
