@@ -4,6 +4,9 @@
 
 ## [Unreleased]
 
+### Fixed
+- ExceptionInInitializerError when opening plguin.
+
 ## [4.0.0] (2025-09-27)
 
 ### Added
