@@ -23,7 +23,6 @@ import com.airsaid.localization.translate.lang.Languages
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import org.apache.http.util.TextUtils
 
 /**
  * A util class that operates on language data.
@@ -100,12 +99,7 @@ object LanguageUtil {
       if (child.isDirectory) {
         val dirName = child.name
 
-        if (dirName == "values") {
-          // Default values directory represents the default language (usually English)
-          // We'll look for a language with empty directoryName or "en" code
-          val defaultLang = supportedLanguages.find { it.directoryName.isBlank() || it.code == "en" }
-          defaultLang?.let { existingLanguages.add(it) }
-        } else if (dirName.startsWith("values-")) {
+        if (dirName.startsWith("values-")) {
           val languageCode = dirName.substring(7) // Remove "values-" prefix
 
           // Find matching language by directory name
