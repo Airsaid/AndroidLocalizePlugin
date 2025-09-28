@@ -36,6 +36,7 @@ dependencies {
   implementation(libs.alimt)
   implementation(compose.desktop.currentOs)
   implementation(compose.material3)
+  implementation(compose.materialIconsExtended)
   implementation(compose.foundation)
 
   compileOnly(libs.autoServiceAnnotations)
@@ -52,8 +53,16 @@ dependencies {
       providers.gradleProperty("platformVersion"),
     )
 
+    // Compose support dependencies
+    bundledModules(
+      "intellij.libraries.skiko",
+      "intellij.libraries.compose.foundation.desktop",
+      "intellij.platform.jewel.foundation",
+      "intellij.platform.jewel.ui",
+      "intellij.platform.jewel.ideLafBridge",
+      "intellij.platform.compose",
+    )
     bundledPlugins(providers.gradleProperty("platformBundledPlugins").map { it.split(',').filter(String::isNotBlank) })
-    bundledModules(providers.gradleProperty("platformBundledModules").map { it.split(',').filter(String::isNotBlank) })
     plugins(providers.gradleProperty("platformPlugins").map { it.split(',').filter(String::isNotBlank) })
 
     testFramework(TestFrameworkType.JUnit5)
