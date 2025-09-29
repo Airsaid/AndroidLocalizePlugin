@@ -17,6 +17,7 @@
 
 package com.airsaid.localization.translate.services
 
+import com.airsaid.localization.extensions.hasNoTranslatableText
 import com.airsaid.localization.translate.AbstractTranslator
 import com.airsaid.localization.translate.interceptors.EscapeCharactersInterceptor
 import com.airsaid.localization.translate.lang.Lang
@@ -24,10 +25,8 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
-import org.apache.commons.lang.StringUtils
 import java.util.*
 import java.util.function.Consumer
-import kotlin.jvm.Volatile
 
 /**
  * @author airsaid
@@ -115,8 +114,8 @@ class TranslatorService {
       }
     }
 
-    // Arabic numbers skip translation
-    if (StringUtils.isNumeric(text)) {
+    // Skip translation for text containing only numbers, symbols, and punctuation
+    if (text.hasNoTranslatableText()) {
       return text
     }
 
