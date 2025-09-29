@@ -14,7 +14,7 @@ intelliJPlatform = "2.9.0"
 kotlin = "2.1.20"
 kover = "0.9.1"
 qodana = "2025.1.1"
-composePlugin = "1.9.0"
+composePlugin = "1.10.0+dev2989"
 
 [libraries]
 junitJupiterApi = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junitJupiter" }
