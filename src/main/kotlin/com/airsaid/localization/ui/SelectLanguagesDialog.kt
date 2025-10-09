@@ -25,16 +25,13 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.*
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -46,16 +43,17 @@ import com.airsaid.localization.translate.AbstractTranslator
 import com.airsaid.localization.translate.lang.Lang
 import com.airsaid.localization.translate.lang.Languages
 import com.airsaid.localization.translate.services.TranslatorService
-import com.airsaid.localization.ui.components.IdeCheckbox
 import com.airsaid.localization.ui.components.SwingIcon
+import com.airsaid.localization.ui.components.TooltipIcon
 import com.airsaid.localization.utils.LanguageUtil
+import com.intellij.icons.AllIcons
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import java.awt.Dimension
-import java.awt.Toolkit
-import kotlin.math.roundToInt
+import org.jetbrains.jewel.foundation.theme.JewelTheme
+import org.jetbrains.jewel.ui.Orientation
+import org.jetbrains.jewel.ui.component.*
 
 /**
  * Compose-driven dialog used to pick the languages that should be generated.
@@ -75,6 +73,9 @@ class SelectLanguagesDialog(private val project: Project) : ComposeDialog(projec
      */
     fun onClickListener(selectedLanguage: List<Lang>)
   }
+
+  override val defaultPreferredSize
+    get() = 900 to 620
 
   private val translatorService = TranslatorService.getInstance()
   private val translator = translatorService.getSelectedTranslator()
@@ -114,6 +115,11 @@ class SelectLanguagesDialog(private val project: Project) : ComposeDialog(projec
     this.resourceDir = resourceDir
   }
 
+  override fun getDimensionServiceKey(): String {
+    val key = translatorService.getSelectedTranslator().key
+    return "#com.airsaid.localization.ui.SelectLanguagesDialog#$key"
+  }
+
   @Composable
   override fun Content() {
     LaunchedEffect(Unit) {
@@ -136,33 +142,28 @@ class SelectLanguagesDialog(private val project: Project) : ComposeDialog(projec
       return
     }
 
-    val languages by remember {
+    val languages by remember(favoriteLanguages) {
       derivedStateOf { translator.supportedLanguages.filterNot { favoriteLanguages.contains(it) } }
     }
 
-    Surface(
-      modifier = Modifier.fillMaxSize().padding(16.dp),
-      color = MaterialTheme.colorScheme.background,
-    ) {
-      SelectLanguagesContent(
-        translator = translator,
-        languages = languages,
-        favoriteLanguages = favoriteLanguages,
-        selectedLanguages = selectedLanguages,
-        overwriteExistingChecked = overwriteExistingState.value,
-        openTranslatedFileChecked = openTranslatedFileState.value,
-        autoSelectExistingChecked = autoSelectExistingState.value,
-        hasResourceDir = resourceDir != null,
-        onSelectAllChanged = { selectAll(languages, it) },
-        onFavoriteSelectAllChanged = { selectAll(favoriteLanguages, it) },
-        onOverwriteChanged = { checked -> overwriteExistingState.value = checked },
-        onOpenTranslatedFileChanged = { checked -> openTranslatedFileState.value = checked },
-        onAutoSelectExistingChanged = { checked -> autoSelectExistingState.value = checked },
-        onLanguageToggled = { lang, checked -> selectLanguage(lang, checked) },
-        onFavoriteToggle = { lang, isFavorite -> setFavoriteLanguage(lang, isFavorite) },
-        onOpenSettings = { openPluginSettings() },
-      )
-    }
+    SelectLanguagesContent(
+      translator = translator,
+      languages = languages,
+      favoriteLanguages = favoriteLanguages,
+      selectedLanguages = selectedLanguages,
+      overwriteExistingChecked = overwriteExistingState.value,
+      openTranslatedFileChecked = openTranslatedFileState.value,
+      autoSelectExistingChecked = autoSelectExistingState.value,
+      hasResourceDir = resourceDir != null,
+      onSelectAllChanged = { selectAll(languages, it) },
+      onFavoriteSelectAllChanged = { selectAll(favoriteLanguages, it) },
+      onOverwriteChanged = { checked -> overwriteExistingState.value = checked },
+      onOpenTranslatedFileChanged = { checked -> openTranslatedFileState.value = checked },
+      onAutoSelectExistingChanged = { checked -> autoSelectExistingState.value = checked },
+      onLanguageToggled = { lang, checked -> selectLanguage(lang, checked) },
+      onFavoriteToggle = { lang, isFavorite -> setFavoriteLanguage(lang, isFavorite) },
+      onOpenSettings = { openPluginSettings() },
+    )
 
     OnClickOK {
       LanguageUtil.saveSelectedLanguages(project, selectedLanguages)
@@ -173,17 +174,6 @@ class SelectLanguagesDialog(private val project: Project) : ComposeDialog(projec
     }
 
     okAction.isEnabled = selectedLanguages.isNotEmpty()
-  }
-
-  override fun preferredSize(): Dimension {
-    val (preferred, minimum) = calculateDialogSize()
-    window?.minimumSize = minimum
-    return preferred
-  }
-
-  override fun getDimensionServiceKey(): String {
-    val key = translatorService.getSelectedTranslator().key
-    return "#com.airsaid.localization.ui.SelectLanguagesDialog#$key"
   }
 
   private fun loadState() {
@@ -258,27 +248,6 @@ class SelectLanguagesDialog(private val project: Project) : ComposeDialog(projec
     return PropertiesComponent.getInstance(project)
   }
 
-  private fun calculateDialogSize(): Pair<Dimension, Dimension> {
-    val screen = Toolkit.getDefaultToolkit().screenSize
-    val aspectRatio = 1.45
-    val maxWidth = (screen.width * 0.85).roundToInt()
-    val minWidth = 900
-    var width = (screen.width * 0.62).roundToInt().coerceIn(minWidth, maxWidth)
-
-    val maxHeight = (screen.height * 0.8).roundToInt()
-    val minHeight = 620
-    var height = (width / aspectRatio).roundToInt().coerceAtLeast(minHeight)
-
-    if (height > maxHeight) {
-      height = maxHeight
-      width = (height * aspectRatio).roundToInt().coerceAtMost(maxWidth)
-    }
-
-    val preferred = Dimension(width, height)
-    val minimum = Dimension(minWidth, minHeight)
-    return preferred to minimum
-  }
-
   private fun openPluginSettings() {
     ShowSettingsUtil.getInstance().showSettingsDialog(project, SettingsConfigurable::class.java)
   }
@@ -308,7 +277,7 @@ private fun SelectLanguagesContent(
   val favoriteSelectAllChecked by remember(selectedLanguages) {
     derivedStateOf { favoriteLanguages.isNotEmpty() && favoriteLanguages.all { selectedLanguages.contains(it) } }
   }
-  val languagesSelectAllChecked by remember(selectedLanguages) {
+  val languagesSelectAllChecked by remember(selectedLanguages, languages) {
     derivedStateOf { languages.isNotEmpty() && languages.all { selectedLanguages.contains(it) } }
   }
 
@@ -334,6 +303,8 @@ private fun SelectLanguagesContent(
       onFavoriteToggle = onFavoriteToggle,
       modifier = Modifier.weight(1f, fill = true),
     )
+
+    Spacer(modifier = Modifier.height(10.dp))
 
     TranslatorFooter(translator = translator, onOpenSettings = onOpenSettings)
   }
@@ -391,17 +362,16 @@ private fun LanguagesCard(
     derivedStateOf { selectedLanguages.count { !favoriteLanguages.contains(it) } }
   }
 
-  Surface(
+  Box(
     modifier = modifier
       .fillMaxWidth()
-      .heightIn(min = 260.dp),
-    tonalElevation = 0.dp,
-    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.12f)),
-    color = MaterialTheme.colorScheme.surface,
+      .heightIn(min = 260.dp)
+      .border(1.dp, JewelTheme.globalColors.borders.normal, RoundedCornerShape(4.dp))
+      .background(JewelTheme.globalColors.panelBackground),
   ) {
     Column(
-      modifier = Modifier.fillMaxSize(),
-      verticalArrangement = Arrangement.spacedBy(16.dp)
+      modifier = Modifier.fillMaxSize().padding(12.dp),
+      verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
       OptionsSection(
         overwriteExisting = overwriteExisting,
@@ -413,12 +383,25 @@ private fun LanguagesCard(
         onAutoSelectExistingChanged = onAutoSelectExistingChanged,
       )
 
-      OutlinedTextField(
+      Divider(orientation = Orientation.Horizontal, modifier = Modifier.fillMaxWidth().padding(bottom = 10.dp))
+
+      BasicTextField(
         value = filterText,
         onValueChange = onFilterChange,
-        label = { Text("Filter languages") },
+        modifier = Modifier
+          .fillMaxWidth()
+          .background(JewelTheme.globalColors.panelBackground, RoundedCornerShape(4.dp))
+          .border(1.dp, JewelTheme.globalColors.borders.normal, RoundedCornerShape(4.dp))
+          .padding(horizontal = 10.dp, vertical = 10.dp),
+        textStyle = JewelTheme.defaultTextStyle.copy(color = JewelTheme.globalColors.text.normal),
+        cursorBrush = SolidColor(JewelTheme.globalColors.text.normal),
         singleLine = true,
-        modifier = Modifier.fillMaxWidth(),
+        decorationBox = { innerTextField ->
+          if (filterText.isEmpty()) {
+            Text("Filter languages", color = JewelTheme.globalColors.text.info)
+          }
+          innerTextField()
+        }
       )
 
       FavoriteLanguagesSection(
@@ -518,8 +501,8 @@ private fun LanguagesHeader(
   ) {
     Text(
       text = "$title ($selected/$total)",
-      style = MaterialTheme.typography.titleSmall,
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
+      fontWeight = FontWeight.Medium,
+      color = JewelTheme.globalColors.text.info,
     )
     if (trailingContent != null) {
       Spacer(modifier = Modifier.weight(1f))
@@ -543,8 +526,7 @@ private fun LanguagesGrid(
     Box(modifier = modifier, contentAlignment = emptyAlignment) {
       Text(
         text = emptyMessage,
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        color = JewelTheme.globalColors.text.info,
         textAlign = TextAlign.Center,
       )
     }
@@ -621,7 +603,7 @@ private fun OptionItem(
 ) {
   Row(
     verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.spacedBy(8.dp),
+    horizontalArrangement = Arrangement.spacedBy(2.dp),
     modifier = modifier.toggleable(
       value = checked,
       interactionSource = remember { MutableInteractionSource() },
@@ -630,38 +612,10 @@ private fun OptionItem(
       onValueChange = onCheckedChange,
     )
   ) {
-    IdeCheckbox(checked = checked)
-    Text(text = text, style = MaterialTheme.typography.bodyMedium)
+    Checkbox(checked = checked, onCheckedChange = onCheckedChange)
+    Text(text = text)
+    Spacer(modifier = Modifier.width(2.dp))
     TooltipIcon(text = tooltip)
-  }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun TooltipIcon(text: String) {
-  TooltipArea(
-    tooltip = {
-      Surface(
-        shape = RoundedCornerShape(6.dp),
-        shadowElevation = 4.dp,
-        color = MaterialTheme.colorScheme.surfaceVariant,
-      ) {
-        Text(
-          text = text,
-          modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-          style = MaterialTheme.typography.bodySmall,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-      }
-    },
-    delayMillis = 300,
-  ) {
-    Icon(
-      imageVector = Icons.Default.Info,
-      contentDescription = null,
-      modifier = Modifier.size(16.dp),
-      tint = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
   }
 }
 
@@ -674,16 +628,14 @@ private fun LanguageOption(
   onFavoriteToggle: (Boolean) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val backgroundColor =
-    if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant
-  val borderColor =
-    if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
+  val backgroundColor = JewelTheme.globalColors.panelBackground
+  val borderColor = if (isSelected) JewelTheme.globalColors.outlines.focused else JewelTheme.globalColors.borders.normal
 
   Row(
     modifier = modifier
       .height(64.dp)
-      .border(BorderStroke(1.dp, borderColor), RoundedCornerShape(12.dp))
-      .background(backgroundColor, RoundedCornerShape(12.dp))
+      .border(1.dp, borderColor, RoundedCornerShape(8.dp))
+      .background(backgroundColor, RoundedCornerShape(8.dp))
       .padding(horizontal = 12.dp, vertical = 8.dp)
       .toggleable(
         value = isSelected,
@@ -695,10 +647,10 @@ private fun LanguageOption(
     horizontalArrangement = Arrangement.spacedBy(8.dp),
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    IdeCheckbox(checked = isSelected)
+    Checkbox(checked = isSelected, onCheckedChange = onToggle)
     Text(
       text = language.flag,
-      style = MaterialTheme.typography.headlineMedium,
+      modifier = Modifier.padding(4.dp),
     )
     Column(
       modifier = Modifier.weight(1f, fill = true),
@@ -706,30 +658,24 @@ private fun LanguageOption(
     ) {
       Text(
         text = language.name,
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurface,
+        color = JewelTheme.globalColors.text.normal,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
       )
       Text(
         text = "${language.englishName} (${language.code})",
-        style = MaterialTheme.typography.labelSmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        color = JewelTheme.globalColors.text.info,
         maxLines = 2,
         overflow = TextOverflow.Ellipsis,
       )
     }
-    IconToggleButton(
-      checked = isFavorite,
-      onCheckedChange = onFavoriteToggle,
+    IconButton(
+      onClick = { onFavoriteToggle(!isFavorite) },
       modifier = Modifier.size(32.dp),
     ) {
-      Icon(
-        imageVector = Icons.Filled.Star,
-        contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
-        tint = if (isFavorite) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurfaceVariant.copy(
-          alpha = 0.45f
-        ),
+      SwingIcon(
+        icon = if (isFavorite) AllIcons.Nodes.Favorite else AllIcons.Nodes.NotFavoriteOnHover,
+        modifier = Modifier.size(16.dp)
       )
     }
   }
@@ -747,30 +693,15 @@ private fun TranslatorFooter(translator: AbstractTranslator, onOpenSettings: () 
     Spacer(modifier = Modifier.width(8.dp))
     Text(
       text = "${translator.name} Translator",
-      style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
+      fontWeight = FontWeight.Medium,
+      color = JewelTheme.globalColors.text.info,
     )
-    TooltipArea(
-      tooltip = {
-        Surface(
-          shape = RoundedCornerShape(6.dp),
-          shadowElevation = 4.dp,
-          color = MaterialTheme.colorScheme.surfaceVariant,
-        ) {
-          Text(
-            text = "Open plugin settings",
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-          )
-        }
-      }
-    ) {
+    Tooltip(tooltip = { Text("Open plugin settings") }) {
       IconButton(onClick = onOpenSettings) {
-        Icon(
-          imageVector = Icons.Filled.Settings,
-          contentDescription = "Open plugin settings",
-          tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        SwingIcon(
+          icon = AllIcons.General.Settings,
+          modifier = Modifier.size(16.dp),
+          tintColor = JewelTheme.globalColors.text.info,
         )
       }
     }

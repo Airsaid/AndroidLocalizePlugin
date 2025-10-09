@@ -26,7 +26,7 @@ class DeepLTranslatorCredentialsDialog(
   override fun Header() {
     IdeCheckBox(
       checked = useDeepLPro,
-      onValueChange = {
+      onCheckedChange = {
         useDeepLPro = !useDeepLPro
       },
       title = "Use DeepL Pro",

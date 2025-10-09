@@ -1,9 +1,6 @@
 package com.airsaid.localization.config
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
@@ -15,6 +12,9 @@ import com.airsaid.localization.translate.TranslatorCredentialDescriptor
 import com.airsaid.localization.ui.ComposeDialog
 import com.airsaid.localization.ui.components.IdeTextField
 import com.intellij.ide.BrowserUtil
+import org.jetbrains.jewel.foundation.theme.JewelTheme
+import org.jetbrains.jewel.ui.component.Link
+import org.jetbrains.jewel.ui.component.Text
 
 /**
  * Base Compose dialog for collecting and persisting translator credentials.
@@ -52,9 +52,10 @@ open class TranslatorCredentialsDialog(
       }
 
       translator.credentialHelpUrl?.takeUnless { it.isBlank() }?.let { url ->
-        TextButton(onClick = { BrowserUtil.browse(url) }) {
-          Text("How to obtain credentials?")
-        }
+        Link(
+          text = "How to obtain credentials?",
+          onClick = { BrowserUtil.browse(url) }
+        )
       }
 
       Footer()
@@ -66,8 +67,7 @@ open class TranslatorCredentialsDialog(
     Column(modifier = Modifier.width(320.dp)) {
       Text(
         text = descriptor.label,
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant
+        color = JewelTheme.globalColors.text.info
       )
       Spacer(modifier = Modifier.height(6.dp))
       IdeTextField(
@@ -81,8 +81,7 @@ open class TranslatorCredentialsDialog(
         Spacer(modifier = Modifier.height(4.dp))
         Text(
           text = helper,
-          style = MaterialTheme.typography.bodySmall,
-          color = MaterialTheme.colorScheme.onSurfaceVariant
+          color = JewelTheme.globalColors.text.info
         )
       }
     }

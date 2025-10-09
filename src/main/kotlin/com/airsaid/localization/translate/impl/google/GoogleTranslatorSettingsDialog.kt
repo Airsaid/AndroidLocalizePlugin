@@ -5,15 +5,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.airsaid.localization.ui.ComposeDialog
 import com.airsaid.localization.ui.components.IdeCheckBox
 import com.airsaid.localization.ui.components.IdeTextField
-import java.awt.Dimension
+import org.jetbrains.jewel.foundation.theme.JewelTheme
+import org.jetbrains.jewel.ui.component.Text
 
 /**
  * Compose dialog allowing users to toggle the Google translator backend address.
@@ -22,13 +21,14 @@ import java.awt.Dimension
  */
 class GoogleTranslatorSettingsDialog : ComposeDialog() {
 
+  override val defaultPreferredSize
+    get() = 400 to 160
+
   private val settings = GoogleTranslatorSettings.getInstance()
 
   init {
     title = "Google Translator Settings"
   }
-
-  override fun preferredSize() = Dimension(400, 160)
 
   @Composable
   override fun Content() {
@@ -42,7 +42,7 @@ class GoogleTranslatorSettingsDialog : ComposeDialog() {
     ) {
       IdeCheckBox(
         checked = useCustomServer,
-        onValueChange = {
+        onCheckedChange = {
           useCustomServer = it
           if (!it) {
             serverUrl = settings.serverUrl
@@ -54,8 +54,7 @@ class GoogleTranslatorSettingsDialog : ComposeDialog() {
       Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Text(
           text = "Server URL",
-          style = MaterialTheme.typography.labelMedium,
-          color = MaterialTheme.colorScheme.onSurfaceVariant
+          color = JewelTheme.globalColors.text.info
         )
         IdeTextField(
           value = serverUrl,
@@ -66,8 +65,7 @@ class GoogleTranslatorSettingsDialog : ComposeDialog() {
           placeholder = {
             Text(
               text = GoogleTranslatorSettings.DEFAULT_SERVER_URL,
-              style = MaterialTheme.typography.bodyMedium,
-              color = MaterialTheme.colorScheme.onSurfaceVariant
+              color = JewelTheme.globalColors.text.info
             )
           }
         )
@@ -76,8 +74,7 @@ class GoogleTranslatorSettingsDialog : ComposeDialog() {
       SelectionContainer {
         Text(
           text = "Defaults to translate.googleapis.com when not specified.",
-          style = MaterialTheme.typography.bodySmall,
-          color = MaterialTheme.colorScheme.onSurfaceVariant
+          color = JewelTheme.globalColors.text.info
         )
       }
     }

@@ -18,28 +18,21 @@ package com.airsaid.localization.ui
 
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.airsaid.localization.translate.AbstractTranslator
 import com.airsaid.localization.translate.lang.Lang
-import java.awt.Dimension
-import javax.swing.Action
+import org.jetbrains.jewel.foundation.theme.JewelTheme
+import org.jetbrains.jewel.ui.component.Text
 
 /**
  * A dialog to show the supported languages of the [translator].
@@ -48,19 +41,21 @@ import javax.swing.Action
  */
 class SupportedLanguagesDialog(private val translator: AbstractTranslator) : ComposeDialog() {
 
+  override val defaultPreferredSize
+    get() = 460 to 420
+
   private val supportedLanguages = translator.supportedLanguages.sortedBy { it.code }
 
   init {
     title = "${translator.name} Translator Supported Languages"
   }
 
-  override fun preferredSize() = Dimension(460, 420)
-
   @Composable
   override fun Content() {
-    Surface(
-      modifier = Modifier.fillMaxWidth(),
-      color = MaterialTheme.colorScheme.background,
+    Box(
+      modifier = Modifier
+        .fillMaxWidth()
+        .background(JewelTheme.globalColors.panelBackground),
     ) {
       SupportLanguagesContent(languages = supportedLanguages)
     }
@@ -78,13 +73,12 @@ private fun SupportLanguagesContent(languages: List<Lang>) {
   Column(
     modifier = Modifier
       .fillMaxWidth()
-      .background(MaterialTheme.colorScheme.background)
       .padding(horizontal = 20.dp, vertical = 24.dp)
   ) {
     Text(
       text = "Supported languages (${languages.size})",
-      style = MaterialTheme.typography.titleSmall,
-      color = MaterialTheme.colorScheme.onBackground
+      fontWeight = FontWeight.Medium,
+      color = JewelTheme.globalColors.text.normal
     )
     Box(
       modifier = Modifier
@@ -106,18 +100,17 @@ private fun SupportLanguagesContent(languages: List<Lang>) {
             if (flag.isNotEmpty()) {
               Text(
                 text = flag,
-                style = MaterialTheme.typography.headlineLarge
+                fontSize = 22.sp
               )
             }
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
               Text(
                 text = language.name,
-                style = MaterialTheme.typography.bodyMedium
+                color = JewelTheme.globalColors.text.normal
               )
               Text(
                 text = "${language.englishName} (${language.code})",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = JewelTheme.globalColors.text.info
               )
             }
           }

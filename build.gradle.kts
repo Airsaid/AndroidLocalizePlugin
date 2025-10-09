@@ -34,13 +34,11 @@ repositories {
 dependencies {
   implementation(libs.gson)
   implementation(libs.alimt)
-  implementation(compose.desktop.currentOs)
-  implementation(compose.material3)
-  implementation(compose.materialIconsExtended)
-  implementation(compose.foundation)
 
   compileOnly(libs.autoServiceAnnotations)
   kapt(libs.autoService)
+
+  compileOnly(compose.desktop.currentOs)
 
   testImplementation(libs.junitJupiterApi)
   testRuntimeOnly(libs.junitJupiterEngine)

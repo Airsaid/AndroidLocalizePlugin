@@ -4,15 +4,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.airsaid.localization.config.SettingsState
 import com.airsaid.localization.config.TranslatorCredentialsDialog
@@ -24,7 +18,8 @@ import com.airsaid.localization.ui.components.IdeDropdownField
 import com.airsaid.localization.ui.components.IdeTextField
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.awt.Dimension
+import org.jetbrains.jewel.foundation.theme.JewelTheme
+import org.jetbrains.jewel.ui.component.Text
 
 /**
  * Compose dialog for managing OpenAI translator credentials, hosts, and models.
@@ -36,13 +31,14 @@ class OpenAITranslatorSettingsDialog(
   settingsState: SettingsState,
 ) : TranslatorCredentialsDialog(translator, settingsState) {
 
+  override val defaultPreferredSize
+    get() = 480 to 400
+
   private val openAISettings = OpenAITranslatorSettings.getInstance()
 
   init {
     title = "OpenAI Settings"
   }
-
-  override fun preferredSize() = Dimension(480, 400)
 
   @Composable
   override fun Content() {
@@ -121,8 +117,7 @@ class OpenAITranslatorSettingsDialog(
       Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Text(
           text = "API Key",
-          style = MaterialTheme.typography.bodyMedium,
-          color = MaterialTheme.colorScheme.onSurfaceVariant
+          color = JewelTheme.globalColors.text.info
         )
         IdeTextField(
           value = credentialValuesState[API_KEY_ID].orEmpty(),
@@ -133,8 +128,7 @@ class OpenAITranslatorSettingsDialog(
           placeholder = {
             Text(
               text = "sk-...",
-              style = MaterialTheme.typography.bodyMedium,
-              color = MaterialTheme.colorScheme.onSurfaceVariant
+              color = JewelTheme.globalColors.text.info
             )
           }
         )
@@ -143,8 +137,7 @@ class OpenAITranslatorSettingsDialog(
       Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(
           text = "API Endpoint",
-          style = MaterialTheme.typography.bodyMedium,
-          color = MaterialTheme.colorScheme.onSurfaceVariant
+          color = JewelTheme.globalColors.text.info
         )
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
           IdeTextField(
@@ -155,28 +148,25 @@ class OpenAITranslatorSettingsDialog(
             placeholder = {
               Text(
                 text = OpenAITranslatorSettings.DEFAULT_API_HOST,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = JewelTheme.globalColors.text.info
               )
             }
           )
           Text(
             text = "Leave blank to use the default OpenAI endpoint.",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = JewelTheme.globalColors.text.info
           )
         }
       }
 
       Text(
         text = "Model",
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant
+        color = JewelTheme.globalColors.text.info
       )
       Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         IdeCheckBox(
           checked = useCustomModel,
-          onValueChange = {
+          onCheckedChange = {
             useCustomModel = it
             if (!it) {
               ensureSelectedModel(availableModels)
@@ -195,8 +185,7 @@ class OpenAITranslatorSettingsDialog(
             placeholder = {
               Text(
                 text = "e.g. gpt-4.1-custom",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = JewelTheme.globalColors.text.info
               )
             }
           )
@@ -213,8 +202,7 @@ class OpenAITranslatorSettingsDialog(
           loadErrorMessage?.let { error ->
             Text(
               text = error,
-              style = MaterialTheme.typography.bodySmall,
-              color = MaterialTheme.colorScheme.error
+              color = Color(0xFFE53935)
             )
           }
 
@@ -229,8 +217,7 @@ class OpenAITranslatorSettingsDialog(
             }
             Text(
               text = helperText,
-              style = MaterialTheme.typography.bodySmall,
-              color = MaterialTheme.colorScheme.onSurfaceVariant
+              color = JewelTheme.globalColors.text.info
             )
           }
         }

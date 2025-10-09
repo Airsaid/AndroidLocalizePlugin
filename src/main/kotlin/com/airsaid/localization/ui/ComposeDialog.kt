@@ -2,9 +2,9 @@ package com.airsaid.localization.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.awt.ComposePanel
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
+import org.jetbrains.jewel.bridge.JewelComposePanel
 import java.awt.Dimension
 import javax.swing.JComponent
 
@@ -18,22 +18,23 @@ abstract class ComposeDialog(
   canBeParent: Boolean = true
 ) : DialogWrapper(project, canBeParent) {
 
-  private val composePanel = ComposePanel()
-  private var onClickOKCallback: (() -> Unit)? = null
+  protected open val defaultPreferredSize: Pair<Int, Int>? = null
 
-  init {
-    preferredSize()?.let { composePanel.preferredSize = it }
-    composePanel.setContent {
-      IdeTheme {
-        Content()
-      }
-    }
-    init()
+  private val composePanel by lazy {
+    JewelComposePanel(config = {
+      println("pSize: $defaultPreferredSize")
+      defaultPreferredSize?.let { preferredSize = Dimension(it.first, it.second) }
+    }, content = {
+      Content()
+    })
   }
+  private var onClickOKCallback: (() -> Unit)? = null
 
   override fun createCenterPanel(): JComponent = composePanel
 
-  protected open fun preferredSize(): Dimension? = null
+  init {
+    init()
+  }
 
   @Composable
   protected abstract fun Content()

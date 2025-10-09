@@ -19,39 +19,32 @@ package com.airsaid.localization.config
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.awt.ComposePanel
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.BitmapPainter
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.toComposeImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.airsaid.localization.translate.AbstractTranslator
 import com.airsaid.localization.translate.services.TranslatorService
-import com.airsaid.localization.ui.IdeTheme
 import com.airsaid.localization.ui.SupportedLanguagesDialog
-import com.airsaid.localization.ui.components.IdeSwitch
 import com.airsaid.localization.ui.components.IdeTextField
+import com.airsaid.localization.ui.components.SwingIcon
+import com.intellij.icons.AllIcons
 import com.intellij.ide.BrowserUtil
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.util.ui.UIUtil
+import org.jetbrains.jewel.bridge.JewelComposePanel
+import org.jetbrains.jewel.foundation.ExperimentalJewelApi
+import org.jetbrains.jewel.foundation.theme.JewelTheme
+import org.jetbrains.jewel.ui.component.*
 import java.awt.Dimension
-import java.awt.RenderingHints
-import java.awt.image.BufferedImage
-import javax.swing.Icon
 import javax.swing.JComponent
-import kotlin.math.max
 import androidx.compose.foundation.layout.Arrangement as LayoutArrangement
 
 /**
@@ -64,36 +57,29 @@ class SettingsComponent {
     private val LOG = Logger.getInstance(SettingsComponent::class.java)
   }
 
-  private val composePanel = ComposePanel()
-
   private val translatorsState = mutableStateListOf<AbstractTranslator>()
   private val selectedTranslatorState = mutableStateOf<AbstractTranslator?>(null)
   private val enableCacheState = mutableStateOf(true)
   private val maxCacheSizeState = mutableStateOf("500")
-  private val translationIntervalState = mutableStateOf("500")
+  private val translationIntervalState = mutableStateOf("50")
 
-  init {
-    composePanel.preferredSize = Dimension(680, 560)
-    composePanel.isOpaque = true
-    composePanel.background = UIUtil.getPanelBackground()
-    composePanel.setContent {
-      IdeTheme {
-        SettingsContent(
-          translators = translatorsState,
-          selectedTranslator = selectedTranslatorState.value,
-          defaultTranslatorKey = TranslatorService.getInstance().getDefaultTranslator().key,
-          enableCacheState = enableCacheState,
-          maxCacheSizeState = maxCacheSizeState,
-          translationIntervalState = translationIntervalState,
-          onTranslatorSelected = { translator -> applySelectedTranslator(translator) },
-          onShowSupportedLanguages = { translator -> SupportedLanguagesDialog(translator).show() },
-          onConfigureTranslator = { translator ->
-            TranslatorConfigurationManager.showConfigurationDialog(translator)
-          }
-        )
+  private val composePanel = JewelComposePanel(config = {
+    preferredSize = Dimension(680, 560)
+    isOpaque = true
+  }, content = {
+    SettingsContent(
+      translators = translatorsState,
+      selectedTranslator = selectedTranslatorState.value,
+      enableCacheState = enableCacheState,
+      maxCacheSizeState = maxCacheSizeState,
+      translationIntervalState = translationIntervalState,
+      onTranslatorSelected = { translator -> applySelectedTranslator(translator) },
+      onShowSupportedLanguages = { translator -> SupportedLanguagesDialog(translator).show() },
+      onConfigureTranslator = { translator ->
+        TranslatorConfigurationManager.showConfigurationDialog(translator)
       }
-    }
-  }
+    )
+  })
 
   val content: JComponent
     get() = composePanel
@@ -152,19 +138,15 @@ class SettingsComponent {
 
 private val LabelColumnWidth = 140.dp
 private val FieldMinWidth = 160.dp
-private val TranslatorDropdownWidth = 280.dp
-private val CompactFieldHeight = 36.dp
 private val FormContentSpacing = 8.dp
 private const val MAX_REQUEST_INTERVAL_MS = 60_000
 private const val DONATION_URL =
   "https://github.com/Airsaid/AndroidLocalizePlugin/blob/main/README.md#support-and-donations"
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SettingsContent(
   translators: SnapshotStateList<AbstractTranslator>,
   selectedTranslator: AbstractTranslator?,
-  defaultTranslatorKey: String?,
   enableCacheState: MutableState<Boolean>,
   maxCacheSizeState: MutableState<String>,
   translationIntervalState: MutableState<String>,
@@ -177,7 +159,7 @@ private fun SettingsContent(
   Column(
     modifier = Modifier
       .fillMaxSize()
-      .background(MaterialTheme.colorScheme.background)
+      .background(JewelTheme.globalColors.panelBackground)
       .verticalScroll(scrollState)
       .padding(horizontal = 24.dp, vertical = 16.dp),
     verticalArrangement = LayoutArrangement.spacedBy(20.dp)
@@ -194,20 +176,18 @@ private fun SettingsContent(
           horizontalArrangement = LayoutArrangement.spacedBy(FormContentSpacing)
         ) {
           TranslatorDropdown(
-            modifier = Modifier.width(TranslatorDropdownWidth),
+            modifier = Modifier.width(220.dp).height(40.dp),
             translators = translators,
             selectedTranslator = selectedTranslator,
-            defaultTranslatorKey = defaultTranslatorKey,
             onTranslatorSelected = onTranslatorSelected
           )
 
           selectedTranslator?.let { translator ->
             if (TranslatorConfigurationManager.hasConfiguration(translator)) {
               IconButton(onClick = { onConfigureTranslator(translator) }) {
-                Icon(
-                  imageVector = Icons.Filled.Settings,
-                  contentDescription = "Configure translator",
-                  tint = MaterialTheme.colorScheme.onSurfaceVariant
+                SwingIcon(
+                  icon = AllIcons.General.Settings,
+                  modifier = Modifier.size(16.dp)
                 )
               }
             }
@@ -215,22 +195,21 @@ private fun SettingsContent(
         }
 
         selectedTranslator?.let { translator ->
-          TextButton(
+          Link(
+            text = "See supported languages",
             onClick = { onShowSupportedLanguages(translator) },
             modifier = Modifier.align(Alignment.Start)
-          ) {
-            Text("See supported languages")
-          }
+          )
         }
       }
     }
 
-    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.35f))
+    HorizontalDivider()
 
     SectionHeader(title = "Caching")
 
     SettingsFormRow(label = "Use cache") {
-      IdeSwitch(
+      Checkbox(
         checked = enableCacheState.value,
         onCheckedChange = { enableCacheState.value = it }
       )
@@ -251,13 +230,12 @@ private fun SettingsContent(
           val digits = newValue.filter { it.isDigit() }
           maxCacheSizeState.value = digits.ifEmpty { "0" }
         },
-        singleLine = true,
         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
         enabled = enableCacheState.value
       )
     }
 
-    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.35f))
+    HorizontalDivider()
 
     SectionHeader(title = "Requests")
 
@@ -279,20 +257,18 @@ private fun SettingsContent(
             else -> clampedValue.toString()
           }
         },
-        singleLine = true,
         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
         suffix = {
           Text(
             text = "ms",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = JewelTheme.globalColors.text.info,
             modifier = Modifier.padding(start = 4.dp)
           )
         }
       )
     }
 
-    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.35f))
+    HorizontalDivider()
 
     SectionHeader(title = "Donation")
     DonationSection()
@@ -303,8 +279,8 @@ private fun SettingsContent(
 private fun SectionHeader(title: String) {
   Text(
     text = title,
-    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
-    color = MaterialTheme.colorScheme.onSurface
+    fontWeight = FontWeight.SemiBold,
+    color = JewelTheme.globalColors.text.normal
   )
 }
 
@@ -325,8 +301,7 @@ private fun SettingsFormRow(
     ) {
       Text(
         text = label,
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        color = JewelTheme.globalColors.text.info,
         modifier = Modifier
           .width(LabelColumnWidth)
           .padding(end = 12.dp)
@@ -343,8 +318,7 @@ private fun SettingsFormRow(
     helperText?.let {
       Text(
         text = it,
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        color = JewelTheme.globalColors.text.info,
         modifier = Modifier.padding(start = LabelColumnWidth + FormContentSpacing, top = 4.dp)
       )
     }
@@ -356,125 +330,55 @@ private fun DonationSection() {
   Column {
     Text(
       text = "If this plugin has helped simplify your localization workflow,\nconsider supporting its ongoing development so it can continue to improve.",
-      style = MaterialTheme.typography.bodyMedium,
-      color = MaterialTheme.colorScheme.onSurface
+      color = JewelTheme.globalColors.text.normal
     )
 
-    TextButton(
+    Link(
+      text = "Buy me a coffee  ☕",
       onClick = { BrowserUtil.browse(DONATION_URL) },
       modifier = Modifier.align(Alignment.Start)
-    ) {
-      Text("Buy me a coffee  ☕")
-    }
+    )
   }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalJewelApi::class)
 @Composable
 private fun TranslatorDropdown(
   modifier: Modifier = Modifier,
   translators: List<AbstractTranslator>,
   selectedTranslator: AbstractTranslator?,
-  defaultTranslatorKey: String?,
   onTranslatorSelected: (AbstractTranslator) -> Unit,
 ) {
-  var expanded by remember { mutableStateOf(false) }
-  val selectedPainter = selectedTranslator?.let { translatorIconPainter(it) }
-  val selectedName = selectedTranslator?.name.orEmpty()
+  val resolvedIndex = selectedTranslator?.let { current ->
+    val index = translators.indexOf(current)
+    if (index >= 0) index else 0
+  } ?: 0
 
-  ExposedDropdownMenuBox(
+  ListComboBox(
     modifier = modifier,
-    expanded = expanded,
-    onExpandedChange = { expanded = !expanded }
-  ) {
-    OutlinedTextField(
-      modifier = Modifier
-        .menuAnchor(MenuAnchorType.PrimaryNotEditable, true)
-        .fillMaxWidth()
-        .heightIn(min = CompactFieldHeight),
-      value = selectedName,
-      onValueChange = {},
-      readOnly = true,
-      label = { Text("Translator") },
-      placeholder = { Text("Select translator") },
-      singleLine = true,
-      leadingIcon = {
-        selectedPainter?.let {
-          Icon(
-            painter = it,
-            contentDescription = selectedTranslator.name,
-            modifier = Modifier.size(18.dp),
-            tint = Color.Unspecified
-          )
-        }
-      },
-      trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) }
-    )
-
-    DropdownMenu(
-      expanded = expanded,
-      onDismissRequest = { expanded = false }
+    items = translators,
+    selectedIndex = resolvedIndex,
+    onSelectedItemChange = { index ->
+      translators.getOrNull(index)?.let(onTranslatorSelected)
+    },
+    itemKeys = { _, translator -> translator.key },
+  ) { translator, _, _ ->
+    Row(
+      modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+      horizontalArrangement = LayoutArrangement.spacedBy(8.dp),
+      verticalAlignment = Alignment.CenterVertically,
     ) {
-      translators.forEach { translator ->
-        val itemPainter = translatorIconPainter(translator)
-        val isDefault = translator.key == defaultTranslatorKey
-
-        DropdownMenuItem(
-          text = { Text(translator.name) },
-          leadingIcon = {
-            itemPainter?.let {
-              Icon(
-                painter = it,
-                contentDescription = translator.name,
-                modifier = Modifier.size(18.dp),
-                tint = Color.Unspecified
-              )
-            }
-          },
-          trailingIcon = {
-            if (isDefault) {
-              DefaultBadge()
-            }
-          },
-          onClick = {
-            expanded = false
-            onTranslatorSelected(translator)
-          },
-          modifier = Modifier.widthIn(min = 240.dp)
-        )
-      }
+      SwingIcon(icon = translator.icon)
+      Text(translator.name)
     }
   }
 }
 
 @Composable
-private fun DefaultBadge() {
-  Text(
-    text = "Default",
-    style = MaterialTheme.typography.labelSmall,
-    color = MaterialTheme.colorScheme.onSecondaryContainer,
-    modifier = Modifier
-      .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(6.dp))
-      .padding(horizontal = 8.dp, vertical = 2.dp)
+private fun HorizontalDivider() {
+  Divider(
+    orientation = org.jetbrains.jewel.ui.Orientation.Horizontal,
+    color = JewelTheme.globalColors.borders.normal,
+    modifier = Modifier.fillMaxWidth()
   )
-}
-
-@Composable
-private fun translatorIconPainter(translator: AbstractTranslator): Painter? {
-  val icon = translator.icon ?: return null
-  return remember(icon) {
-    val buffered = icon.toBufferedImageSafely()
-    BitmapPainter(buffered.toComposeImageBitmap())
-  }
-}
-
-private fun Icon.toBufferedImageSafely(): BufferedImage {
-  val width = max(1, iconWidth)
-  val height = max(1, iconHeight)
-  val image = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
-  val graphics = image.createGraphics()
-  graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC)
-  paintIcon(null, graphics, 0, 0)
-  graphics.dispose()
-  return image
 }
