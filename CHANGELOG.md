@@ -8,7 +8,7 @@
 - Auto-select existing languages option in the Select Languages dialog to automatically detect and select languages that already exist in the project.
 
 ### Fixed
-- ExceptionInInitializerError when opening plguin.
+- ExceptionInInitializerError when opening plugin.
 
 ## [4.0.0] (2025-09-27)
 
