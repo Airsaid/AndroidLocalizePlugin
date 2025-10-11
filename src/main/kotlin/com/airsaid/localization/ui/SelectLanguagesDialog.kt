@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.airsaid.localization.config.SettingsConfigurable
 import com.airsaid.localization.constant.Constants
 import com.airsaid.localization.translate.AbstractTranslator
@@ -636,7 +637,7 @@ private fun LanguageOption(
       .height(64.dp)
       .border(1.dp, borderColor, RoundedCornerShape(8.dp))
       .background(backgroundColor, RoundedCornerShape(8.dp))
-      .padding(horizontal = 12.dp, vertical = 8.dp)
+      .padding(horizontal = 10.dp, vertical = 2.dp)
       .toggleable(
         value = isSelected,
         interactionSource = remember { MutableInteractionSource() },
@@ -644,13 +645,13 @@ private fun LanguageOption(
         role = Role.Checkbox,
         onValueChange = onToggle,
       ),
-    horizontalArrangement = Arrangement.spacedBy(8.dp),
+    horizontalArrangement = Arrangement.spacedBy(6.dp),
     verticalAlignment = Alignment.CenterVertically,
   ) {
     Checkbox(checked = isSelected, onCheckedChange = onToggle)
     Text(
       text = language.flag,
-      modifier = Modifier.padding(4.dp),
+      fontSize = 22.sp,
     )
     Column(
       modifier = Modifier.weight(1f, fill = true),
@@ -659,12 +660,14 @@ private fun LanguageOption(
       Text(
         text = language.name,
         color = JewelTheme.globalColors.text.normal,
+        fontSize = 14.sp,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
       )
       Text(
         text = "${language.englishName} (${language.code})",
         color = JewelTheme.globalColors.text.info,
+        fontSize = 12.sp,
         maxLines = 2,
         overflow = TextOverflow.Ellipsis,
       )
