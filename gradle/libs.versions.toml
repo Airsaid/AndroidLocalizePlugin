@@ -1,7 +1,7 @@
 [versions]
 # libraries
 junitJupiter = "5.10.2"
-junitPlatform = "1.10.2"
+junitPlatform = "6.0.0"
 junittest4 = "4.13.2"
 autoService = "1.1.1"
 autoServiceAnnotations = "1.1.1"
