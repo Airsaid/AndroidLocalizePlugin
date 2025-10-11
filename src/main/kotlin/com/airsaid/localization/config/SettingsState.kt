@@ -138,7 +138,7 @@ class SettingsState : PersistentStateComponent<SettingsState.State> {
     var credentials: MutableMap<String, MutableMap<String, String>> = mutableMapOf(),
     var isEnableCache: Boolean = true,
     var maxCacheSize: Int = 500,
-    var translationInterval: Int = 500, // milliseconds
+    var translationInterval: Int = 50, // milliseconds
     var isSkipNonTranslatable: Boolean = false,
   )
 
