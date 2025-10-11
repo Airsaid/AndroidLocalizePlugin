@@ -5,6 +5,10 @@
 
     <depends>com.intellij.modules.platform</depends>
 
+    <dependencies>
+        <module name="intellij.platform.compose"/>
+    </dependencies>
+
     <extensions defaultExtensionNs="com.intellij">
         <applicationConfigurable parentId="tools"
                                  displayName="Android Localize"
