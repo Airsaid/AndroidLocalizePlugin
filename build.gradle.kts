@@ -23,12 +23,10 @@ kotlin {
 
 repositories {
   mavenCentral()
-  google()
-  maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
-
   intellijPlatform {
     defaultRepositories()
   }
+  google()
 }
 
 dependencies {
