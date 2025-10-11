@@ -22,7 +22,6 @@ abstract class ComposeDialog(
 
   private val composePanel by lazy {
     JewelComposePanel(config = {
-      println("pSize: $defaultPreferredSize")
       defaultPreferredSize?.let { preferredSize = Dimension(it.first, it.second) }
     }, content = {
       Content()
