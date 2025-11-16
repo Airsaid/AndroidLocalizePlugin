@@ -8,6 +8,10 @@
 
 - Allow configuring a Google Cloud Translation API key for the Google translator, including secure credential storage and Compose UI controls.
 
+### Fixed
+
+- Refresh dialog languages after settings change.
+
 ## [4.1.0] - 2025-10-11
 
 ### Added

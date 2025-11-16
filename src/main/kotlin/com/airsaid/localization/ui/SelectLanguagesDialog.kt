@@ -79,8 +79,8 @@ class SelectLanguagesDialog(private val project: Project) : ComposeDialog(projec
     get() = 900 to 620
 
   private val translatorService = TranslatorService.getInstance()
-  private val translator = translatorService.getSelectedTranslator()
-  private val supportedLanguages = translator.supportedLanguages.sortedBy { it.code }
+  private var translator by mutableStateOf(translatorService.getSelectedTranslator())
+  private var supportedLanguages by mutableStateOf(translator.supportedLanguages.sortedBy { it.code })
   private val defaultFavoriteCodes = Languages.defaultFavoriteCodes()
 
   private val favoriteLanguages = mutableStateListOf<Lang>()
@@ -143,8 +143,8 @@ class SelectLanguagesDialog(private val project: Project) : ComposeDialog(projec
       return
     }
 
-    val languages by remember(favoriteLanguages) {
-      derivedStateOf { translator.supportedLanguages.filterNot { favoriteLanguages.contains(it) } }
+    val languages by remember(favoriteLanguages, supportedLanguages) {
+      derivedStateOf { supportedLanguages.filterNot { favoriteLanguages.contains(it) } }
     }
 
     SelectLanguagesContent(
@@ -178,6 +178,7 @@ class SelectLanguagesDialog(private val project: Project) : ComposeDialog(projec
   }
 
   private fun loadState() {
+    stateInitialized = false
     val properties = properties()
 
     favoriteLanguages.clear()
@@ -251,6 +252,18 @@ class SelectLanguagesDialog(private val project: Project) : ComposeDialog(projec
 
   private fun openPluginSettings() {
     ShowSettingsUtil.getInstance().showSettingsDialog(project, SettingsConfigurable::class.java)
+    refreshSettingsFromConfig()
+  }
+
+  private fun refreshSettingsFromConfig() {
+    val updatedTranslator = translatorService.getSelectedTranslator()
+    val updatedSupportedLanguages = updatedTranslator.supportedLanguages.sortedBy { it.code }
+    if (translator.key == updatedTranslator.key && supportedLanguages == updatedSupportedLanguages) {
+      return
+    }
+    translator = updatedTranslator
+    supportedLanguages = updatedSupportedLanguages
+    loadState()
   }
 }
 
