@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [4.2.0] - 2025-11-16
+
 ### Added
 
 - Allow configuring a Google Cloud Translation API key for the Google translator, including secure credential storage and Compose UI controls.
@@ -214,7 +216,8 @@
 
 - Initial release of the plugin.
 
-[Unreleased]: https://github.com/Airsaid/AndroidLocalizePlugin/compare/v4.1.0...HEAD
+[Unreleased]: https://github.com/Airsaid/AndroidLocalizePlugin/compare/v4.2.0...HEAD
+[4.2.0]: https://github.com/Airsaid/AndroidLocalizePlugin/compare/v4.1.0...v4.2.0
 [4.1.0]: https://github.com/Airsaid/AndroidLocalizePlugin/compare/v4.0.0...v4.1.0
 [4.0.0]: https://github.com/Airsaid/AndroidLocalizePlugin/compare/v3.0.0...v4.0.0
 [3.0.0]: https://github.com/Airsaid/AndroidLocalizePlugin/compare/v2.9.0...v3.0.0
