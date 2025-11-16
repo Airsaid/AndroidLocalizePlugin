@@ -17,7 +17,8 @@ class GoogleTranslatorSettings : PersistentStateComponent<GoogleTranslatorSettin
 
   data class State(
     var useCustomServer: Boolean = false,
-    var serverUrl: String = DEFAULT_SERVER_URL
+    var serverUrl: String = DEFAULT_SERVER_URL,
+    var useCustomApiKey: Boolean = false,
   )
 
   private var state = State()
@@ -32,6 +33,12 @@ class GoogleTranslatorSettings : PersistentStateComponent<GoogleTranslatorSettin
     get() = state.serverUrl.ifBlank { DEFAULT_SERVER_URL }
     set(value) {
       state = state.copy(serverUrl = value.ifBlank { DEFAULT_SERVER_URL })
+    }
+
+  var useCustomApiKey: Boolean
+    get() = state.useCustomApiKey
+    set(value) {
+      state = state.copy(useCustomApiKey = value)
     }
 
   override fun getState(): State = state

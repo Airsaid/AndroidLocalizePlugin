@@ -31,7 +31,7 @@ abstract class AbsGoogleTranslator : AbstractTranslator() {
 
   override val icon: Icon = PluginIcons.GOOGLE_ICON
 
-  override val credentialDefinitions: List<TranslatorCredentialDescriptor> = emptyList()
+  override val credentialDefinitions: List<TranslatorCredentialDescriptor> = listOf(API_KEY_DESCRIPTOR)
 
   override val supportedLanguages: List<Lang> by lazy {
     Languages.allSupportedLanguages()
@@ -45,5 +45,15 @@ abstract class AbsGoogleTranslator : AbstractTranslator() {
           else -> lang
         }
       }
+  }
+
+  companion object {
+    val API_KEY_DESCRIPTOR = TranslatorCredentialDescriptor(
+      id = "apiKey",
+      label = "API Key",
+      isSecret = true,
+      required = false,
+      description = "Optional Google Cloud Translation API key"
+    )
   }
 }
